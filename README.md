@@ -15,9 +15,15 @@ Ultimately, the goal is to publish on CRAN.
  ## Roadmap
 
  - [ ] Composition of needed columns
- - [ ] Cleaning data (id needed)
+ - [ ] Cleaning data (if needed)
  - [ ] Analyses
  - [ ] Viz
  - [ ] Publication (reports, pres)
 
  All steps must contain documnetation and tests.
+
+ ## Construction
+
+ - [ ] Use `checkmate` or `asserthat` for parameters checks
+ - [ ] Use `assertr` for datasets checks, e.g. do columns exist in df, is colA of type X, Y, Z
+ - [ ] Document return outputs, document the process
