@@ -68,7 +68,6 @@ expand.select.multiple <- function(df, var, val.parent.na=NA){
   return(df)
 }
 
-
 expand.select.multiple.vec <- function(df, x=c(),...){
   lapply(x, function(var) {df <<- df %>% expand.select.multiple(var,...)})
   return(df)
@@ -251,4 +250,9 @@ mark_significance <- function(df=sum.hoh.gender, treshold=0.01){
   df %>% group_by(country, question, choice) %>%
     mutate(no_overlap=ifelse(max(`mean/low`)>min(`mean/upp`) & mean(mean)>treshold, "*", "")) %>%
     arrange(country, question, choice)
+}
+
+first_up <- function(x) {
+  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+  return(x)
 }

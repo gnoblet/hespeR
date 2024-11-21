@@ -334,10 +334,6 @@ for (ind in all.ind){
 }
 
 ## extract the HESPER items serious problem vs top three priority and plot it
-first_up <- function(x) {
-  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
-  return(x)
-}
 res_hesper_main <- result_hesper %>% mutate(choice_label=str_wrap(choice_label, 40)) %>%
   filter(question %in% c("hesper_serious_problem", "hesper_top_three_priorities"), !group %in% "subset") %>%
   mutate(question = "HESPER Item", Type=str_replace_all(first_up(type), "_", " ")) %>% arrange(desc(Type), mean)
