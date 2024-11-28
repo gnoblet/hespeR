@@ -50,7 +50,8 @@ add_hesper_main <- function(df,
                             hesper_item_non_displaced = NULL,
                             add_binaries = T,
                             add_binaries_subset = T,
-                            subset = T
+                            subset = T,
+                            add_binaries_undefined = T
                             ){
   
   ## check that all columns are present in dataframe and print the non matching columns
@@ -63,10 +64,11 @@ add_hesper_main <- function(df,
   
   ## compute total items selected
   df <- df %>%
-    dplyr::mutate(nb_hesper.all = rowSums(dplyr::across(dplyr::all_of(col_items), ~. %in% choice_serious), na.rm=T),
-           nb_hesper.applicable = rowSums(dplyr::across(dplyr::all_of(col_items), ~ . %in% choice_applicable), na.rm=T),
-           nb_hesper.pnta = rowSums(dplyr::across(dplyr::all_of(col_items), ~ . %in% choice_pnta), na.rm=T),
-           nb_hepser.dnk = rowSums(dplyr::across(dplyr::all_of(col_items), ~ . %in% choice_dnk), na.rm=T),
+    mutate(nb_hesper.all = rowSums(across(all_of(col_items), ~. %in% choice_serious), na.rm=T),
+           nb_hesper.applicable = rowSums(across(all_of(col_items), ~ . %in% choice_applicable), na.rm=T),
+           nb_hesper.undefined = rowSums(across(all_of(col_items), ~ . %in% c(choice_na, choice_dnk, choice_pnta)), na.rm=T),
+           nb_hesper.pnta = rowSums(across(all_of(col_items), ~ . %in% choice_pnta), na.rm=T),
+           nb_hepser.dnk = rowSums(across(all_of(col_items), ~ . %in% choice_dnk), na.rm=T)
            prop_hesper.all = nb_hesper.all / nb_hesper.applicable)
   
   ## Add binary columns to record serious problem, 0 if no serious problem and NA otherwise for all items across col_items
@@ -79,22 +81,27 @@ add_hesper_main <- function(df,
   if (add_binaries_subset){
     df <- df %>% dplyr::mutate(dplyr::across(dplyr::all_of(col_hesper_subset), ~dplyr::case_when(. %in% choice_serious ~ 1, . %in% choice_no_serious ~ 0, TRUE ~ NA_real_), .names = "{.col}.binary_subset"))
   }
-    
-  ## collapse priority columns to have a select multiple column
+  
+  ## Add binary columns across all HESPER items recording if response is undefined
+  if (add_binaries_undefined){
+    df <- df %>% mutate(across(all_of(col_items), ~case_when(. %in% c(choice_na, choice_dnk, choice_pnta) ~ 1, TRUE ~ 0), .names = "{.col}.undefined"))  
+  }
+  
+  ## collapse priority columns to have a select multiple column, create dummy binary child columns (with & without subset) & ensure that skip logic is respected for top three binaries
   if (!is.null(cols_priority)){
     
     ## stop and display columns that are not in df
     if (sum(!cols_priority %in% colnames(df))>0) stop("The following columns are not present in the dataframe: ", cols_priority[!cols_priority %in% colnames(df)])
     
     ## unite the thre priority columns to have one select multiple hesper priorities
-    df <- df %>%
-      tidyr::unite(!!rlang::sym(col_name_hesper_top_three), dplyr::all_of(cols_priority), sep = " ", remove = F, na.rm = T) %>%
-      dplyr::mutate(!!rlang::sym(col_name_hesper_top_three) := ifelse(!!rlang::sym(col_name_hesper_top_three)=="", NA, stringr::str_replace_all(!!rlang::sym(col_name_hesper_top_three), "^ | $", "")))
-    
-    ### expand parent column top three priorities and priority without subset
+    df <- df %>% add.top.three(new_col = col_name_hesper_top_three, cols_unite = cols_priority)
+
+    ### expand parent column top three priorities and priority without accounting for subset
     df <- df %>% expand.select.multiple.vec(c(col_name_hesper_top_three, cols_priority))
     
     ### ensure that skip logic are respected
+    ### to avoid having binaries with zero for items that are not applicable to the respondent 
+    
     if (subset){
       
       # mutate all subset binaries with _subset at the end before reworking them 
@@ -114,10 +121,11 @@ add_hesper_main <- function(df,
       )
       
       ## mutate all subset binaries for priority 1 / 2 / 3
-      col_prio_male <- if (!any(is.null(hesper_item_male)|is.na(hesper_item_male))) purrr::map(cols_priority, ~ paste0(., ".", hesper_item_male, "_subset")) %>% unlist else NULL
-      col_prio_female <- if (!any(is.null(hesper_item_female)|is.na(hesper_item_female))) purrr::map(cols_priority, ~ paste0(., ".", hesper_item_female, "_subset")) %>% unlist else NULL
-      col_prio_displaced <- if (!any(is.null(hesper_item_displaced)|is.na(hesper_item_displaced))) purrr::map(cols_priority, ~ paste0(., ".", hesper_item_displaced, "_subset")) %>% unlist else NULL
-      col_prio_non_displaced <- if (!any(is.null(hesper_item_non_displaced)|is.na(hesper_item_non_displaced))) purrr::map(cols_priority, ~ paste0(., ".", hesper_item_non_displaced, "_subset")) %>% unlist else NULL
+      ## ensure that the binaries are not 0 if the item is not supposed to be asked to the respondent according to the tool
+      col_prio_male <- if (!any(is.null(hesper_item_male)|is.na(hesper_item_male))) map(cols_priority, ~ paste0(., ".", hesper_item_male, "_subset")) %>% unlist else NULL
+      col_prio_female <- if (!any(is.null(hesper_item_female)|is.na(hesper_item_female))) map(cols_priority, ~ paste0(., ".", hesper_item_female, "_subset")) %>% unlist else NULL
+      col_prio_displaced <- if (!any(is.null(hesper_item_displaced)|is.na(hesper_item_displaced))) map(cols_priority, ~ paste0(., ".", hesper_item_displaced, "_subset")) %>% unlist else NULL
+      col_prio_non_displaced <- if (!any(is.null(hesper_item_non_displaced)|is.na(hesper_item_non_displaced))) map(cols_priority, ~ paste0(., ".", hesper_item_non_displaced, "_subset")) %>% unlist else NULL
       col_prio_subset <- c(col_prio_male, col_prio_female, col_prio_displaced)
       col_prio_item_subset <- col_prio_subset %>% stringr::str_replace_all("_subset$", "")
       
@@ -137,80 +145,3 @@ add_hesper_main <- function(df,
   
 }
 
-
-
-#' @title function that creates the number of items with serious problem reported in a particular section and compute main other indicators needed
-#'
-#' @description naming done using the following syntax: nb_hesper_items_{section_name}.{section_category}
-#' @param df dataframe containing the data
-#' @param list_group named list with all HESPER items column names organized by category
-#' The argument must be a named list containing for each list element a vector with all columns names corresponding to the group category. 
-#' The names of the list elements must be the name of the group category.  
-#' @param choice_serious value that indicates a serious problem
-#' @param choice_no_serious value that indicates no serious problem
-#' @param choice_dnk value that indicates do not know
-#' @param choice_pnta value that indicates decline to answer
-#' @param choice_na value that indicates not applicable to household
-#' 
-#' @return dataframe with following new columns added: nb_hesper_items_{section_name}.{section_category} // prop_hesper_items_{section_name}.{section_category} // hesper_items_{section_name}.{section_category}
-#' @details The function creates the following indicators:
-#' nb_hesper_items_{section_name}.{section_category} : number of items with serious problem reported in the corresponding section category
-#' prop_hesper_items_{section_name}.{section_category} : proportion of items with serious problem reported in the corresponding section category relative to all items of this section category
-#' overall_prop_hesper_items_{section_name}.{section_category} : overall proportion of items with serious problem in the corresponding section category compared to all items reported as serious problem
-#' at_least_one_hesper_item_{section_name}.{section_category} : binary column indicating if at least one item with serious problem is reported in the corresponding section category
-
-add_hesper_cat <- function(df,
-                           list_group = section_wide,
-                           choice_serious = "serious_problem",
-                           choice_no_serious = "no_serious_problem",
-                           choice_dnk = "dnk",
-                           choice_pnta = "pnta",
-                           choice_na = "not_applicable"
-){
-  
-  ## access the name of the object passed as argument to "list_group"
-  list_group_name <- deparse(substitute(list_group))
-  list_group_cat <- names(list_group)
-  
-  # ## check that all columns are present in dataframe and print the non matching columns
-  col_hesper <- list_group %>% unname %>% unlist
-  col_not_matching <- col_hesper %>% purrr::keep(!. %in% colnames(df))
-  if(length(col_not_matching) > 0){warning(paste("The following columns are not present in the dataframe: ", col_not_matching, "\n"))}
-  
-  ## all response choices that should not be counted in the total nb of items
-  choice_applicable <- c(choice_serious, choice_no_serious, choice_dnk, choice_pnta)
-  choice_exclude <- c(NA, choice_na, choice_dnk, choice_pnta)
-  
-  ## Add a check if choice_serious and choice_no_serious never appears in any of df[, col_hesper]
-     
-  if(df %>% dplyr::select(any_of(col_hesper)) %>% purrr::map(unique) %>% purrr::map(~all(!. %in% c(choice_serious, choice_no_serious))) %>% unlist %>% any){
-    stop("The specified values for arguments choice_serious and choice_no_serious do not appear in the dataframe. Please check the values.")
-  }
-  
-  ## for each group category, create the nb_hesper_items_{section_name}.{section_category} to capture number of serious problem recorded
-  ## if there is only NAs across list_group[[cat]], the value should be set to NA 
-  
-  for (cat in list_group_cat){
-    df <- df %>% 
-      dplyr::mutate(all_serious_items := rowSums(dplyr::across(any_of(unlist(unname(list_group))), ~ . %in% choice_serious), na.rm=T),
-             
-             n_valid := rowSums(dplyr::across(any_of(list_group[[cat]]), ~ !. %in% choice_exclude)),
-             
-             !!paste0("nb_hesper_items_", list_group_name, ".", cat) := dplyr::case_when(
-               n_valid == 0 ~ NA_real_, TRUE ~ rowSums(dplyr::across(any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T)
-             ),
-             
-             !!paste0("prop_hesper_items_", list_group_name, ".", cat) := !!rlang::sym(paste0("nb_hesper_items_", list_group_name, ".", cat)) / n_valid,
-             
-             !!paste0("overall_prop_hesper_", list_group_name, ".", cat) := !!rlang::sym(paste0("nb_hesper_items_", list_group_name, ".", cat)) / all_serious_items,
-             
-             !!paste0("at_least_one_hesper_item_", list_group_name, ".", cat) := dplyr::case_when(
-               n_valid == 0 ~ NA_real_, TRUE ~ rowSums(dplyr::across(any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T) > 0
-             )
-      ) 
-  }
-  
-  df <- df %>% dplyr::select(-n_valid)
-  
-  return(df)
-}

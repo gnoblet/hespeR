@@ -2,14 +2,12 @@
 
 rm(list=ls())
 require(pacman)
-p_load(readxl, writexl, tidyverse, srvyr, purrr, rio, data.table)
+p_load(readxl, writexl, tidyverse, srvyr, purrr, rio, data.table, assertr)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 ### 0. Source needed functions  -------------------------------------------------------------
-
-source("add_hesper.R")
-source("plot_hesper.R")
-source("utils.R")
+## list all scripts in R
+map(list.files(pattern = ".R$", full.names = TRUE) %>% str_subset("hesper analysis", T), source) %>% invisible
 
 ### 1. Read data, survey, labels and define column names, choices and define parameters  ----
 
@@ -24,9 +22,6 @@ data <- data %>%
   mutate(across(where(is.character), ~ifelse(. %in% c("0", "1", "NA"), as.numeric(.), .))) %>% 
   mutate(weights=as.numeric(weights))
 # str(data)
-
-# data <- rio::import(file = path.data, format = "xlsx", sheet=sheet.data, guess_max=9000)
-# data <- read.csv(path.data, fileEncoding = "UTF-8")
 
 ## read tool and key hesper table
 path.tool <- "../resources/REACH_DRC2404_MSNA2024_tool.xlsx"
@@ -90,8 +85,8 @@ section_priority <- key_hesper %>% select(section=`Section`, name_priority) %>% 
 area_wellbeing_priority <- key_hesper %>% select(area_wellbeing=`Area of well-being`, name_priority) %>% split(.$area_wellbeing) %>% map(.,~pull(.,name_priority)) ### Area of well-being
 sector_priority <- key_hesper %>% select(sector_theme=`Sector/Theme`, name_priority) %>% split(.$sector_theme) %>% map(.,~pull(.,name_priority)) ### Sector/Theme
 
-## function to put "other" is at the end
-other_end <- function(var) {var[c(names(var)[!names(var) %in% "other"],"other")]}
+## function to put "other" is at the end, only if other is in the names
+other_end <- function(var){if("other" %in% names(var)){var[c(names(var)[!names(var) %in% "other"],"other")]} else {var}}
 group_name <- c("section_wide", "section", "area_wellbeing", "sector")
 for (var in c(group_name, paste0(group_name, "_priority"))) {assign(var, other_end(get(var)))}
 
@@ -153,7 +148,7 @@ data <- data %>%
   add_hesper_cat(list_group=sector_priority, choice_serious = 1, choice_no_serious = 0, choice_na = NA)
 
 ## write data with composite indicators
-data %>% fwrite("../Data/data_hesper.csv", row.names = F)
+data %>% fwrite("../data_hesper.csv", row.names = F)
 
 ### Dual voices formatting
 ## Get all child columns for select one questions to then aggregate select one with binary columns only
@@ -172,7 +167,7 @@ col.strata <- "admin3_group_population"
 all_var_parent <- c("hesper_top_three_priorities", col.prio)
 binary_var <- str_subset(colnames(data), "^(prop_hesper|nb_hesper)") %>% str_subset("items", negate=T)
 binary_var2 <- str_subset(colnames(data), "^(nb_hesper_items_|prop_hesper_items_|hesper_item_|overall_prop_hesper|at_least_one)")
-binary_var3 <- paste0(col.hesp, ".binary") %>% append(paste0(col.subset, ".binary_subset"))
+binary_var3 <- paste0(col.hesp, ".binary") %>% append(paste0(col.subset, ".binary_subset")) %>% append(paste0(col.hesp, ".undefined"))
 binary_prio <- c(col.prio, "hesper_top_three_priorities") %>% map(~paste0(.x, ".") %>% str_subset(colnames(data_expanded), .)) %>% unlist
 var_analyse <- c(binary_var, binary_var2, binary_var3, binary_prio)
 
@@ -203,7 +198,8 @@ format_hesper <- function(df=res_hesper,
     mutate(group = case_when(str_detect(question, "item|overall_prop") ~ str_replace_all(question, ".*item(|s)_|overall_prop_hesper_", ""),
                              str_detect(choice, "subset$") ~ "subset", T ~ NA_character_), 
            metric= case_when(str_detect(question, group) ~ str_replace_all(question, paste0("_", group), ""), 
-                             str_detect(choice, "binary") ~ "binary", question %in% c("nb_hesper", "prop_hesper") ~ paste0(question, ".", choice), T ~ NA_character_), 
+                             str_detect(choice, "binary") ~ "binary", question %in% c("nb_hesper", "prop_hesper") ~ paste0(question, ".", choice), 
+                             T ~ NA_character_), 
            choice = case_when(str_detect(choice, "binary") ~ question, str_detect(choice, "subset") ~ str_replace_all(choice, "_subset$", ""), T ~ choice),
            question = case_when(metric=="binary" & choice %in% col.hesp ~ "hesper_serious_problem", T ~ question), 
            type = case_when(question %in% col_prio | str_detect(group, "_priority$") ~ "priority",
@@ -212,7 +208,11 @@ format_hesper <- function(df=res_hesper,
     left_join(survey %>% select(name, question_label=!!sym(col_lab)), by=c("question"="name")) %>%
     left_join(survey_combined %>% select(name, choice_name, choice_label), by=c("question"="name", "choice"="choice_name")) %>%
     left_join(key_all %>% select(-label, -item_name), by=c("group", "choice"="group_cat")) %>%
-    mutate(choice_label = coalesce(choice_label, question_name)) %>% select(-question_name) %>%
+    mutate(choice_label = coalesce(choice_label, question_name), 
+           metric = coalesce(metric, choice), 
+           choice=ifelse(metric=="undefined", question, choice),
+           question=ifelse(metric=="undefined", "item_undefined", question)) %>% 
+    select(-question_name) %>%
     left_join(ind_lab_hesper, by=c("metric")) %>% mutate(question_label=coalesce(question_label, metric_label)) %>% select(-metric_label) %>%
     left_join(df_key_hesper %>% select(choice=name, new_choice=choice_name)) %>% mutate(choice=coalesce(new_choice, choice)) %>% select(-new_choice) %>%
     left_join(df_key_hesper %>% select(choice=choice_name, item_label=Question, criteria=`Severity Criteria`)) %>%
@@ -248,11 +248,13 @@ list(result_hesper=result_hesper, res_hesper_group=res_hesper_group) %>% write_x
 ## Formatting function to pivot wider priority needs results
 format_top_three <- function(df = result_hesper, 
                              col_priority = all_var_parent){
- df %>% filter(str_detect(question, paste0(col_priority, collapse="|")) | metric=="binary") %>% 
-    mutate(choice_subset=case_when(group=="subset" ~ paste0(choice, "_", group), T ~ choice), .after="choice") %>%
-    select(-nb_items, -question_label, -metric, -type)  %>% mutate(stat=paste0(count, " (", 100*round(mean,3), "%)")) %>%
-    pivot_wider(names_from = question, values_from = any_of(c("stat", "mean", "count", "n", "mean/low", "mean/upp"))) %>%
-    rename_with(~str_replace_all(., "(stat_hesper_|stat_.*_hesper_)", ""))
+ df %>% 
+   filter(! question %in% "nb_hesper") %>%
+   filter(str_detect(question, paste0(col_priority, collapse="|")) | metric=="binary" | metric %in% "undefined") %>% 
+   mutate(choice_subset=case_when(group=="subset" ~ paste0(choice, "_", group), T ~ choice), .after="choice") %>%
+   select(-nb_items, -question_label, -metric, -type)  %>% mutate(stat=paste0(count, " (", 100*round(mean,3), "%)")) %>%
+   pivot_wider(names_from = question, values_from = any_of(c("stat", "mean", "count", "n", "mean/low", "mean/upp"))) %>%
+   rename_with(~str_replace_all(., "(stat_hesper_|stat_.*_hesper_|^stat_)", "")) 
 }
 
 top_three_formatted <- result_hesper %>% format_top_three
@@ -334,10 +336,6 @@ for (ind in all.ind){
 }
 
 ## extract the HESPER items serious problem vs top three priority and plot it
-first_up <- function(x) {
-  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
-  return(x)
-}
 res_hesper_main <- result_hesper %>% mutate(choice_label=str_wrap(choice_label, 40)) %>%
   filter(question %in% c("hesper_serious_problem", "hesper_top_three_priorities"), !group %in% "subset") %>%
   mutate(question = "HESPER Item", Type=str_replace_all(first_up(type), "_", " ")) %>% arrange(desc(Type), mean)
