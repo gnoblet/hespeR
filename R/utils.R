@@ -1,10 +1,10 @@
 
 paste.remove.na <- function(...){return(trimws(gsub("NA", "", paste(...))))}
-split.order.c <- function(x){paste(unique(sort(str_split(x, " ")[[1]])), collapse=" ")}
+split.order.c <- function(x){paste(unique(sort(stringr::str_split(x, " ")[[1]])), collapse=" ")}
 reorder.select.multiple <- function(x){lapply(x, split.order.c) %>% unlist}
 # reorder.select.multiple <- function(x) {
 #   sapply(x, function(element) {
-#     if (str_detect(element, " ")) {
+#     if (stringr::str_detect(element, " ")) {
 #       split.order.c(element)
 #     } else {
 #       element
@@ -13,14 +13,14 @@ reorder.select.multiple <- function(x){lapply(x, split.order.c) %>% unlist}
 # }
 
 expand.select.one <- function(df, var, val.parent.na=NA){
-  unique <- df %>% pull(!!sym(var)) %>% unique %>% na.omit %>% as.character
+  unique <- df %>% dplyr::pull(!!rlang::sym(var)) %>% unique %>% na.omit %>% as.character
   lapply(unique,
          function(val) {
            bin.col <- paste0(var, ".", val)
            df <<- df %>% 
-             mutate(!!sym(bin.col) := case_when(!!sym(var) %in% val.parent.na ~ NA_real_, 
-                                                !!sym(var) == val ~ 1,
-                                                TRUE ~ 0), .after=!!sym(var))
+             dplyr::mutate(!!rlang::sym(bin.col) := dplyr::case_when(!!rlang::sym(var) %in% val.parent.na ~ NA_real_, 
+                                                !!rlang::sym(var) == val ~ 1,
+                                                TRUE ~ 0), .after=!!rlang::sym(var))
          })
   return(df)
 }
@@ -38,32 +38,32 @@ collapse.select.multiple <- function(df, cols, name=unique(gsub("(\\.|__|/).*","
   
   cols <- sort(cols)
   var.parent <- name
-  df <- df %>% mutate(!!sym(var.parent) := NA_character_)
+  df <- df %>% dplyr::mutate(!!rlang::sym(var.parent) := NA_character_)
   lapply(cols, function(c){
     df <<- df %>% 
-      mutate(!!sym(var.parent) := case_when(
-        !!sym(c) > 0 & !!sym(c) <= 1 ~ paste.remove.na(!!sym(var.parent), gsub(paste0("^", var.parent, "(\\.|__)"), "", c)),
-        TRUE ~ !!sym(var.parent)
+      dplyr::mutate(!!rlang::sym(var.parent) := dplyr::case_when(
+        !!rlang::sym(c) > 0 & !!rlang::sym(c) <= 1 ~ paste.remove.na(!!rlang::sym(var.parent), gsub(paste0("^", var.parent, "(\\.|__)"), "", c)),
+        TRUE ~ !!rlang::sym(var.parent)
       )
       )
   })
-  df <- df %>% mutate(!!sym(var.parent) := reorder.select.multiple(!!sym(var.parent)))
+  df <- df %>% dplyr::mutate(!!rlang::sym(var.parent) := reorder.select.multiple(!!rlang::sym(var.parent)))
   return(df)
 }
 
 
 expand.select.multiple <- function(df, var, val.parent.na=NA){
-  unique <- df %>% pull(!!sym(var)) %>% str_split(" ") %>% unlist %>% unique %>% na.omit %>% as.character
+  unique <- df %>% dplyr::pull(!!rlang::sym(var)) %>% str_split(" ") %>% unlist %>% unique %>% na.omit %>% as.character
   unique <- unique[!unique %in% ""]
   lapply(unique,
          function(val) {
            bin.col <- paste0(var, ".", val)
            df <<- df %>% 
-             dplyr::mutate(!!sym(bin.col) := case_when(!!sym(var) %in% val.parent.na ~ NA_real_, 
-                                                       str_detect(!!sym(var), paste0("(^| )", 
-                                                                                     str_replace_all(val, c("\\("="\\\\\\(", "\\)"="\\\\\\)", "\\'"="\\\\\\'", "\\/"="\\\\\\/")), 
+             dplyr::dplyr::mutate(!!rlang::sym(bin.col) := dplyr::case_when(!!rlang::sym(var) %in% val.parent.na ~ NA_real_, 
+                                                       stringr::str_detect(!!rlang::sym(var), paste0("(^| )", 
+                                                                                     stringr::str_replace_all(val, c("\\("="\\\\\\(", "\\)"="\\\\\\)", "\\'"="\\\\\\'", "\\/"="\\\\\\/")), 
                                                                                      "($| )")) ~ 1,
-                                                       TRUE ~ 0), .after=!!sym(var))
+                                                       TRUE ~ 0), .after=!!rlang::sym(var))
          })
   return(df)
 }
@@ -226,13 +226,13 @@ analyse_ci <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
   } 
   
   df <- df %>% 
-    as_survey_design(weights=!!sym(col_weight), strata=!!sym(col_strata)) %>% group_by(!!!syms(group_var)) 
+    srvyr::as_survey_design(weights=!!rlang::sym(col_weight), strata=!!rlang::sym(col_strata)) %>% srvyr::dplyr::group_by(!!!syms(group_var)) 
   
   df <- df %>% 
-    summarise(across(all_of(var), list(mean=~survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
-    rename_with(.fn = ~str_replace_all(., c("_(?=(low|upp))"="\\/"))) %>% 
-    pivot_longer(where(is.numeric)) %>% separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
-    separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% pivot_wider(names_from = fn, values_from = value)
+    srvyr::summarise(srvyr::across(srvyr::all_of(var), list(mean=~srvyr::survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
+    dplyr::rename_with(.fn = ~stringr::str_replace_all(., c("_(?=(low|upp))"="\\/"))) %>% 
+    tidyr::pivot_longer(where(is.numeric)) %>% tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
+    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value)
 }
 
 analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
@@ -240,10 +240,10 @@ analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
     print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
     var <- var[var %in% colnames(df)]
   }
-  df <- df %>% group_by(!!!syms(group_var)) %>%
-    summarise(across(all_of(var), list(mean=~weighted.mean(., w=!!sym(col_weight), na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
-    pivot_longer(where(is.numeric)) %>% separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
-    separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% pivot_wider(names_from = fn, values_from = value)
+  df <- df %>% dplyr::group_by(!!!syms(group_var)) %>%
+    dplyr::summarise(dplyr::across(dplyr::all_of(var), list(mean=~weighted.mean(., w=!!rlang::sym(col_weight), na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
+    tidyr::pivot_longer(where(is.numeric)) %>% tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
+    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value)
 }
 
 mark_significance <- function(df=sum.hoh.gender, treshold=0.01){

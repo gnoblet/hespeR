@@ -55,7 +55,7 @@ add_hesper_main <- function(df,
                             ){
   
   ## check that all columns are present in dataframe and print the non matching columns
-  col_not_matching <- col_items %>% unname %>% unlist %>% keep(!. %in% colnames(df))
+  col_not_matching <- col_items %>% unname %>% unlist %>% purrr::keep(!. %in% colnames(df))
   if(length(col_not_matching) > 0){warning(paste("The following columns are not present in the dataframe: ", col_not_matching))}
   
   ## all response choices that should not be counted in the total nb of items
@@ -68,18 +68,18 @@ add_hesper_main <- function(df,
            nb_hesper.applicable = rowSums(across(all_of(col_items), ~ . %in% choice_applicable), na.rm=T),
            nb_hesper.undefined = rowSums(across(all_of(col_items), ~ . %in% c(choice_na, choice_dnk, choice_pnta)), na.rm=T),
            nb_hesper.pnta = rowSums(across(all_of(col_items), ~ . %in% choice_pnta), na.rm=T),
-           nb_hepser.dnk = rowSums(across(all_of(col_items), ~ . %in% choice_dnk), na.rm=T),
+           nb_hepser.dnk = rowSums(across(all_of(col_items), ~ . %in% choice_dnk), na.rm=T)
            prop_hesper.all = nb_hesper.all / nb_hesper.applicable)
   
   ## Add binary columns to record serious problem, 0 if no serious problem and NA otherwise for all items across col_items
   ## Column names is original names with _binary suffix appended
   
   if (add_binaries){
-    df <- df %>% mutate(across(all_of(col_items), ~case_when(. %in% choice_serious ~ 1, . %in% c(choice_dnk, choice_pnta) ~ NA_real_, TRUE ~ 0), .names = "{.col}.binary"))
+    df <- df %>% dplyr::mutate(dplyr::across(dplyr::all_of(col_items), ~dplyr::case_when(. %in% choice_serious ~ 1, . %in% c(choice_dnk, choice_pnta) ~ NA_real_, TRUE ~ 0), .names = "{.col}.binary"))
   }
   
   if (add_binaries_subset){
-    df <- df %>% mutate(across(all_of(col_hesper_subset), ~case_when(. %in% choice_serious ~ 1, . %in% choice_no_serious ~ 0, TRUE ~ NA_real_), .names = "{.col}.binary_subset"))
+    df <- df %>% dplyr::mutate(dplyr::across(dplyr::all_of(col_hesper_subset), ~dplyr::case_when(. %in% choice_serious ~ 1, . %in% choice_no_serious ~ 0, TRUE ~ NA_real_), .names = "{.col}.binary_subset"))
   }
   
   ## Add binary columns across all HESPER items recording if response is undefined
@@ -110,14 +110,14 @@ add_hesper_main <- function(df,
       col_hesper_displaced <- if (!any(is.null(hesper_item_displaced)|is.na(hesper_item_displaced))) paste0(col_name_hesper_top_three, ".", hesper_item_displaced, "_subset") else NULL 
       col_hesper_non_displaced <- if (!any(is.null(hesper_item_non_displaced)|is.na(hesper_item_non_displaced))) paste0(col_name_hesper_top_three, ".", hesper_item_non_displaced, "_subset") else NULL
       col_hesper_subset <- c(col_hesper_male, col_hesper_female, col_hesper_displaced, col_hesper_non_displaced)  
-      col_hesper_item_subset <- col_hesper_subset %>% str_replace_all("_subset$", "")
+      col_hesper_item_subset <- col_hesper_subset %>% stringr::str_replace_all("_subset$", "")
       
-      df <- df %>% mutate(across(any_of(col_hesper_item_subset), ~ . , .names = "{.col}_subset"))
-      df <- df %>% mutate(
-        across(any_of(col_hesper_male), ~ case_when(!(!!sym(col_gender) == choice_male) ~ NA_real_, TRUE ~ .)),
-        across(any_of(col_hesper_female), ~ case_when(!(!!sym(col_gender) == choice_female) ~ NA_real_, TRUE ~ .)),
-        across(any_of(col_hesper_displaced), ~ case_when(!(!!sym(col_displacement) %in% choices_displaced) ~ NA_real_, TRUE ~ .)),
-        across(any_of(col_hesper_non_displaced), ~ case_when(!(!!sym(col_displacement) %in% choices_non_displaced) ~ NA_real_, TRUE ~ .))
+      df <- df %>% dplyr::mutate(dplyr::across(any_of(col_hesper_item_subset), ~ . , .names = "{.col}_subset"))
+      df <- df %>% dplyr::mutate(
+        dplyr::across(any_of(col_hesper_male), ~ dplyr::case_when(!(!!rlang::sym(col_gender) == choice_male) ~ NA_real_, TRUE ~ .)),
+        dplyr::across(any_of(col_hesper_female), ~ dplyr::case_when(!(!!rlang::sym(col_gender) == choice_female) ~ NA_real_, TRUE ~ .)),
+        dplyr::across(any_of(col_hesper_displaced), ~ dplyr::case_when(!(!!rlang::sym(col_displacement) %in% choices_displaced) ~ NA_real_, TRUE ~ .)),
+        dplyr::across(any_of(col_hesper_non_displaced), ~ dplyr::case_when(!(!!rlang::sym(col_displacement) %in% choices_non_displaced) ~ NA_real_, TRUE ~ .))
       )
       
       ## mutate all subset binaries for priority 1 / 2 / 3
@@ -127,14 +127,14 @@ add_hesper_main <- function(df,
       col_prio_displaced <- if (!any(is.null(hesper_item_displaced)|is.na(hesper_item_displaced))) map(cols_priority, ~ paste0(., ".", hesper_item_displaced, "_subset")) %>% unlist else NULL
       col_prio_non_displaced <- if (!any(is.null(hesper_item_non_displaced)|is.na(hesper_item_non_displaced))) map(cols_priority, ~ paste0(., ".", hesper_item_non_displaced, "_subset")) %>% unlist else NULL
       col_prio_subset <- c(col_prio_male, col_prio_female, col_prio_displaced)
-      col_prio_item_subset <- col_prio_subset %>% str_replace_all("_subset$", "")
+      col_prio_item_subset <- col_prio_subset %>% stringr::str_replace_all("_subset$", "")
       
-      df <- df %>% mutate(across(any_of(col_prio_item_subset), ~ . , .names = "{.col}_subset"))
-      df <- df %>% mutate(
-        across(any_of(col_prio_male), ~ case_when(!(!!sym(col_gender) == choice_male) ~ NA_real_, TRUE ~ .)),
-        across(any_of(col_prio_female), ~ case_when(!(!!sym(col_gender) == choice_female) ~ NA_real_, TRUE ~ .)),
-        across(any_of(col_prio_displaced), ~ case_when(!(!!sym(col_displacement) %in% choices_displaced) ~ NA_real_, TRUE ~ .)),
-        across(any_of(col_prio_non_displaced), ~ case_when(!(!!sym(col_displacement) %in% choices_non_displaced) ~ NA_real_, TRUE ~ .))
+      df <- df %>% dplyr::mutate(dplyr::across(any_of(col_prio_item_subset), ~ . , .names = "{.col}_subset"))
+      df <- df %>% dplyr::mutate(
+        dplyr::across(any_of(col_prio_male), ~ dplyr::case_when(!(!!rlang::sym(col_gender) == choice_male) ~ NA_real_, TRUE ~ .)),
+        dplyr::across(any_of(col_prio_female), ~ dplyr::case_when(!(!!rlang::sym(col_gender) == choice_female) ~ NA_real_, TRUE ~ .)),
+        dplyr::across(any_of(col_prio_displaced), ~ dplyr::case_when(!(!!rlang::sym(col_displacement) %in% choices_displaced) ~ NA_real_, TRUE ~ .)),
+        dplyr::across(any_of(col_prio_non_displaced), ~ dplyr::case_when(!(!!rlang::sym(col_displacement) %in% choices_non_displaced) ~ NA_real_, TRUE ~ .))
       )
       
     }
@@ -144,3 +144,4 @@ add_hesper_main <- function(df,
   return(df)
   
 }
+
