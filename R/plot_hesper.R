@@ -20,7 +20,7 @@ plot.hist <- function(df,
                       fill=NULL,
                       title=stringr::str_replace_all(var, "_|\\.", " "),
                       subtitle = NULL, bins.val=10, 
-                      median=T, ggplot2::scale_density=2, smoothness=.5){
+                      median=T, scale_density=2, smoothness=.5){
   # df_filtered <- df %>% select(any_of(c(var, fill))) %>% pivot_longer(any_of(c(var))) %>% dplyr::mutate(value=as.numeric(value))
   df_filtered <- df %>% select(any_of(c(var, fill))) %>% pivot_longer(any_of(c(var))) %>% 
     dplyr::mutate(value=as.numeric(value)) %>% dplyr::group_by(!!!syms(fill)) %>% 
@@ -97,7 +97,7 @@ plot.num <- function(df = median_nb_serious,
 #' @param custom.folder custom folder to save the plot
 #' @param custom.file custom file name to save the plot
 #' 
-create_graph_ggplot2::facet_disag <- function(df=result_hesper, 
+facet_disag <- function(df=result_hesper, 
                                      indicator="at_least_one_hesper_item_section", 
                                      col_disag="", flip=T,
                                      fwidth=12, 
