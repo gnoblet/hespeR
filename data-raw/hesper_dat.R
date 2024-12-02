@@ -27,15 +27,6 @@ l <- list(
 hesper_df <- lapply(hesper_vars, \(x) x = sample(hesper_opts, 10000, replace = TRUE)) |> 
   setNames(hesper_vars) |> 
   as.data.frame()
-## generate top 1/2/3 priorities
-hesper_df <- hesper_df %>%
-  mutate(across(all_of(hesper_vars), ~ case_when(. %in% "serious_problem" ~ cur_column()), .names="{.col}_name")) %>%
-  unite(col = "all.selected", paste0(hesper_vars, "_name"), na.rm = T, sep = " ", remove=T) %>%
-  mutate(hesper_priorities = str_split(all.selected, " ") %>% 
-           map_chr(~str_c(sample(.x, size = min(3, length(.x))), collapse = " "))) %>%
-  mutate(hesper_priority_first = map(hesper_priorities, ~unlist(str_split(., " "))[1]) %>% unlist,
-         hesper_priority_second = map(hesper_priorities, ~unlist(str_split(., " "))[2]) %>% unlist,
-         hesper_priority_third = map(hesper_priorities, ~unlist(str_split(., " "))[3]) %>% unlist) 
 
 gender_df <- lapply(gender_vars, \(x) x = sample(gender_opts, 10000, replace = TRUE)) |> 
   setNames(gender_vars) |> 
@@ -44,10 +35,30 @@ dis_df <- lapply(dis_vars, \(x) x = sample(dis_opts, 10000, replace = TRUE)) |>
   setNames(dis_vars) |> 
   as.data.frame()
 
+
 # Bind all and add key id
-hesper_dat <- cbind(hesper_df, gender_df, dis_df) 
+hesper_dat <- cbind(gender_df, dis_df, hesper_df) 
+
+# Back to data.table
 library(data.table)
 setDT(hesper_dat)
-hesper_dat[, uuid := paste0("uuid_", .I)]
 
+# Add key 
+hesper_dat[, uuid := .I]
+
+# Sample priorities out of the existing serious problems
+hesper_dat[,
+  hesper_priorities := {
+    # Get serious problems var names
+    probs <- names(.SD)[.SD == "serious_problem"]
+    # If not empty, sample
+    if (length(probs)) paste(sample(probs, min(3, length(probs))), collapse = " ") else NA_character_
+  },
+  by = "uuid", 
+  .SDcols = hesper_vars]
+
+# Split by " " and add to the priority columns
+hesper_dat[, c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third") := tstrsplit(hesper_priorities, " ", fixed = TRUE, fill = NA_character_)]
+
+# Save
 usethis::use_data(hesper_dat, overwrite = TRUE)
