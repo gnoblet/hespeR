@@ -27,6 +27,16 @@ l <- list(
 hesper_df <- lapply(hesper_vars, \(x) x = sample(hesper_opts, 10000, replace = TRUE)) |> 
   setNames(hesper_vars) |> 
   as.data.frame()
+## generate top 1/2/3 priorities
+hesper_df <- hesper_df %>%
+  mutate(across(all_of(hesper_vars), ~ case_when(. %in% "serious_problem" ~ cur_column()), .names="{.col}_name")) %>%
+  unite(col = "all.selected", paste0(hesper_vars, "_name"), na.rm = T, sep = " ", remove=T) %>%
+  mutate(hesper_priorities = str_split(all.selected, " ") %>% 
+           map_chr(~str_c(sample(.x, size = min(3, length(.x))), collapse = " "))) %>%
+  mutate(hesper_priority_first = map(hesper_priorities, ~unlist(str_split(., " "))[1]) %>% unlist,
+         hesper_priority_second = map(hesper_priorities, ~unlist(str_split(., " "))[2]) %>% unlist,
+         hesper_priority_third = map(hesper_priorities, ~unlist(str_split(., " "))[3]) %>% unlist) 
+
 gender_df <- lapply(gender_vars, \(x) x = sample(gender_opts, 10000, replace = TRUE)) |> 
   setNames(gender_vars) |> 
   as.data.frame()
