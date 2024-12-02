@@ -8,6 +8,7 @@
 #' @param var The name of the variable to expand
 #' @param split_by The separator used to split the variable into choices (default: " ")
 #' @param bin_sep The separator used to separate the original variable name and the choice name in the binary columns (default: ".")
+#' @param drop_undefined A character vector of values to consider as undefined. Defaults to NULL if none.
 #'
 #' @return The modified dataframe with as many binary columns as there are choices in the original variable.
 #' 
@@ -17,7 +18,7 @@
 #' df
 #' 
 #' @export
-expand_bin <- function(df, vars, split_by = " ", bin_sep = ".") {
+expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined = NULL) {
 
   #------ Checks
 
@@ -39,11 +40,14 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".") {
   # vars is a character vector 
   checkmate::assertCharacter(vars, min.chars = 1)
 
-  # Check if all vars are in df and of class character
+  # all vars are in df and of class character
   for (var in vars) {
     if (!(var %in% colnames(df))) rlang::abort(paste0("Variable ", var, " not found in df."))
     checkmate::assertClass(df[[var]], "character", .var.name = var)
   }
+
+  # drop_undefined is a character vector or NULL
+  checkmate::assertCharacter(drop_undefined, null.ok = TRUE)
 
   #------ Do stuff
     
@@ -54,9 +58,16 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".") {
   for (var in vars) {
 
   # Step 1: Create binary indicators for each choice in `var`
+    
+  # Drop undefined
+  if (!is.null(drop_undefined)) {
+    df.bin <- drop_undefined(df, var, vals_undefined = drop_undefined)
+  } else {
+    df.bin <- df
+  }
 
   # Split longer (removing NAs) 
-  df.bin <- df[
+  df.bin <- df.bin[
     !is.na(get(var)), 
     .(temp = unlist(strsplit(get(var), split_by, fixed = TRUE))), 
     by = "key_id"]
