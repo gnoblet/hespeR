@@ -45,7 +45,7 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".") {
     checkmate::assertClass(df[[var]], "character", .var.name = var)
   }
 
-  #------ Compute
+  #------ Do stuff
     
 
   # Create a unique id for each row 
@@ -71,9 +71,19 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".") {
   names.bin <- setdiff(colnames(df.bin), "key_id")
   
   # Remove from df the names.bin binary columns if they exist, and warn for replacement
-  warn_replace(df, names.bin)
-  df[, (names.bin[names.bin %in% colnames(df)]) := NULL]
-  
+  names.bin_replace <- names.bin[names.bin %in% colnames(df)]
+  if (length(names.bin_replace) > 0){
+    warn_replace(df, names.bin)
+    df[, (names.bin_replace) := NULL]
+  }
+    
+  # Also remove all variables starting with "varbinsep" to avoid confusion
+  names.bin_removal <- colnames(df)[startsWith(colnames(df), paste0(var, "."))]
+  if (length(names.bin_removal) > 0){
+    warn_removal(df, names.bin_removal)
+    df[, (names.bin_removal) := NULL]
+  }
+
   
   # Step 2: Merge back the binary columns to the original dataframe and remove row_id
   df <- merge(df, df.bin, by = "key_id", all.x = TRUE)

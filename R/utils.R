@@ -8,6 +8,16 @@ warn_replace <- function(df, vars) {
     }
 }
 
+warn_removal <- function(df, vars) {
+
+  # Remove from df the names.bin binary columns if they exist, and warn for removal
+  vars_in_lgl <- vars %in% colnames(df)
+  if (any(vars_in_lgl)){
+    vars_in <- vars[vars_in_lgl]
+    rlang::warn(paste0("Variable(s) ", paste(vars_in, collapse = ", "), " will be removed."))
+  }
+}
+
 
 
 paste.remove.na <- function(...){return(trimws(gsub("NA", "", paste(...))))}
