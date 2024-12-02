@@ -1,3 +1,24 @@
+warn_replace <- function(df, vars) {
+
+    # Remove from df the names.bin binary columns if they exist, and warn for replacement
+    vars_in_lgl <- vars %in% colnames(df)
+    if (any(vars_in_lgl)){
+      vars_in <- vars[vars_in_lgl]
+      rlang::warn(paste0("Variable(s) ", paste(vars_in, collapse = ", "), " already present in df. They will be replaced."))
+    }
+}
+
+warn_removal <- function(df, vars) {
+
+  # Remove from df the names.bin binary columns if they exist, and warn for removal
+  vars_in_lgl <- vars %in% colnames(df)
+  if (any(vars_in_lgl)){
+    vars_in <- vars[vars_in_lgl]
+    rlang::warn(paste0("Variable(s) ", paste(vars_in, collapse = ", "), " will be removed."))
+  }
+}
+
+
 
 paste.remove.na <- function(...){return(trimws(gsub("NA", "", paste(...))))}
 split.order.c <- function(x){paste(unique(sort(stringr::str_split(x, " ")[[1]])), collapse=" ")}
@@ -59,7 +80,7 @@ expand.select.multiple <- function(df, var, val.parent.na=NA){
          function(val) {
            bin.col <- paste0(var, ".", val)
            df <<- df %>% 
-             dplyr::dplyr::mutate(!!rlang::sym(bin.col) := dplyr::case_when(!!rlang::sym(var) %in% val.parent.na ~ NA_real_, 
+             dplyr::mutate(!!rlang::sym(bin.col) := dplyr::case_when(!!rlang::sym(var) %in% val.parent.na ~ NA_real_, 
                                                        stringr::str_detect(!!rlang::sym(var), paste0("(^| )", 
                                                                                      stringr::str_replace_all(val, c("\\("="\\\\\\(", "\\)"="\\\\\\)", "\\'"="\\\\\\'", "\\/"="\\\\\\/")), 
                                                                                      "($| )")) ~ 1,
@@ -226,7 +247,7 @@ analyse_ci <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
   } 
   
   df <- df %>% 
-    srvyr::as_survey_design(weights=!!rlang::sym(col_weight), strata=!!rlang::sym(col_strata)) %>% srvyr::dplyr::group_by(!!!syms(group_var)) 
+    srvyr::as_survey_design(weights=!!rlang::sym(col_weight), strata=!!rlang::sym(col_strata)) %>% srvyr::group_by(!!!syms(group_var)) 
   
   df <- df %>% 
     srvyr::summarise(srvyr::across(srvyr::all_of(var), list(mean=~srvyr::survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
