@@ -79,7 +79,7 @@ replace_na_subset <- function(data=df,
     stop(paste0("The following child columns are missing: ", paste(missing_cols, collapse = ", ")))
   }
   
-  ## replace binary columns with NA for the subset of the data ## with data.table
+  ## replace binary columns with NA for the subset of the data if there is a match
   cols.subset <- colnames(data)[grepl(paste0(col_parent, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(data))]
   data[get(subset_col) == subset_value, (cols.subset) := NA]
   

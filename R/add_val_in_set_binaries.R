@@ -27,36 +27,46 @@ hesper_vars <- c("hesper_drinking_water", "hesper_food", "hesper_shelter", "hesp
                  "hesper_health", "hesper_distress", "hesper_safety", "hesper_education", "hesper_care", "hesper_support", "hesper_separation", "hesper_displaced", "hesper_information", "hesper_aid",
                  "hesper_respect", "hesper_movement", "hesper_time", "hesper_law", "hesper_gbv", "hesper_drug", "hesper_mental_health", "hesper_care_community")
 
-data=hesper_dat
-cols_character = hesper_vars
-value_1= c("serious_problem")
-value_na = c("undefined", "dnk", "pnta")
-value_default = NULL
-replace=F
-name_suffix="binary"
-sep="_"
+## Add binaries populated with NA if undefined, dnk or pnta, 1 if serious_problem and 0 otherwise
+hesper_dat_comp <- hesper_dat %>% 
+  ## Add HESPER binaries - global => prevalence of serious problem on all sample (regardless of subset or cleaning or undefined)
+  add_val_in_set_binaries(cols_character = hesper_vars, 
+                          value_1 = c("serious_problem"),
+                          value_0 = NULL,
+                          value_na = NULL,
+                          value_default = 0,
+                          replace = F, 
+                          name_suffix = "binary", 
+                          sep = ".") %>%
+  ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
+  add_val_in_set_binaries(cols_character = hesper_vars, 
+                          value_1 = c("serious_problem"),
+                          value_0 = c("no_serious_problem"),
+                          value_na = NULL,
+                          value_default = NA_integer_,
+                          replace = F, 
+                          name_suffix = "binary_subset", 
+                          sep = ".") %>%
+  ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices]
+  add_val_in_set_binaries(cols_character = hesper_vars, 
+                          value_1 = c("pnta", "dnk", "not_applicable"),
+                          value_0 = NULL,
+                          value_na = NULL,
+                          value_default = 0,
+                          replace = F, 
+                          name_suffix = "binary_undefined", 
+                          sep = ".")
 
-
-## Add binaries populated with NA if undefeined, dnk or pnta, 1 if serious_problem and 0 otherwise
-hesper_dat <- hesper_dat %>% 
-  add_binaries(cols_character = hesper_vars, 
-               value_1 = c("serious_problem"),
-               value_na = c("undefined", "dnk", "pnta"),
-               value_default = NULL,
-               replace = F, 
-               name_suffix = "binary", 
-               sep = "_")
-
-add_binaries <- function(
+add_val_in_set_binaries <- function(
   data = df,
   cols_character,
   value_1,
-  value_0=NULL,
+  value_0,
   value_na=NA,
+  value_default=NA,
   replace = F,
   name_suffix="binary",
-  sep=".",
-  value_default=NA_integer_
+  sep="."
 ) {
   
   ## if replace=T, force arguments name_suffix to "" and sep to ""
@@ -80,15 +90,9 @@ add_binaries <- function(
   checkmate::assert_character(cols_character)
   
   ## if value_0=NULL ensure that default is overridden to 0 
-  if (is.null(value_0)){
+  if (all(is.null(value_0) & value_default!=0)){
     value_default <- 0
     warning("value_0 is NULL, default value is overridden to 0")
-  }
-  
-  ## if value_na=NULL ensure that default is overridden to NA_integer_
-  if (is.null(value_na)){
-    value_default <- NA_integer_
-    warning("value_na is NULL, default value is overridden to NA_integer_")
   }
   
   data[, (paste0(cols_character, sep, name_suffix)) := 

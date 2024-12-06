@@ -6,7 +6,7 @@ set.seed(1234)
 hesper_vars <- c("hesper_drinking_water", "hesper_food", "hesper_shelter", "hesper_toilet", "hesper_clean", "hesper_clean", "hesper_clothes_etc", "hesper_income_livelihood", "hesper_health", "hesper_health",
 "hesper_health", "hesper_distress", "hesper_safety", "hesper_education", "hesper_care", "hesper_support", "hesper_separation", "hesper_displaced", "hesper_information", "hesper_aid",
 "hesper_respect", "hesper_movement", "hesper_time", "hesper_law", "hesper_gbv", "hesper_drug", "hesper_mental_health", "hesper_care_community")
-hesper_opts <- c("serious_problem", "no_serious_problem", "dnk", "pnta")
+hesper_opts <- c("serious_problem", "no_serious_problem", "dnk", "pnta", "not_applicable")
 
 # hoh gender and respondent gender
 gender_vars <- c("hoh_gender", "resp_gender")
