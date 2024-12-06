@@ -38,12 +38,8 @@ dis_df <- lapply(dis_vars, \(x) x = sample(dis_opts, 10000, replace = TRUE)) |>
 
 # Bind all and add key id
 hesper_dat <- cbind(gender_df, dis_df, hesper_df) 
-
-# Back to data.table
 library(data.table)
 setDT(hesper_dat)
-
-# Add key 
 hesper_dat[, uuid := .I]
 
 # Sample priorities out of the existing serious problems
