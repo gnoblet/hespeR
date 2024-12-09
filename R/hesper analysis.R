@@ -12,9 +12,10 @@ map(list.files(pattern = ".R$", full.names = TRUE) %>% str_subset("hesper analys
 ### 1. Read data, survey, labels and define column names, choices and define parameters  ----
 
 ## read data
-path.data <- "C:/Users/raphael.bacot/ACTED/IMPACT HQ-Accountability & Inclusion - Documents/General/12_Accountability to Affected People Specialist/07_Hesper Scale/4. REACH HESPER Pilots/DRC MSNA/Data/REACH_DRC2404_MSNA2024_Clean-Data.xlsx"
-sheet.data <- "hh data"
-data <- read_excel(path.data, sheet=sheet.data, guess_max=10000)
+# path.data <- "C:/Users/raphael.bacot/ACTED/IMPACT HQ-Accountability & Inclusion - Documents/General/12_Accountability to Affected People Specialist/07_Hesper Scale/4. REACH HESPER Pilots/DRC MSNA/Data/REACH_DRC2404_MSNA2024_Clean-Data.xlsx"
+# sheet.data <- "hh data"
+# data <- read_excel(path.data, sheet=sheet.data, guess_max=10000)
+data <- hesper_dat 
 
 ## convert as numeric if unique values are in "0" "1" and "NA" NA
 data <- data %>% 
@@ -24,7 +25,7 @@ data <- data %>%
 # str(data)
 
 ## read tool and key hesper table
-path.tool <- "../resources/REACH_DRC2404_MSNA2024_tool.xlsx"
+path.tool <- "../resources/"
 path.hesper.key <- "../resources/country_hesper_key.xlsx"
 
 survey <- read_excel(path.tool, "survey") %>% mutate(row=row_number()) %>% separate(type, into = c("q.type", "list_name"), sep = " ", remove = F)
