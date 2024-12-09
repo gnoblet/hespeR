@@ -81,12 +81,8 @@ replace_na_subset <- function(data,
   }
   
   ## replace binary columns with NA for the subset of the data if there is a match
-  # cols.subset <- colnames(data)[grepl(paste0(col_parent, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(data))]
   cols.subset <- map(col_parent, \(x) colnames(data)[grepl(paste0(x, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(data))]) %>% unlist
   data[get(subset_col) %in% subset_value, (cols.subset) := NA]
-  
-  ## check that the columns were replaced
-  # test <-data %>% filter(!!sym(subset_col) %in% subset_value) %>% select(any_of(cols.subset))
   
   return(data)
 }

@@ -14,6 +14,7 @@
 #'
 #' @examples
 #' 
+#' ## Expand the top first second and third priority columns into child binaries and then clean the top priorities child columns for the subset of data
 #' hesper_dat_clean <- hesper_dat %>% 
 #'   ## expand the top priorities columns to have binaries for each choice
 #'   expand_bin(c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third")) %>%
