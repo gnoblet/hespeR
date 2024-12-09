@@ -8,6 +8,7 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ### 0. Source needed functions  -------------------------------------------------------------
 ## list all scripts in R
 map(list.files(pattern = ".R$", full.names = TRUE) %>% str_subset("hesper analysis", T), source) %>% invisible
+source("../data-raw/hesper_dat.R")
 
 ### 1. Read data, survey, labels and define column names, choices and define parameters  ----
 
@@ -20,17 +21,17 @@ data <- hesper_dat
 ## convert as numeric if unique values are in "0" "1" and "NA" NA
 data <- data %>% 
   mutate(across(matches("\\."), as.numeric)) %>%
-  mutate(across(where(is.character), ~ifelse(. %in% c("0", "1", "NA"), as.numeric(.), .))) %>% 
-  mutate(weights=as.numeric(weights))
+  mutate(across(where(is.character), ~ifelse(. %in% c("0", "1", "NA"), as.numeric(.), .))) 
+if (!"weights" %in% colnames(data)) data$weights <- 1
 # str(data)
 
 ## read tool and key hesper table
-path.tool <- "../resources/"
-path.hesper.key <- "../resources/country_hesper_key.xlsx"
+path.tool <- "../resources/template_tool_hh.xlsx"
+path.hesper.key <- "../resources/hesper_key.xlsx"
 
 survey <- read_excel(path.tool, "survey") %>% mutate(row=row_number()) %>% separate(type, into = c("q.type", "list_name"), sep = " ", remove = F)
 choices <- read_excel(path.tool, "choices") %>% rename("label::french"=any_of("label"))
-col_label <- "label::french"
+col_label <- "label::english"
 
 ## Extract variables names
 so.questions <- survey %>% filter(q.type=="select_one") %>% pull(name) %>% keep(. %in% colnames(data)) %>% str_subset("hesper")
@@ -38,6 +39,16 @@ sm.questions <- survey %>% filter(q.type=="select_multiple") %>% pull(name) %>% 
 
 key_hesper <- read_excel(path.hesper.key, "key")
 ind_lab_hesper <- read_excel(path.hesper.key, "lab")
+
+## create name and subset columns, pulling from HH or ind version depending on the type of tool
+type.tool <- "hh" ## to be updated if the tool is individual or household level
+if (type.tool=="hh") {
+  key_hesper <- key_hesper %>% mutate(name=name_hh, subset=subset_hh)
+} else if (type.tool=="ind") {
+  key_hesper <- key_hesper %>% mutate(name=name_ind, subset=subset_ind)
+} else {
+  stop("type.tool must be either ind or hh")
+}
 
 ## combine survey and choices
 survey_combined <- survey %>%
@@ -57,13 +68,15 @@ col.subset <- c(col.men, col.women, col.host, col.displaced)
 ## define name pattern in kobo tool associated with the hesper priority needs question
 pattern.prio <- "hesper_priority_"
 col.prio <- survey %>% filter(str_detect(name, pattern.prio)) %>% pull(name) ## to be updated depending on name of priority questions in tool
+col.prio <- col.prio %>% str_subset("priority_support", negate = T)
 
 ## Add as well choice list for "hesper_top_three_priorities" to have label
 survey_combined <- survey_combined %>% 
   bind_rows(survey_combined %>% filter(name==col.prio[1]) %>% 
               mutate(name="hesper_top_three_priorities",
-                     # label="What are the top three priorities from the selected HESPER serious problems?"
-                     label="Quels sont les trois priorités les plus importantes parmi les problèmes graves HESPER sélectionnés?"))
+                     label="What are the top three priorities from the selected HESPER serious problems?"
+                     # label="Quels sont les trois priorités les plus importantes parmi les problèmes graves HESPER sélectionnés?"
+                     ))
 
 ## extract the hesper items choices from the key_hesper 
 ## to be updated if there are more/less subset questions in the hesper tool
@@ -101,9 +114,9 @@ parameters <- list(
   col_gender = "resp_gender",
   choice_male = "male",
   choice_female = "female",
-  col_displacement = "hoh_dis",
-  choice_displaced = c("host_family", "diplaced_camp"),
-  choice_host = c("host", "retourne")
+  col_displacement = "pop_group",
+  choice_displaced = c("refugees", "idp"),
+  choice_host = c("hosts")
   )
 
 ### 2. Composition of needed columns  -------------------------------------------------------
@@ -129,12 +142,12 @@ data <- data %>%
                   col_displacement = parameters$col_displacement,
                   choices_displaced = parameters$choice_displaced,
                   choices_non_displaced = parameters$choice_host,
-                  col_hesper_subset = col.subset,
                   hesper_item_displaced = val.hesper.displaced,
                   hesper_item_non_displaced = val.hesper.host,
                   add_binaries = T,
                   add_binaries_subset = T,
-                  subset = T)
+                  subset = T,
+                  add_binaries_undefined=T)
 
 ### use HESPER functions to calculate composite indicators based on categories regrouping hesper items 
 ## ensure that you update the choice serious / choice no serious arguments
@@ -143,17 +156,18 @@ data <- data %>%
   add_hesper_cat(list_group=section, choice_serious = parameters$choice_serious, choice_no_serious = parameters$choice_no_serious, choice_dnk = parameters$choice_dnk, choice_pnta = parameters$choice_pnta, choice_na = parameters$choice_na) %>%
   add_hesper_cat(list_group=area_wellbeing, choice_serious = parameters$choice_serious, choice_no_serious = parameters$choice_no_serious, choice_dnk = parameters$choice_dnk, choice_pnta = parameters$choice_pnta, choice_na = parameters$choice_na) %>%
   add_hesper_cat(list_group=sector, choice_serious = parameters$choice_serious, choice_no_serious = parameters$choice_no_serious, choice_dnk = parameters$choice_dnk, choice_pnta = parameters$choice_pnta, choice_na = parameters$choice_na) %>%
+  ## For the top three priority child columns, update choice_serious and no_serious to 1 and 0 as these are binary columns
   add_hesper_cat(list_group=section_wide_priority, choice_serious = 1, choice_no_serious = 0, choice_na = NA) %>%
   add_hesper_cat(list_group=section_priority, choice_serious = 1, choice_no_serious = 0, choice_na = NA) %>%
   add_hesper_cat(list_group=area_wellbeing_priority, choice_serious = 1, choice_no_serious = 0, choice_na = NA) %>%
   add_hesper_cat(list_group=sector_priority, choice_serious = 1, choice_no_serious = 0, choice_na = NA)
 
 ## write data with composite indicators
-data %>% fwrite("../data_hesper.csv", row.names = F)
+# data %>% fwrite("../data_hesper.csv", row.names = F)
 
 ### Dual voices formatting
 ## Get all child columns for select one questions to then aggregate select one with binary columns only
-data_expanded <- data %>% expand.select.one.vec(so.questions) 
+data_expanded <- data %>% expand_bin(so.questions) 
 
 ### 3. Analysis HESPER [Aggregation + table formatting ---------------------------------------
 

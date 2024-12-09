@@ -18,43 +18,44 @@
 #' overall_prop_hesper_items_{section_name}.{section_category} : overall proportion of items with serious problem in the corresponding section category compared to all items reported as serious problem
 #' at_least_one_hesper_item_{section_name}.{section_category} : binary column indicating if at least one item with serious problem is reported in the corresponding section category
 
-add_hesper_cat <- function(df,
-                           list_group = list(
-                             aap = c("hesper_information", 
-                                     "hesper_aid"),
-                             education = c("hesper_education"),
-                             fsl = c("hesper_food"),
-                             health = c("hesper_health", 
-                                        "hesper_health_care_men", 
-                                        "hesper_health_care_women"),
-                             livelihood = c("hesper_income_livelihood"),
-                             protection = c("hesper_distress", 
-                                            "hesper_safety", 
-                                            "hesper_separation", 
-                                            "hesper_displaced", 
-                                            "hesper_respect",
-                                            "hesper_movement",
-                                            "hesper_law", 
-                                            "hesper_gbv",
-                                            "hesper_drug"),
-                             snfi = c("hesper_shelter", 
-                                      "hesper_clothes_etc"),
-                             wash = c("hesper_drinking_water",
-                                      "hesper_toilet", 
-                                      "hesper_clean",
-                                      "hesper_clean_women"),
-                             wellbeing = c("hesper_care",
-                                           "hesper_support", 
-                                           "hesper_time", 
-                                           "hesper_mental_health",
-                                           "hesper_care_community")
-                           ),
-                           choice_serious = "serious_problem",
-                           choice_no_serious = "no_serious_problem",
-                           choice_dnk = "dnk",
-                           choice_pnta = "pnta",
-                           choice_na = "not_applicable"
-){
+add_hesper_cat <- function(
+    df,
+    list_group = list(
+      aap = c("hesper_information", 
+              "hesper_aid"),
+      education = c("hesper_education"),
+      fsl = c("hesper_food"),
+      health = c("hesper_health", 
+                 "hesper_health_care_men", 
+                 "hesper_health_care_women"),
+      livelihood = c("hesper_income_livelihood"),
+      protection = c("hesper_distress", 
+                     "hesper_safety", 
+                     "hesper_separation", 
+                     "hesper_displaced", 
+                     "hesper_respect",
+                     "hesper_movement",
+                     "hesper_law", 
+                     "hesper_gbv",
+                     "hesper_drug"),
+      snfi = c("hesper_shelter", 
+               "hesper_clothes_etc"),
+      wash = c("hesper_drinking_water",
+               "hesper_toilet", 
+               "hesper_clean",
+               "hesper_clean_women"),
+      wellbeing = c("hesper_care",
+                    "hesper_support", 
+                    "hesper_time", 
+                    "hesper_mental_health",
+                    "hesper_care_community")
+    ),
+    choice_serious = "serious_problem",
+    choice_no_serious = "no_serious_problem",
+    choice_dnk = "dnk",
+    choice_pnta = "pnta",
+    choice_na = "not_applicable"
+  ){
   
   ## access the name of the object passed as argument to "list_group"
   list_group_name <- deparse(substitute(list_group))

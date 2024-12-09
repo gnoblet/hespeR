@@ -37,7 +37,7 @@
 #'                     col_parent = "hesper_top_three_priorities", 
 #'                     choice_vals = c("hesper_displaced", "hesper_info_displaced", "cleaning_displaced"))
 
-replace_na_subset <- function(data=df, 
+replace_na_subset <- function(data, 
                               subset_col, 
                               subset_value, 
                               sep=".", 
@@ -57,7 +57,7 @@ replace_na_subset <- function(data=df,
   }  
   
   ## check that subset_value is in subset_col, or stop and print unique values
-  if (!subset_value %in% unique(data[[subset_col]])) {
+  if (!any(subset_value %in% unique(data[[subset_col]]))) {
     unique_values <- unique(data[[subset_col]])
     stop(paste0("The value ", subset_value, " is not in the column ", subset_col, ". Unique values are: ", paste(unique_values, collapse = ", ")))
   }
@@ -69,7 +69,8 @@ replace_na_subset <- function(data=df,
   }
   
   ## check that choice separator is the relevant one
-  all.cols <- colnames(data)[grepl(paste0(col_parent, sep.escaped), colnames(data))]
+  all.cols <- map(col_parent, \(x) colnames(data)[grepl(paste0(x, sep.escaped), colnames(data))]) %>% unlist
+  
   if (length(all.cols) == 0) {
     stop(paste0("No child columns with the parent column ", col_parent, " and choice separator ", sep, " were found in the data."))
   }
@@ -80,8 +81,12 @@ replace_na_subset <- function(data=df,
   }
   
   ## replace binary columns with NA for the subset of the data if there is a match
-  cols.subset <- colnames(data)[grepl(paste0(col_parent, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(data))]
-  data[get(subset_col) == subset_value, (cols.subset) := NA]
+  # cols.subset <- colnames(data)[grepl(paste0(col_parent, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(data))]
+  cols.subset <- map(col_parent, \(x) colnames(data)[grepl(paste0(x, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(data))]) %>% unlist
+  data[get(subset_col) %in% subset_value, (cols.subset) := NA]
+  
+  ## check that the columns were replaced
+  # test <-data %>% filter(!!sym(subset_col) %in% subset_value) %>% select(any_of(cols.subset))
   
   return(data)
 }
