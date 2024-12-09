@@ -17,6 +17,77 @@
 #' prop_hesper_items_{section_name}.{section_category} : proportion of items with serious problem reported in the corresponding section category relative to all items of this section category
 #' overall_prop_hesper_items_{section_name}.{section_category} : overall proportion of items with serious problem in the corresponding section category compared to all items reported as serious problem
 #' at_least_one_hesper_item_{section_name}.{section_category} : binary column indicating if at least one item with serious problem is reported in the corresponding section category
+#' @export
+#' 
+#' @examples
+#' # 1. how to categorise hesper items according to sector
+#' hesper_dat_out <- hesper_dat %>%
+#'   add_hesper_cat(
+#'     list_group = list(
+#'       aap = c("hesper_information", 
+#'               "hesper_aid"),
+#'       education = c("hesper_education"),
+#'       fsl = c("hesper_food"),
+#'       health = c("hesper_health", 
+#'                  "hesper_health_care_men", 
+#'                   "hesper_health_care_women"),
+#'       livelihood = c("hesper_income_livelihood"),
+#'       protection = c("hesper_distress", 
+#'                      "hesper_safety", 
+#'                      "hesper_separation", 
+#'                      "hesper_displaced", 
+#'                      "hesper_respect",
+#'                      "hesper_movement",
+#'                      "hesper_law", 
+#'                      "hesper_gbv",
+#'                      "hesper_drug"),
+#'       snfi = c("hesper_shelter", 
+#'                "hesper_clothes_etc"),
+#'       wash = c("hesper_drinking_water",
+#'                "hesper_toilet", 
+#'                "hesper_clean",
+#'                "hesper_clean_women"),
+#'       wellbeing = c("hesper_care",
+#'                     "hesper_support", 
+#'                     "hesper_time", 
+#'                     "hesper_mental_health",
+#'                     "hesper_care_community")
+#'                     ),
+#'    choice_serious = "serious_problem",
+#'    choice_no_serious = "no_serious_problem",
+#'    choice_dnk = "dnk",
+#'    choice_pnta = "pnta",
+#'    choice_na = "not_applicable"
+#'  ) 
+#' 
+#' 
+#' # 2. how to categorise hesper top three priority items according to sector
+#'
+#' hesper_dat_out <- hesper_dat %>%
+#'   add_hesper_cat(
+#'      list_group = list(
+#'        aap = c("hesper_top_three_priorities.hesper_information", "hesper_top_three_priorities.hesper_aid"),
+#'        displacement = c("hesper_top_three_priorities.hesper_displaced"),
+#'        education = c("hesper_top_three_priorities.hesper_education"),
+#'        fsl = c("hesper_top_three_priorities.hesper_food"),
+#'        health = c("hesper_top_three_priorities.hesper_health", "hesper_top_three_priorities.hesper_health_care_men", "hesper_top_three_priorities.hesper_health_care_women"),
+#'        livelihood = c("hesper_top_three_priorities.hesper_income_livelihood"),
+#'        protection = c("hesper_top_three_priorities.hesper_distress", "hesper_top_three_priorities.hesper_safety", 
+#'                       "hesper_top_three_priorities.hesper_separation", "hesper_top_three_priorities.hesper_respect", 
+#'                       "hesper_top_three_priorities.hesper_movement", "hesper_top_three_priorities.hesper_law", 
+#'                       "hesper_top_three_priorities.hesper_gbv", "hesper_top_three_priorities.hesper_drug"),
+#'        snfi = c("hesper_top_three_priorities.hesper_shelter", "hesper_top_three_priorities.hesper_clothes_etc"),
+#'        wash = c("hesper_top_three_priorities.hesper_drinking_water", "hesper_top_three_priorities.hesper_toilet",
+#'                 "hesper_top_three_priorities.hesper_clean", "hesper_top_three_priorities.hesper_clean_women"),
+#'        wellbeing = c("hesper_top_three_priorities.hesper_care", "hesper_top_three_priorities.hesper_support",
+#'                      "hesper_top_three_priorities.hesper_time", "hesper_top_three_priorities.hesper_mental_health_care_community")
+#'        other = c("hesper_top_three_priorities.hesper_other")
+#'        ),
+#'        choice_serious = 1,
+#'        choice_no_serious = 0,
+#'        choice_na = NA
+#'      )
+#'        
 
 add_hesper_cat <- function(
     df,

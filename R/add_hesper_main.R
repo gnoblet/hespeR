@@ -25,6 +25,11 @@
 #' @param subset logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population
 #'
 #' @return dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
+#' 
+#' @export
+#' 
+#' 
+#' 
 
 add_hesper_main <- function(df,
                             col_items = c("hesper_drinking_water", 

@@ -193,6 +193,10 @@ data_expanded <- data_expanded %>%
     subset_cols_vals = filtered_list
   )
 
+
+#### NOTE for GUIGUI : starting this point, it's the old messy script =) 
+
+
 ### 3. Analysis HESPER [Aggregation + table formatting ---------------------------------------
 
 ## Defin colname of geographical disaggregation
