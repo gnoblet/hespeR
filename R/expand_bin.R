@@ -91,18 +91,22 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
     # Get new binary column names
     names.bin <- setdiff(colnames(df.bin), "key_id")
     
-    # Remove from df the names.bin binary columns if they exist, and warn for replacement
-    names.bin_replace <- names.bin[names.bin %in% colnames(df)]
-    if (length(names.bin_replace) > 0){
-      warn_replace(df, names.bin)
-      df[, (names.bin_replace) := NULL]
+    if (remove.new.bin){
+      # Remove from df the names.bin binary columns if they exist, and warn for replacement
+      names.bin_replace <- names.bin[names.bin %in% colnames(df)]
+      if (length(names.bin_replace) > 0){
+        warn_replace(df, names.bin)
+        df[, (names.bin_replace) := NULL]
+      }
     }
       
-    # Also remove all variables starting with "varbinsep" to avoid confusion
-    names.bin_removal <- colnames(df)[startsWith(colnames(df), paste0(var, "."))]
-    if (length(names.bin_removal) > 0){
-      warn_removal(df, names.bin_removal)
-      df[, (names.bin_removal) := NULL]
+    if (remove.other.bin){
+      # Also remove all variables starting with "varbinsep" to avoid confusion
+      names.bin_removal <- colnames(df)[startsWith(colnames(df), paste0(var, "."))]
+      if (length(names.bin_removal) > 0){
+        warn_removal(df, names.bin_removal)
+        df[, (names.bin_removal) := NULL]
+      }
     }
       
     # Intermediate step - value in

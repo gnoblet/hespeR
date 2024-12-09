@@ -71,6 +71,10 @@ clean_top_priorities_subset <- function(
   ## for each element of subset_cols_vals list of arguments, replace_na_subset with for the relevant subset col and values
   for (subset_col in names(subset_cols_vals)){
     for (subset_val in names(subset_cols_vals[[subset_col]])){
+      ## print a message to display that for the corresponding subset_col and subset_val subset_cols_vals[[subset_col]][[subset_val]][["subset_val"]]
+      ## the col_prio child binary columns for the following choices subset_cols_vals[[subset_col]][[subset_val]][["col_val"]] will be replaced with NA
+      message(paste0("Cleaning the top priorities child columns for the subset of data: ", subset_col, " = ", subset_cols_vals[[subset_col]][[subset_val]][["subset_val"]], 
+                     " for the following hesper choices: ", subset_cols_vals[[subset_col]][[subset_val]][["col_val"]]))
       data <- replace_na_subset(data,
                                 subset_col = subset_col,
                                 subset_value = subset_cols_vals[[subset_col]][[subset_val]][["subset_val"]],

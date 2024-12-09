@@ -165,20 +165,32 @@ data <- data %>%
 ## write data with composite indicators
 # data %>% fwrite("../data_hesper.csv", row.names = F)
 
-### Dual voices formatting
 ## Get all child columns for select one questions to then aggregate select one with binary columns only
-data_expanded <- data %>% expand_bin(so.questions) 
+data_expanded <- data %>% expand_bin(so.questions, remove.new.bin = T, remove.other.bin = F) 
 
-### clean the top first/second/third priority questions
+### clean the top first/second/third priority questions depending on the subsets
+# define the general param_subset list for displacement and gender dimensions, for any of the two possible sub-choices
+list_param_subset <- list(
+  "pop_group" = list("displaced" = list("subset_val" = parameters$choice_displaced, 
+                                        "col_val" = c(val.hesper.displaced)),
+                     "non_displaced" = list("subset_val" = parameters$choice_host,
+                                            "col_val" = c(val.hesper.host))),
+  "resp_gender" = list("female" = list("subset_val" = c(parameters$choice_female),
+                                       "col_val" = c(val.hesper.women)),
+                       "male" = list("subset_val" = c(parameters$choice_male),
+                                     "col_val" = c(val.hesper.men)))
+)
+
+## filter to keep only subset that are present in the version of the tool
+filtered_list <- list_param_subset %>%
+  map(~ .x %>% keep(~ is_not_empty(.x$col_val))) %>% ## keep only subset values for which there is a hesper specific item (i.e., with a skip logic)
+  keep(~ length(.x) > 0) ## ensure that there is at least one subset
+
+## clean the hesper first, second and third priority child columns [i.e. replace with NA the relevant choices for the subset that have not been asked the hesper item]
 data_expanded <- data_expanded %>% 
   clean_top_priorities_subset(
     col_prio = c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third"),
-    subset_cols_vals = list(
-      "pop_group" = list("displaced" = list("subset_val" = c("idp", "refugees"), 
-                                          "col_val" = c("hesper_displaced"))),
-      "resp_gender" = list("female" = list("subset_val" = c("female"),
-                                         "col_val" = c("hesper_clean_women")))
-    )
+    subset_cols_vals = filtered_list
   )
 
 ### 3. Analysis HESPER [Aggregation + table formatting ---------------------------------------

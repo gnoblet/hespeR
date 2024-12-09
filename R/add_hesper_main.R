@@ -153,8 +153,9 @@ add_hesper_main <- function(df,
     df <- df %>% add.top.three(new_col = col_name_hesper_top_three, cols_unite = cols_priority)
 
     ### expand parent column top three priorities and priority without accounting for subset
-    df <- df %>% expand_bin(c(col_name_hesper_top_three, cols_priority))
-    
+    df <- df %>% expand_bin(c(col_name_hesper_top_three))
+    # df <- df %>% expand_bin(c(cols_priority)) ## for now commented
+  
     ### ensure that skip logic are respected
     ### to avoid having binaries with zero for items that are not applicable to the respondent 
     
