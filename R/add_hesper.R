@@ -68,7 +68,7 @@ add_hesper_main <- function(df,
            nb_hesper.applicable = rowSums(across(all_of(col_items), ~ . %in% choice_applicable), na.rm=T),
            nb_hesper.undefined = rowSums(across(all_of(col_items), ~ . %in% c(choice_na, choice_dnk, choice_pnta)), na.rm=T),
            nb_hesper.pnta = rowSums(across(all_of(col_items), ~ . %in% choice_pnta), na.rm=T),
-           nb_hepser.dnk = rowSums(across(all_of(col_items), ~ . %in% choice_dnk), na.rm=T)
+           nb_hepser.dnk = rowSums(across(all_of(col_items), ~ . %in% choice_dnk), na.rm=T),
            prop_hesper.all = nb_hesper.all / nb_hesper.applicable)
   
   ## Add binary columns to record serious problem, 0 if no serious problem and NA otherwise for all items across col_items
