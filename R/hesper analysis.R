@@ -169,6 +169,18 @@ data <- data %>%
 ## Get all child columns for select one questions to then aggregate select one with binary columns only
 data_expanded <- data %>% expand_bin(so.questions) 
 
+### clean the top first/second/third priority questions
+data_expanded <- data_expanded %>% 
+  clean_top_priorities_subset(
+    col_prio = c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third"),
+    subset_cols_vals = list(
+      "pop_group" = list("displaced" = list("subset_val" = c("idp", "refugees"), 
+                                          "col_val" = c("hesper_displaced"))),
+      "resp_gender" = list("female" = list("subset_val" = c("female"),
+                                         "col_val" = c("hesper_clean_women")))
+    )
+  )
+
 ### 3. Analysis HESPER [Aggregation + table formatting ---------------------------------------
 
 ## Defin colname of geographical disaggregation

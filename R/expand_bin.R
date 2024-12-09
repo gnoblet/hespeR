@@ -11,7 +11,8 @@
 #' @param drop_undefined A character vector of values to consider as undefined. Defaults to NULL if none.
 #' @param value_in A character vector of values to consider as value_in. Defaults to NULL if none.
 #' @param value_in_suffix A character scalar or an empty string to append to the variable names. Defaults to NULL.
-#'
+#' @param remove.new.bin A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.
+#' @param remove.other.bin A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.
 #' @return The modified dataframe with as many binary columns as there are choices in the original variable.
 #' 
 #' @examples
@@ -20,7 +21,8 @@
 #' df
 #' 
 #' @export
-expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined = NULL, value_in = NULL, value_in_suffix = NULL) {
+expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined = NULL, value_in = NULL, value_in_suffix = NULL,
+                       remove.new.bin = T, remove.other.bin = T) {
 
   #------ Checks
 
