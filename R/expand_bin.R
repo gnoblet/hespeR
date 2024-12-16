@@ -11,8 +11,8 @@
 #' @param drop_undefined A character vector of values to consider as undefined. Defaults to NULL if none.
 #' @param value_in A character vector of values to consider as value_in. Defaults to NULL if none.
 #' @param value_in_suffix A character scalar or an empty string to append to the variable names. Defaults to NULL.
-#' @param remove.new.bin A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.
-#' @param remove.other.bin A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.
+#' @param remove_new_bin A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.
+#' @param remove_other_bin A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.
 #' @return The modified dataframe with as many binary columns as there are choices in the original variable.
 #' 
 #' @examples
@@ -21,8 +21,7 @@
 #' df
 #' 
 #' @export
-expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined = NULL, value_in = NULL, value_in_suffix = NULL,
-                       remove.new.bin = T, remove.other.bin = T) {
+expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined = NULL, value_in = NULL, value_in_suffix = NULL, remove_new_bin = TRUE, remove_other_bin = TRUE) {
 
   #------ Checks
 
@@ -59,6 +58,12 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
   # value_in_suffix is a character scalar or an empty string or NULL
   checkmate::assertCharacter(value_in_suffix, len = 1, null.ok = TRUE)
 
+  # remove_new_bin is a logical scalar
+  checkmate::assertLogical(remove_new_bin, len = 1)
+
+  # remove_other_bin is a logical scalar
+  checkmate::assertLogical(remove_other_bin, len = 1)
+
   #------ Do stuff
     
 
@@ -91,7 +96,7 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
     # Get new binary column names
     names.bin <- setdiff(colnames(df.bin), "key_id")
     
-    if (remove.new.bin){
+    if (remove_new_bin){
       # Remove from df the names.bin binary columns if they exist, and warn for replacement
       names.bin_replace <- names.bin[names.bin %in% colnames(df)]
       if (length(names.bin_replace) > 0){
@@ -100,7 +105,7 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
       }
     }
       
-    if (remove.other.bin){
+    if (remove_other_bin){
       # Also remove all variables starting with "varbinsep" to avoid confusion
       names.bin_removal <- colnames(df)[startsWith(colnames(df), paste0(var, "."))]
       if (length(names.bin_removal) > 0){
