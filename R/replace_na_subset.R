@@ -13,30 +13,29 @@
 #' 
 #' @return A data.table or data.frame with the binary columns replaced by `NA` for the relevant subset.
 #' 
-#' @examples
-#' # Create a fake dataset
-#' subset_col <- "pop_group"
-#' subset_values <- c("displaced", "host")
-#' sep <- "."
-#' col_parent <- "hesper_top_three_priorities"
-#' choice_vals <- c("hesper_displaced", "hesper_food", "hesper_water", "hesper_info_displaced")
-#' df <- data.frame(
-#'   pop_group = sample(subset_values, 100, replace = TRUE),
-#'   hesper_top_three_priorities = sample(c("hesper_displaced", "hesper_food", "hesper_water"), 100, replace = TRUE),
-#'   hesper_top_three_priorities.hesper_displaced = sample(0:1, 100, replace = TRUE),
-#'   hesper_top_three_priorities.hesper_food = sample(0:1, 100, replace = TRUE),
-#'   hesper_top_three_priorities.hesper_water = sample(0:1, 100, replace = TRUE),
-#'   hesper_top_three_priorities.hesper_info_displaced = sample(0:1, 100, replace = TRUE)
-#' )
-#'
-#' # Use the replace_na_subset function
-#' data %>%
-#'   replace_na_subset(subset_col = "pop_group", 
-#'                     subset_value = "displaced", 
-#'                     sep = ".", 
-#'                     col_parent = "hesper_top_three_priorities", 
-#'                     choice_vals = c("hesper_displaced", "hesper_info_displaced", "cleaning_displaced"))
-
+# #' @examples
+# #' # Create a fake dataset
+# #' subset_col <- "pop_group"
+# #' subset_values <- c("displaced", "host")
+# #' sep <- "."
+# #' col_parent <- "hesper_top_three_priorities"
+# #' choice_vals <- c("hesper_displaced", "hesper_food", "hesper_water", "hesper_info_displaced")
+# #' df <- data.frame(
+# #'   pop_group = sample(subset_values, 100, replace = TRUE),
+# #'   hesper_top_three_priorities = sample(c("hesper_displaced", "hesper_food", "hesper_water"), 100, replace = TRUE),
+# #'   hesper_top_three_priorities.hesper_displaced = sample(0:1, 100, replace = TRUE),
+# #'   hesper_top_three_priorities.hesper_food = sample(0:1, 100, replace = TRUE),
+# #'   hesper_top_three_priorities.hesper_water = sample(0:1, 100, replace = TRUE),
+# #'   hesper_top_three_priorities.hesper_info_displaced = sample(0:1, 100, replace = TRUE)
+# #' )
+# #'
+# #' # Use the replace_na_subset function
+# #' data %>%
+# #'   replace_na_subset(subset_col = "pop_group", 
+# #'                     subset_value = "displaced", 
+# #'                     sep = ".", 
+# #'                     col_parent = "hesper_top_three_priorities", 
+# #'                     choice_vals = c("hesper_displaced", "hesper_info_displaced", "cleaning_displaced"))
 replace_na_subset <- function(data, 
                               subset_col, 
                               subset_value, 
@@ -52,7 +51,7 @@ replace_na_subset <- function(data,
   
   ## check that subset_col and col_parent are in data, or stop and print colnames
   if (!all(c(subset_col, col_parent) %in% colnames(data))) {
-    col_not_in_data <- c(subset_col, col_parent) %>% setdiff(colnames(data))
+    col_not_in_data <- c(subset_col, col_parent) |> setdiff(colnames(data))
     stop(paste0("The following columns are not in the data: ", paste(col_not_in_data, collapse = ", ")))
   }  
   
@@ -69,19 +68,19 @@ replace_na_subset <- function(data,
   }
   
   ## check that choice separator is the relevant one
-  all.cols <- map(col_parent, \(x) colnames(data)[grepl(paste0(x, sep.escaped), colnames(data))]) %>% unlist
+  all.cols <- purrr::map(col_parent, \(x) colnames(data)[grepl(paste0(x, sep.escaped), colnames(data))]) |> unlist()
   
   if (length(all.cols) == 0) {
     stop(paste0("No child columns with the parent column ", col_parent, " and choice separator ", sep, " were found in the data."))
   }
   ## if not all choice_vals in df, stop and print the missing cols
-  missing_cols <- paste0(col_parent, sep, choice_vals) %>% setdiff(all.cols)
+  missing_cols <- paste0(col_parent, sep, choice_vals) |> setdiff(all.cols)
   if (length(missing_cols) > 0) {
     stop(paste0("The following child columns are missing: ", paste(missing_cols, collapse = ", ")))
   }
   
   ## replace binary columns with NA for the subset of the data if there is a match
-  cols.subset <- map(col_parent, \(x) colnames(data)[grepl(paste0(x, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(data))]) %>% unlist
+  cols.subset <- purrr::map(col_parent, \(x) colnames(data)[grepl(paste0(x, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(data))]) |> unlist()
   data[get(subset_col) %in% subset_value, (cols.subset) := NA]
   
   return(data)

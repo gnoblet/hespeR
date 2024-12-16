@@ -8,3 +8,5 @@
 ^pkgdown$
 ^\.github$
 ^data-raw$
+^resources/
+^test.R
