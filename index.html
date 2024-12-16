@@ -67,9 +67,19 @@
 <p>## Construction</p>
 <ul class="task-list">
 <li><label><input type="checkbox">Use <code>checkmate</code> or <code>asserthat</code> for parameters checks</label></li>
-<li><label><input type="checkbox">Use <code>assertr</code> for datasets checks, e.g. do columns exist in df, is colA of type X, Y, Z</label></li>
+<li><label><input type="checkbox">Use a consistent way to check for datasets details, e.g. do columns exist in df, is colA of type X, Y, Z</label></li>
 <li><label><input type="checkbox">Document return outputs, document the process</label></li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="data-workflow">Data workflow<a class="anchor" aria-label="anchor" href="#data-workflow"></a>
+</h2>
+<p>Below is an initial wrap-up of the data workflow we have in place.</p>
+<ol style="list-style-type: decimal">
+<li><p><code><a href="reference/add_hesper_main.html">add_hesper_main()</a></code>: creates binaries for all hesper items, collapse top three priorities into one top three column. Needs helper functions <code><a href="reference/add_val_in_set_binaries.html">add_val_in_set_binaries()</a></code>, <code><a href="reference/add_top_three.html">add_top_three()</a></code>, <code><a href="reference/expand_bin.html">expand_bin()</a></code>, <code><a href="reference/replace_na_subset.html">replace_na_subset()</a></code>, <code><a href="reference/is_not_empty.html">is_not_empty()</a></code></p></li>
+<li><p><code><a href="reference/add_hesper_cat.html">add_hesper_cat()</a></code>: function that creates different composite indicators from hesper items for each type of hesper items [no helper function, just rowSums]</p></li>
+<li><p><code><a href="reference/clean_top_priorities_subset.html">clean_top_priorities_subset()</a></code>: clean top one/two/three priorities child binary columns with NA for subset of data. Needs helper functions: <code><a href="reference/replace_na_subset.html">replace_na_subset()</a></code>, <code><a href="reference/is_not_empty.html">is_not_empty()</a></code></p></li>
+</ol>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
