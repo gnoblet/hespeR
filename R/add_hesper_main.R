@@ -80,7 +80,6 @@ add_hesper_main <- function(df,
                             choices_non_displaced = c("hosts"), 
                             hesper_item_displaced = c("hesper_displaced"),
                             hesper_item_non_displaced = NULL,
-                            # col_hesper_subset = c("hesper_clean_women", "hesper_displaced"),
                             add_binaries = T,
                             add_binaries_subset = T,
                             subset = T,
@@ -94,6 +93,34 @@ add_hesper_main <- function(df,
   ## all response choices that should not be counted in the total nb of items
   choice_applicable <- c(choice_serious, choice_no_serious, choice_dnk, choice_pnta)
   choice_exclude <- c(NA, choice_na, choice_dnk, choice_pnta)
+  
+  ## check that all choice_applicable val are in hesper items unique values in the dataset, vectorized (one check for all items, one message by choice val)
+  for (val in choice_applicable){
+    if(!val %in% df[, lapply(.SD, function(x) unique(na.omit(x))), .SDcols = col_items]){
+      stop(paste("The choice value", val, "is not present in the dataset hesper items"))
+    }
+  }
+  
+  ## check that choice_male and choice_female are in the column col_gender
+  for (val in c(choice_male, choice_female)){
+    if(!val %in% unlist(unique(df[, col_gender, with=F]))){
+      stop(paste("The choice value", val, "is not present in the column ", col_gender))
+    }
+  }
+  
+  ## check that all choices_displaced and choices_non_displaced are in the column col_displacement
+  for (val in c(choices_displaced, choices_non_displaced)){
+    if(!val %in% unlist(unique(df[, col_displacement, with=F]))){
+      stop(paste("The choice value", val, "is not present in the column ", col_displacement))
+    }
+  }
+  
+  ## check that any of arguments in this vector c(hesper_item_male, hesper_item_female, hesper_item_displaced, hesper_item_non_displaced) are contained in col_items or throw a message
+  for (val in c(hesper_item_male, hesper_item_female, hesper_item_displaced, hesper_item_non_displaced)){
+    if(!val %in% col_items){
+        stop(paste("The hesper item", val, "is not present in the col_items vector"))
+    }
+  }
   
   ## compute total items selected
   df <- df %>%
@@ -155,7 +182,7 @@ add_hesper_main <- function(df,
     if (sum(!cols_priority %in% colnames(df))>0) stop("The following columns are not present in the dataframe: ", cols_priority[!cols_priority %in% colnames(df)])
     
     ## unite the thre priority columns to have one select multiple hesper priorities
-    df <- df %>% add.top.three(new_col = col_name_hesper_top_three, cols_unite = cols_priority)
+      df <- df %>% add.top.three(new_col = col_name_hesper_top_three, cols_unite = cols_priority)
 
     ### expand parent column top three priorities and priority without accounting for subset
     df <- df %>% expand_bin(c(col_name_hesper_top_three))

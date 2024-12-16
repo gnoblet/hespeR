@@ -1,4 +1,4 @@
-#' @title function that creates the number of items with serious problem reported in a particular section and compute main other indicators needed
+#' @title function that creates different composite indicators from hesper items for each type of hesper items (at least one item as serious problem from the category, number of items as serious problem from the category, proportion of items as serious problem from the category, overall proportion of items as serious problem from the category compared to all other items)
 #'
 #' @description naming done using the following syntax: nb_hesper_items_{section_name}.{section_category}
 #' @param df dataframe containing the data
