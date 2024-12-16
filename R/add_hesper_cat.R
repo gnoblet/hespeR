@@ -134,7 +134,7 @@ add_hesper_cat <- function(
   
   ## check that all columns are present in dataframe and print the non matching columns
   col_hesper <- list_group %>% unname %>% unlist
-  col_not_matching <- col_hesper %>% keep(!. %in% colnames(df))
+  col_not_matching <- col_hesper %>% purrr::keep(!. %in% colnames(df))
   if(length(col_not_matching) > 0){warning(paste("The following columns are not present in the dataframe: ", col_not_matching, "\n"))}
   
   ## all response choices that should not be counted in the total nb of items
@@ -143,7 +143,7 @@ add_hesper_cat <- function(
   
   ## Add a check if choice_serious and choice_no_serious never appears in any of df[, col_hesper]
   
-  if(df %>% select(any_of(col_hesper)) %>% map(unique) %>% map(~all(!. %in% c(choice_serious, choice_no_serious))) %>% unlist %>% any){
+  if(df |> dplyr::select(dplyr::any_of(col_hesper)) |> purrr::map(unique) |> purrr::map(~all(!. %in% c(choice_serious, choice_no_serious))) |> unlist %>% any){
     stop("The specified values for arguments choice_serious and choice_no_serious do not appear in the dataframe. Please check the values.")
   }
   
@@ -152,12 +152,12 @@ add_hesper_cat <- function(
   
   for (cat in list_group_cat){
     df <- df %>% 
-      mutate(all_serious_items := rowSums(across(any_of(unlist(unname(list_group))), ~ . %in% choice_serious), na.rm=T),
+      dplyr::mutate(all_serious_items := rowSums(dplyr::across(dplyr::any_of(unlist(unname(list_group))), ~ . %in% choice_serious), na.rm=T),
              
-             n_valid := rowSums(across(any_of(list_group[[cat]]), ~ !. %in% choice_exclude)),
+             n_valid := rowSums(dplyr::across(dplyr::any_of(list_group[[cat]]), ~ !. %in% choice_exclude)),
              
              !!paste0("nb_hesper_items_", list_group_name, ".", cat) := case_when(
-               n_valid == 0 ~ NA_real_, TRUE ~ rowSums(across(any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T)
+               n_valid == 0 ~ NA_real_, TRUE ~ rowSums(dplyr::across(dplyr::any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T)
              ),
              
              !!paste0("prop_hesper_items_", list_group_name, ".", cat) := !!sym(paste0("nb_hesper_items_", list_group_name, ".", cat)) / n_valid,
@@ -165,12 +165,12 @@ add_hesper_cat <- function(
              !!paste0("overall_prop_hesper_", list_group_name, ".", cat) := !!sym(paste0("nb_hesper_items_", list_group_name, ".", cat)) / all_serious_items,
              
              !!paste0("at_least_one_hesper_item_", list_group_name, ".", cat) := case_when(
-               n_valid == 0 ~ NA_real_, TRUE ~ rowSums(across(any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T) > 0
+               n_valid == 0 ~ NA_real_, TRUE ~ rowSums(dplyr::across(dplyr::any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T) > 0
              )
       ) 
   }
   
-  df <- df %>% select(-n_valid)
+  df <- df %>% dplyr::select(-n_valid)
   
   return(df)
 }
