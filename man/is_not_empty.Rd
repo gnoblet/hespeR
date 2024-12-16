@@ -2,7 +2,7 @@
 % Please edit documentation in R/is_not_empty.R
 \name{is_not_empty}
 \alias{is_not_empty}
-\title{Check if a vector is not empty, i.e. not null, positive length and not NA}
+\title{Check if a vector is not empty, i.e. not null, positive length and not filled with NA}
 \usage{
 is_not_empty(x)
 }
@@ -13,5 +13,5 @@ is_not_empty(x)
 TRUE if the vector is not empty, FALSE otherwise
 }
 \description{
-Check if a vector is not empty, i.e. not null, positive length and not NA
+Check if a vector is not empty, i.e. not null, positive length and not filled with NA
 }

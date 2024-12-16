@@ -15,6 +15,10 @@
 #' @param remove_other_bin A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.
 #' @return The modified dataframe with as many binary columns as there are choices in the original variable.
 #' 
+#' @importFrom data.table `.SD`
+#' @importFrom data.table `:=`
+#' @importFrom data.table `.I`
+#' 
 #' @examples
 #' df <- data.frame(var1 = c("a b c", "a c", "d", NA), var2 = c("a b c", "a c", "c a", NA))
 #' df <- expand_bin(df, c("var1", "var2"))
@@ -68,7 +72,7 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
     
 
   # Create a unique id for each row 
-  df[, key_id := .I]
+  df[, 'key_id' := .I]
 
   for (var in vars) {
 
@@ -84,7 +88,7 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
     # Split longer (removing NAs) 
     df.bin <- df.bin[
       !is.na(get(var)), 
-      .(temp = unlist(strsplit(get(var), split_by, fixed = TRUE))), 
+      list(temp = unlist(strsplit(get(var), split_by, fixed = TRUE))), 
       by = "key_id"]
     
     # Remove duplicates
@@ -150,7 +154,7 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
   }
 
   # Step 4: Remove key_id
-  df[, key_id := NULL]
+  df[, 'key_id' := NULL]
 
   return(df)
 }

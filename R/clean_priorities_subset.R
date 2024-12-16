@@ -8,6 +8,7 @@
 #' This list be a nested list with names of the subset columns as first layer, with as many names as subset dimension to clean for
 #' For each subset dimension, another list with as many values than subset groups that needs to be cleaned with 
 #' then two list elements linking to all values corresponding to the subset in data set followed by the choice value for the parent target columns that needs to be cleaned with NA for the corresponding subset   
+#' @param sep_val A character scalar as the separator used in the child binary column names
 #'
 #' @return A data frame or data table with the top 1/2/3 priority columns replaced with `NA` for the specified subset of the data
 #' @export
@@ -36,7 +37,7 @@ clean_top_priorities_subset <- function(
     "resp_gender"=list("female"=list("subset_val"=c("female"),
                                      "col_val"=c("hesper_clean_women")))
     ),
-  sep.val="."
+  sep_val="."
   ){
   ## if checkmate:: datatable not true, transform in DT
   if (!checkmate::testDataTable(data)){
@@ -81,7 +82,7 @@ clean_top_priorities_subset <- function(
                                 subset_value = subset_cols_vals[[subset_col]][[subset_val]][["subset_val"]],
                                 col_parent = col_prio,
                                 choice_vals = subset_cols_vals[[subset_col]][[subset_val]][["col_val"]],
-                                sep = sep.val)
+                                sep = sep_val)
 
     }
   }

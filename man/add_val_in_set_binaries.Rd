@@ -44,12 +44,11 @@ For HESPER package, can be used to create binaries for all HESPER items select o
 Additionnal argument can be used to add a suffix to the column names of the binary created
 }
 \examples{
-source("../data-raw/hesper_dat.R")
 hesper_vars <- c("hesper_drinking_water", "hesper_food", "hesper_shelter", "hesper_toilet", "hesper_clean", "hesper_clothes_etc", "hesper_income_livelihood",
                  "hesper_health", "hesper_distress", "hesper_safety", "hesper_education", "hesper_care", "hesper_support", "hesper_separation", "hesper_displaced", "hesper_information", "hesper_aid",
                  "hesper_respect", "hesper_movement", "hesper_time", "hesper_law", "hesper_gbv", "hesper_drug", "hesper_mental_health", "hesper_care_community")
   
-hesper_dat_comp <- hesper_dat \%>
+hesper_dat_comp <- hesper_dat |> 
      ## Add HESPER binaries - global => prevalence of serious problem on all sample (regardless of subset or cleaning or undefined)
      add_val_in_set_binaries(cols_character = hesper_vars, 
                          value_1 = c("serious_problem"),

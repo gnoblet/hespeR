@@ -4,6 +4,9 @@
 #' @param df input dataframe
 #' @param new_col name of the new column
 #' @param cols_unite vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities
+#' 
+#' @importFrom rlang `:=`
+#' 
 #' @return dataframe with new column
 #' @export
 #' 
@@ -11,6 +14,6 @@
 add_top_three <- function(df, new_col, cols_unite){
   df <- df |> 
     tidyr::unite(!!sym(new_col), dplyr::all_of(cols_unite), sep = " ", remove = F, na.rm = T) |> 
-    dplyr::mutate(!!sym(new_col) := ifelse(!!sym(new_col)=="", NA, stringr::str_replace_all(!!sym(new_col), "^ | $", "")))
+    dplyr::mutate(!!sym(new_col) := ifelse(!!rlang::sym(new_col)=="", NA, stringr::str_replace_all(!!sym(new_col), "^ | $", "")))
 }
 

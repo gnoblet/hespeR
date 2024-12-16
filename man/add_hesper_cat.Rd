@@ -55,8 +55,8 @@ at_least_one_hesper_item_{section_name}.{section_category} : binary column indic
 }
 \examples{
 # 1. how to categorise hesper items according to sector
-hesper_dat_out <- hesper_dat \%>\%
-  add_hesper_cat(
+hesper_dat_out <- add_hesper_cat(
+    hesper_dat,
     list_group = list(
       aap = c("hesper_information", 
               "hesper_aid"),
@@ -97,29 +97,28 @@ hesper_dat_out <- hesper_dat \%>\%
 
 # 2. how to categorise hesper top three priority items according to sector
 
-hesper_dat_out <- hesper_dat \%>\%
-  add_hesper_cat(
-     list_group = list(
-       aap = c("hesper_top_three_priorities.hesper_information", "hesper_top_three_priorities.hesper_aid"),
-       displacement = c("hesper_top_three_priorities.hesper_displaced"),
-       education = c("hesper_top_three_priorities.hesper_education"),
-       fsl = c("hesper_top_three_priorities.hesper_food"),
-       health = c("hesper_top_three_priorities.hesper_health", "hesper_top_three_priorities.hesper_health_care_men", "hesper_top_three_priorities.hesper_health_care_women"),
-       livelihood = c("hesper_top_three_priorities.hesper_income_livelihood"),
-       protection = c("hesper_top_three_priorities.hesper_distress", "hesper_top_three_priorities.hesper_safety", 
-                      "hesper_top_three_priorities.hesper_separation", "hesper_top_three_priorities.hesper_respect", 
-                      "hesper_top_three_priorities.hesper_movement", "hesper_top_three_priorities.hesper_law", 
-                      "hesper_top_three_priorities.hesper_gbv", "hesper_top_three_priorities.hesper_drug"),
-       snfi = c("hesper_top_three_priorities.hesper_shelter", "hesper_top_three_priorities.hesper_clothes_etc"),
-       wash = c("hesper_top_three_priorities.hesper_drinking_water", "hesper_top_three_priorities.hesper_toilet",
-                "hesper_top_three_priorities.hesper_clean", "hesper_top_three_priorities.hesper_clean_women"),
-       wellbeing = c("hesper_top_three_priorities.hesper_care", "hesper_top_three_priorities.hesper_support",
-                     "hesper_top_three_priorities.hesper_time", "hesper_top_three_priorities.hesper_mental_health_care_community")
-       other = c("hesper_top_three_priorities.hesper_other")
-       ),
-       choice_serious = 1,
-       choice_no_serious = 0,
-       choice_na = NA
-     )
-       
+hesper_dat_out <-add_hesper_cat(
+ hesper_dat
+ list_group = list(
+  aap = c("hesper_top_three_priorities.hesper_information", "hesper_top_three_priorities.hesper_aid"),
+  displacement = c("hesper_top_three_priorities.hesper_displaced"),
+  education = c("hesper_top_three_priorities.hesper_education"),
+  fsl = c("hesper_top_three_priorities.hesper_food"),
+   health = c("hesper_top_three_priorities.hesper_health", "hesper_top_three_priorities.hesper_health_care_men", "hesper_top_three_priorities.hesper_health_care_women"),
+  livelihood = c("hesper_top_three_priorities.hesper_income_livelihood"),
+  protection = c("hesper_top_three_priorities.hesper_distress", "hesper_top_three_priorities.hesper_safety", 
+                 "hesper_top_three_priorities.hesper_separation", "hesper_top_three_priorities.hesper_respect", 
+                 "hesper_top_three_priorities.hesper_movement",             "hesper_top_three_priorities.hesper_law", 
+                 "hesper_top_three_priorities.hesper_gbv", "hesper_top_three_priorities.hesper_drug"),
+  snfi = c("hesper_top_three_priorities.hesper_shelter", "hesper_top_three_priorities.hesper_clothes_etc"),
+  wash = c("hesper_top_three_priorities.hesper_drinking_water", "hesper_top_three_priorities.hesper_toilet",
+           "hesper_top_three_priorities.hesper_clean", "hesper_top_three_priorities.hesper_clean_women"),
+  wellbeing = c("hesper_top_three_priorities.hesper_care", "hesper_top_three_priorities.hesper_support",
+                "hesper_top_three_priorities.hesper_time", "hesper_top_three_priorities.hesper_mental_health_care_community")
+  other = c("hesper_top_three_priorities.hesper_other")
+ ),
+ choice_serious = 1,
+ choice_no_serious = 0,
+ choice_na = NA
+   )   
 }

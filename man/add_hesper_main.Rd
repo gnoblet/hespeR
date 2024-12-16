@@ -24,8 +24,8 @@ add_hesper_main(
     "hesper_priority_third"),
   col_name_hesper_top_three = "hesper_top_three_priorities",
   col_gender = "gender",
-  choice_male = "men",
-  choice_female = "women",
+  choices_male = "men",
+  choices_female = "women",
   hesper_item_male = NULL,
   hesper_item_female = c("hesper_clean_women"),
   col_displacement = "pop_group",
@@ -58,15 +58,23 @@ add_hesper_main(
 
 \item{col_gender}{character string representing the column name containing the respondent's gender}
 
-\item{choice_male}{character string representing the choice corresponding to male respondent gender}
+\item{choices_male}{character string representing the choice corresponding to male respondent gender}
 
-\item{choice_female}{character string representing the choice corresponding to female respondent gender}
+\item{choices_female}{character string representing the choice corresponding to female respondent gender}
 
 \item{hesper_item_male}{vector of two choice names corresponding to the hesper items specific for male respondent}
 
+\item{hesper_item_female}{vector of two choice names corresponding to the hesper items specific for female respodent}
+
 \item{col_displacement}{character string representing the column name containing the respondent's displacement status}
 
+\item{choices_displaced}{character string representing the choice corresponding to displaced respondent}
+
+\item{choices_non_displaced}{character string representing the choice corresponding to not displaced respondent}
+
 \item{hesper_item_displaced}{vector of two choices name coresponding to the hesper items specific for displaced respondent}
+
+\item{hesper_item_non_displaced}{vector of two choices name coresponding to the hesper items specific for not displaced respondent}
 
 \item{add_binaries}{logical value indicating whether to add binary variables for each hesper item}
 
@@ -74,15 +82,7 @@ add_hesper_main(
 
 \item{subset}{logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population}
 
-\item{hesper_item_femal}{vector of two choice names corresponding to the hesper items specific for female respodent}
-
-\item{choice_displaced}{character string representing the choice corresponding to displaced respondent}
-
-\item{choice_not_displaced}{character string representing the choice corresponding to not displaced respondent}
-
 \item{col_hesper_subset}{character string representing the column name containing the respondent's hesper items that are applicable only to a gender/displacement status subset. should match column names in the dataset}
-
-\item{hesper_item_not_displaced}{vector of two choices name coresponding to the hesper items specific for not displaced respondent}
 }
 \value{
 dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column

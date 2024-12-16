@@ -17,11 +17,13 @@ expand_bin(
 )
 }
 \arguments{
-\item{df}{The input dataframe}
+\item{df}{The input dataframe.}
 
-\item{split_by}{The separator used to split the variable into choices (default: " ")}
+\item{vars}{The name of the variables to expand.}
 
-\item{bin_sep}{The separator used to separate the original variable name and the choice name in the binary columns (default: ".")}
+\item{split_by}{The separator used to split the variable into choices (default: " ").}
+
+\item{bin_sep}{The separator used to separate the original variable name and the choice name in the binary columns (default: ".").}
 
 \item{drop_undefined}{A character vector of values to consider as undefined. Defaults to NULL if none.}
 
@@ -32,8 +34,6 @@ expand_bin(
 \item{remove_new_bin}{A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.}
 
 \item{remove_other_bin}{A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.}
-
-\item{var}{The name of the variable to expand}
 }
 \value{
 The modified dataframe with as many binary columns as there are choices in the original variable.
