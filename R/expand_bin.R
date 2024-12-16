@@ -4,10 +4,10 @@
 #' The variable is split by the `split_by` separator, and each choice is represented by a binary column.
 #' The binary columns are separated by the `bin_sep` separator.
 #'
-#' @param df The input dataframe
-#' @param var The name of the variable to expand
-#' @param split_by The separator used to split the variable into choices (default: " ")
-#' @param bin_sep The separator used to separate the original variable name and the choice name in the binary columns (default: ".")
+#' @param df The input dataframe.
+#' @param vars The name of the variables to expand.
+#' @param split_by The separator used to split the variable into choices (default: " ").
+#' @param bin_sep The separator used to separate the original variable name and the choice name in the binary columns (default: ".").
 #' @param drop_undefined A character vector of values to consider as undefined. Defaults to NULL if none.
 #' @param value_in A character vector of values to consider as value_in. Defaults to NULL if none.
 #' @param value_in_suffix A character scalar or an empty string to append to the variable names. Defaults to NULL.
