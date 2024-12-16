@@ -25,5 +25,5 @@ Ultimately, the goal is to publish on CRAN.
  ## Construction
 
  - [ ] Use `checkmate` or `asserthat` for parameters checks
- - [ ] Use `assertr` for datasets checks, e.g. do columns exist in df, is colA of type X, Y, Z
+ - [ ] Use a consistent way to check for datasets details, e.g. do columns exist in df, is colA of type X, Y, Z
  - [ ] Document return outputs, document the process
