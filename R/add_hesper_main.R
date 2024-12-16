@@ -96,7 +96,7 @@ add_hesper_main <- function(df,
   
   ## check that all choice_applicable val are in hesper items unique values in the dataset, vectorized (one check for all items, one message by choice val)
   for (val in choice_applicable){
-    if(!val %in% df[, lapply(.SD, function(x) unique(na.omit(x))), .SDcols = col_items]){
+    if(!val %in% unlist(unique(df[, col_items, with=F]))){
       stop(paste("The choice value", val, "is not present in the dataset hesper items"))
     }
   }
