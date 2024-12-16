@@ -1,11 +1,12 @@
 analyse_sm <- function(df, group_var=NULL, var, col_weight, type="quick"){
   if (type=="quick") {
-    analyse_sm_quick(df, group_var, var, col_weight)
+    res <- analyse_sm_quick(df, group_var, var, col_weight)
   } else if (type=="ci") {
-    analyse_sm_ci(df, group_var, var, col_weight)
+    res <- analyse_sm_ci(df, group_var, var, col_weight)
   } else {
     print("Type must be either 'quick' or 'ci'")
   }
+  res <- res %>% add_key(group_var, type, delete.old.col=T)
 }
 
 analyse_sm_ci <- function(df, group_var=NULL, var, col_weight){

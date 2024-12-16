@@ -139,7 +139,7 @@ add_hesper_main <- function(df,
       ## Add HESPER binaries - global => prevalence of serious problem on all sample (regardless of subset or cleaning or undefined)
       add_val_in_set_binaries(data=.,
                               cols_character = col_items, 
-                              value_1 = c("serious_problem"),
+                              value_1 = c(choice_serious),
                               value_0 = NULL,
                               value_na = NULL,
                               value_default = 0,
@@ -152,8 +152,8 @@ add_hesper_main <- function(df,
     df <- df %>% 
       ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
       add_val_in_set_binaries(cols_character = col_items, 
-                              value_1 = c("serious_problem"),
-                              value_0 = c("no_serious_problem"),
+                              value_1 = c(choice_serious),
+                              value_0 = c(choice_no_serious),
                               value_na = NULL,
                               value_default = NA_integer_,
                               replace = F, 
@@ -166,7 +166,7 @@ add_hesper_main <- function(df,
     df <- df %>% 
       ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices]
       add_val_in_set_binaries(cols_character = col_items, 
-                              value_1 = c("pnta", "dnk", "not_applicable"),
+                              value_1 = c(choice_na, choice_dnk, choice_pnta),
                               value_0 = NULL,
                               value_na = NULL,
                               value_default = 0,

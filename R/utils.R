@@ -253,7 +253,8 @@ analyse_ci <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
     srvyr::summarise(srvyr::across(srvyr::all_of(var), list(mean=~srvyr::survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
     dplyr::rename_with(.fn = ~stringr::str_replace_all(., c("_(?=(low|upp))"="\\/"))) %>% 
     tidyr::pivot_longer(where(is.numeric)) %>% tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
-    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value)
+    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value) %>%
+    add_key(group_var)
 }
 
 analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
@@ -264,7 +265,8 @@ analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
   df <- df %>% dplyr::group_by(!!!syms(group_var)) %>%
     dplyr::summarise(dplyr::across(dplyr::all_of(var), list(mean=~weighted.mean(., w=!!rlang::sym(col_weight), na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
     tidyr::pivot_longer(where(is.numeric)) %>% tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
-    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value)
+    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value) %>%
+    add_key(group_var)
 }
 
 mark_significance <- function(df=sum.hoh.gender, treshold=0.01){
