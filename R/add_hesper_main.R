@@ -182,7 +182,7 @@ add_hesper_main <- function(df,
     if (sum(!cols_priority %in% colnames(df))>0) stop("The following columns are not present in the dataframe: ", cols_priority[!cols_priority %in% colnames(df)])
     
     ## unite the thre priority columns to have one select multiple hesper priorities
-      df <- df %>% add.top.three(new_col = col_name_hesper_top_three, cols_unite = cols_priority)
+      df <- df %>% add_top_three(new_col = col_name_hesper_top_three, cols_unite = cols_priority)
 
     ### expand parent column top three priorities and priority without accounting for subset
     df <- df %>% expand_bin(c(col_name_hesper_top_three))

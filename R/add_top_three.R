@@ -8,7 +8,7 @@
 #' @export
 #' 
 
-add.top.three <- function(df, new_col, cols_unite){
+add_top_three <- function(df, new_col, cols_unite){
   df <- df %>%
     unite(!!sym(new_col), all_of(cols_unite), sep = " ", remove = F, na.rm = T) %>%
     mutate(!!sym(new_col) := ifelse(!!sym(new_col)=="", NA, str_replace_all(!!sym(new_col), "^ | $", "")))
