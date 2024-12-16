@@ -56,11 +56,11 @@ add_val_in_set_binaries <- function(
   cols_character,
   value_1,
   value_0,
-  value_na=NA,
-  value_default=NA,
-  replace = F,
-  name_suffix="binary",
-  sep="."
+  value_na = NA,
+  value_default = NA,
+  replace  =  F,
+  name_suffix = "binary",
+  sep = "."
 ) {
   
   ## if replace=T, force arguments name_suffix to "" and sep to ""
