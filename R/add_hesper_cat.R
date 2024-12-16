@@ -151,26 +151,22 @@ add_hesper_cat <- function(
   ## if there is only NAs across list_group[[cat]], the value should be set to NA 
   
   for (cat in list_group_cat){
-    df <- df %>% 
-      dplyr::mutate(all_serious_items := rowSums(dplyr::across(dplyr::any_of(unlist(unname(list_group))), ~ . %in% choice_serious), na.rm=T),
-             
-             n_valid := rowSums(dplyr::across(dplyr::any_of(list_group[[cat]]), ~ !. %in% choice_exclude)),
-             
-             !!paste0("nb_hesper_items_", list_group_name, ".", cat) := case_when(
+    df <- dplyr::mutate(
+      df, 
+      all_serious_items := rowSums(dplyr::across(dplyr::any_of(unlist(unname(list_group))), ~ . %in% choice_serious), na.rm=T),
+       n_valid := rowSums(dplyr::across(dplyr::any_of(list_group[[cat]]), ~ !. %in% choice_exclude)), !!paste0("nb_hesper_items_", list_group_name, ".", cat) := dplyr::case_when(
                n_valid == 0 ~ NA_real_, TRUE ~ rowSums(dplyr::across(dplyr::any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T)
              ),
-             
-             !!paste0("prop_hesper_items_", list_group_name, ".", cat) := !!sym(paste0("nb_hesper_items_", list_group_name, ".", cat)) / n_valid,
-             
-             !!paste0("overall_prop_hesper_", list_group_name, ".", cat) := !!sym(paste0("nb_hesper_items_", list_group_name, ".", cat)) / all_serious_items,
-             
-             !!paste0("at_least_one_hesper_item_", list_group_name, ".", cat) := case_when(
-               n_valid == 0 ~ NA_real_, TRUE ~ rowSums(dplyr::across(dplyr::any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T) > 0
-             )
-      ) 
+      !!paste0("prop_hesper_items_", list_group_name, ".", cat) := !!sym(paste0("nb_hesper_items_", list_group_name, ".", cat)) / n_valid,
+      !!paste0("overall_prop_hesper_", list_group_name, ".", cat) := !!sym(paste0("nb_hesper_items_", list_group_name, ".", cat)) / all_serious_items,
+      !!paste0("at_least_one_hesper_item_", list_group_name, ".", cat) := dplyr:: case_when(
+        n_valid == 0 ~ NA_real_,
+        .default = rowSums(dplyr::across(dplyr::any_of(list_group[[cat]]), ~. %in% c(choice_serious)), na.rm=T) > 0
+      )
+    ) 
   }
   
-  df <- df %>% dplyr::select(-n_valid)
+  df <- dplyr::select(df, -n_valid)
   
   return(df)
 }
