@@ -22,7 +22,7 @@ add_hesper_main(
   choice_na = "Not_applicable_to_household",
   cols_priority = c("hesper_priority_first", "hesper_priority_second",
     "hesper_priority_third"),
-  col_name_hesper_top_three = "hesper_top_three_priorities",
+  col_hesper_top_three = "hesper_top_three_priorities",
   col_gender = "gender",
   choices_male = "men",
   choices_female = "women",
@@ -33,10 +33,10 @@ add_hesper_main(
   choices_non_displaced = c("hosts"),
   hesper_item_displaced = c("hesper_displaced"),
   hesper_item_non_displaced = NULL,
-  add_binaries = T,
-  add_binaries_subset = T,
-  subset = T,
-  add_binaries_undefined = T
+  add_binaries = TRUE,
+  add_binaries_subset = TRUE,
+  subset = TRUE,
+  add_binaries_undefined = TRUE
 )
 }
 \arguments{
@@ -55,6 +55,8 @@ add_hesper_main(
 \item{choice_na}{character string representing the choice for not applicable to household}
 
 \item{cols_priority}{vector of three column names containing the first, second and third priority hesper items}
+
+\item{col_hesper_top_three}{character string representing the column name containing the three ordered priorities}
 
 \item{col_gender}{character string representing the column name containing the respondent's gender}
 
@@ -82,7 +84,7 @@ add_hesper_main(
 
 \item{subset}{logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population}
 
-\item{col_hesper_subset}{character string representing the column name containing the respondent's hesper items that are applicable only to a gender/displacement status subset. should match column names in the dataset}
+\item{add_binaries_undefined}{logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population}
 }
 \value{
 dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column

@@ -5,7 +5,7 @@
 \title{Add as many binaries than input columns, taking the value 1 if value in each column is inside a set a values}
 \usage{
 add_val_in_set_binaries(
-  data = df,
+  data,
   cols_character,
   value_1,
   value_0,
@@ -42,38 +42,4 @@ A data.table or data.frame with the binary columns added.
 Useful to create a set of dummy variables from a set of categorical variables if they are in a defined set of choices
 For HESPER package, can be used to create binaries for all HESPER items select one columns, to either record if it's a serious problem, undefined, serious problem with subset
 Additionnal argument can be used to add a suffix to the column names of the binary created
-}
-\examples{
-hesper_vars <- c("hesper_drinking_water", "hesper_food", "hesper_shelter", "hesper_toilet", "hesper_clean", "hesper_clothes_etc", "hesper_income_livelihood",
-                 "hesper_health", "hesper_distress", "hesper_safety", "hesper_education", "hesper_care", "hesper_support", "hesper_separation", "hesper_displaced", "hesper_information", "hesper_aid",
-                 "hesper_respect", "hesper_movement", "hesper_time", "hesper_law", "hesper_gbv", "hesper_drug", "hesper_mental_health", "hesper_care_community")
-  
-hesper_dat_comp <- hesper_dat |> 
-     ## Add HESPER binaries - global => prevalence of serious problem on all sample (regardless of subset or cleaning or undefined)
-     add_val_in_set_binaries(cols_character = hesper_vars, 
-                         value_1 = c("serious_problem"),
-                         value_0 = NULL,
-                         value_na = NULL,
-                         value_default = 0,
-                         replace = F, 
-                         name_suffix = "binary", 
-                         sep = ".") \%>\%
-     ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
-     add_val_in_set_binaries(cols_character = hesper_vars, 
-                             value_1 = c("serious_problem"),
-                             value_0 = c("no_serious_problem"),
-                             value_na = NULL,
-                             value_default = NA_integer_,
-                             replace = F, 
-                             name_suffix = "binary_subset", 
-                             sep = ".") \%>\%
-     ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices]
-     add_val_in_set_binaries(cols_character = hesper_vars, 
-                             value_1 = c("pnta", "dnk", "not_applicable"),
-                             value_0 = NULL,
-                             value_na = NULL,
-                             value_default = 0,
-                             replace = F, 
-                             name_suffix = "binary_undefined", 
-                             sep = ".")
 }

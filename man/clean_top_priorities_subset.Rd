@@ -2,7 +2,7 @@
 % Please edit documentation in R/clean_priorities_subset.R
 \name{clean_top_priorities_subset}
 \alias{clean_top_priorities_subset}
-\title{Clean top one/two/three priorities child binary columns with NA for subset of data}
+\title{This function replaces the top 1/2/3 binary columns (which correspond to choices) with \code{NA} for a specified subset of the data.}
 \usage{
 clean_top_priorities_subset(
   data,
@@ -31,19 +31,4 @@ A data frame or data table with the top 1/2/3 priority columns replaced with \co
 }
 \description{
 This function replaces the top 1/2/3 binary columns (which correspond to choices) with \code{NA} for a specified subset of the data.
-}
-\examples{
-
-## Expand the top first second and third priority columns into child binaries and then clean the top priorities child columns for the subset of data
-hesper_dat_clean <- hesper_dat \%>\% 
-  ## expand the top priorities columns to have binaries for each choice
-  expand_bin(c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third")) \%>\%
-  ## clean the top priorities child columns for the subset of data (standard list of subset and choices)
-  clean_top_priorities_subset(data = .,
-                              col_prio = c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third"))
-
-## check that it did clean the parent columns correctly:
-hesper_dat_clean \%>\% 
-  filter(pop_group \%in\% c("idp", "refugees")) \%>\% select(pop_group, contains("displaced")) \%>\% distinct
-
 }

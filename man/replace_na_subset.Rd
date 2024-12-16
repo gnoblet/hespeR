@@ -34,27 +34,3 @@ This function replaces binary columns (which correspond to choices) with \code{N
 It is typically used when expanding top priority columns into child binary columns, ensuring that child columns for
 choices that do not apply to a subset are set to \code{NA}.
 }
-\examples{
-# Create a fake dataset
-subset_col <- "pop_group"
-subset_values <- c("displaced", "host")
-sep <- "."
-col_parent <- "hesper_top_three_priorities"
-choice_vals <- c("hesper_displaced", "hesper_food", "hesper_water", "hesper_info_displaced")
-df <- data.frame(
-  pop_group = sample(subset_values, 100, replace = TRUE),
-  hesper_top_three_priorities = sample(c("hesper_displaced", "hesper_food", "hesper_water"), 100, replace = TRUE),
-  hesper_top_three_priorities.hesper_displaced = sample(0:1, 100, replace = TRUE),
-  hesper_top_three_priorities.hesper_food = sample(0:1, 100, replace = TRUE),
-  hesper_top_three_priorities.hesper_water = sample(0:1, 100, replace = TRUE),
-  hesper_top_three_priorities.hesper_info_displaced = sample(0:1, 100, replace = TRUE)
-)
-
-# Use the replace_na_subset function
-data \%>\%
-  replace_na_subset(subset_col = "pop_group", 
-                    subset_value = "displaced", 
-                    sep = ".", 
-                    col_parent = "hesper_top_three_priorities", 
-                    choice_vals = c("hesper_displaced", "hesper_info_displaced", "cleaning_displaced"))
-}

@@ -10,8 +10,7 @@
 #' @return dataframe with new column
 #' @export
 #' 
-
-add_top_three <- function(df, new_varn, vars_unite){
+add_top_three <- function(df, new_var, vars_unite){
 
   #------ Checks
 
@@ -36,6 +35,8 @@ add_top_three <- function(df, new_varn, vars_unite){
     checkmate::assertClass(df[[var]], "character", .var.name = var)
   }
 
+  #------ Do stuff
+  
   df[, (new_var) := do.call(paste, c(.SD, sep = " ", na.rm = TRUE)), .SDcols = vars_unite]
   df[, (new_var) := data.table::fifelse(
     get(new_var) == "", 

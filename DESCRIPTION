@@ -16,7 +16,7 @@ Config/testthat/edition: 3
 URL: https://gnoblet.github.io/hespeR/
 Imports: 
     dplyr,
-    srvyr,
+    purrr,
     stringr,
     tidyr,
     checkmate,

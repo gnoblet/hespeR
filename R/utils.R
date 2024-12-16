@@ -165,41 +165,41 @@ colors_reach <- c(
 
 
 
-## quick utils function to run weighted analysis
-analyse_ci <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
-  if (any(!var %in% colnames(df))) {
-    print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
-    var <- var[var %in% colnames(df)]
-  } 
+# ## quick utils function to run weighted analysis
+# analyse_ci <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
+#   if (any(!var %in% colnames(df))) {
+#     print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
+#     var <- var[var %in% colnames(df)]
+#   } 
   
-  df <- df |> 
-    srvyr::as_survey_design(weights=!!rlang::sym(col_weight), strata=!!rlang::sym(col_strata)) |> srvyr::group_by(!!!syms(group_var)) 
+#   df <- df |> 
+#     srvyr::as_survey_design(weights=!!rlang::sym(col_weight), strata=!!rlang::sym(col_strata)) |> srvyr::group_by(!!!syms(group_var)) 
   
-  df <- df |> 
-    srvyr::summarise(srvyr::across(dplyr::all_of(var), list(mean=~srvyr::survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) |> 
-    dplyr::rename_with(.fn = ~stringr::str_replace_all(., c("_(?=(low|upp))"="\\/"))) |> 
-    tidyr::pivot_longer(where(is.numeric)) |> tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) |> 
-    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) |> tidyr::pivot_wider(names_from = fn, values_from = value)
-}
+#   df <- df |> 
+#     srvyr::summarise(srvyr::across(dplyr::all_of(var), list(mean=~srvyr::survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) |> 
+#     dplyr::rename_with(.fn = ~stringr::str_replace_all(., c("_(?=(low|upp))"="\\/"))) |> 
+#     tidyr::pivot_longer(where(is.numeric)) |> tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) |> 
+#     tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) |> tidyr::pivot_wider(names_from = fn, values_from = value)
+# }
 
-analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
-  if (any(!var %in% colnames(df))) {
-    print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
-    var <- var[var %in% colnames(df)]
-  }
-  df <- df |> dplyr::group_by(!!!syms(group_var)) |> 
-    dplyr::summarise(dplyr::across(dplyr::all_of(var), list(mean=~weighted.mean(., w=!!rlang::sym(col_weight), na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) |> 
-    tidyr::pivot_longer(where(is.numeric)) |> tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) |> 
-    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) |> tidyr::pivot_wider(names_from = fn, values_from = value)
-}
+# analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
+#   if (any(!var %in% colnames(df))) {
+#     print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
+#     var <- var[var %in% colnames(df)]
+#   }
+#   df <- df |> dplyr::group_by(!!!syms(group_var)) |> 
+#     dplyr::summarise(dplyr::across(dplyr::all_of(var), list(mean=~weighted.mean(., w=!!rlang::sym(col_weight), na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) |> 
+#     tidyr::pivot_longer(where(is.numeric)) |> tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) |> 
+#     tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) |> tidyr::pivot_wider(names_from = fn, values_from = value)
+# }
 
-mark_significance <- function(df=sum.hoh.gender, treshold=0.01){
-  df |> dplyr::group_by(country, question, choice) |> 
-    dplyr::mutate(no_overlap=ifelse(max(`mean/low`)>min(`mean/upp`) & mean(mean)>treshold, "*", "")) %>%
-    dplyr::arrange(country, question, choice)
-}
+# mark_significance <- function(df=sum.hoh.gender, treshold=0.01){
+#   df |> dplyr::group_by(country, question, choice) |> 
+#     dplyr::mutate(no_overlap=ifelse(max(`mean/low`)>min(`mean/upp`) & mean(mean)>treshold, "*", "")) %>%
+#     dplyr::arrange(country, question, choice)
+# }
 
-first_up <- function(x) {
-  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
-  return(x)
-}
+# first_up <- function(x) {
+#   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+#   return(x)
+# }
