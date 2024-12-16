@@ -2,8 +2,8 @@
 
 #' Add a new column with the top three priorities
 #' @param df input dataframe
-#' @param new_col name of the new column
-#' @param cols_unite vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities
+#' @param new_var name of the new column
+#' @param vars_unite vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities
 #' 
 #' @importFrom rlang `:=`
 #' 
@@ -11,9 +11,40 @@
 #' @export
 #' 
 
-add_top_three <- function(df, new_col, cols_unite){
-  df <- df |> 
-    tidyr::unite(!!sym(new_col), dplyr::all_of(cols_unite), sep = " ", remove = F, na.rm = T) |> 
-    dplyr::mutate(!!sym(new_col) := ifelse(!!rlang::sym(new_col)=="", NA, stringr::str_replace_all(!!sym(new_col), "^ | $", "")))
+add_top_three <- function(df, new_varn, vars_unite){
+
+  #------ Checks
+
+  # df is a dataframe
+  checkmate::assertDataFrame(df)
+
+  # df is not data.table, convert it
+  if (!checkmate::testDataTable(df)) {
+    rlang::warn("Converting df to data.table.")
+    data.table::setDT(df)
+  }
+
+  # new_var is character of length 1
+  checkmate::assertCharacter(new_var, len = 1, min.chars = 1)
+
+  # vars_unite is a character vector
+  checkmate::assertCharacter(vars_unite, min.chars = 1)
+
+  # all vars are in df and of class character
+  for (var in vars_unite) {
+    if (!(var %in% colnames(df))) rlang::abort(paste0("Variable ", var, " not found in df."))
+    checkmate::assertClass(df[[var]], "character", .var.name = var)
+  }
+
+  df[, (new_var) := do.call(paste, c(.SD, sep = " ", na.rm = TRUE)), .SDcols = vars_unite]
+  df[, (new_var) := data.table::fifelse(
+    get(new_var) == "", 
+    NA_character_, 
+    stringr::str_trim(get(new_var)))]
+  
+  return(df)
+
 }
 
+
+  
