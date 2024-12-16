@@ -149,9 +149,10 @@ add_hesper_main <- function(df,
   }
   
   if (add_binaries_subset){
+    hesper_item_subset <- c(hesper_item_male, hesper_item_female, hesper_item_displaced, hesper_item_non_displaced)
     df <- df %>% 
       ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
-      add_val_in_set_binaries(cols_character = col_items, 
+      add_val_in_set_binaries(cols_character = hesper_item_subset, 
                               value_1 = c(choice_serious),
                               value_0 = c(choice_no_serious),
                               value_na = NULL,
