@@ -117,8 +117,8 @@ add_hesper_main <- function(df,
   
   ## check that any of arguments in this vector c(hesper_item_male, hesper_item_female, hesper_item_displaced, hesper_item_non_displaced) are contained in col_items or throw a message
   for (val in c(hesper_item_male, hesper_item_female, hesper_item_displaced, hesper_item_non_displaced)){
-    if(!val %in% col_items){
-        stop(paste("The hesper item", val, "is not present in the col_items vector"))
+    if(!val %in% unique(unlist(df[, cols_priority, with=F]))){
+        warning(paste("The hesper item", val, "is not present in the priority columns", cols_priority))
     }
   }
   
