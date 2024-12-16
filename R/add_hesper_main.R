@@ -96,7 +96,7 @@ add_hesper_main <- function(df,
   
   ## check that all choice_applicable val are in hesper items unique values in the dataset, vectorized (one check for all items, one message by choice val)
   for (val in choice_applicable){
-    if(!val %in% df[, lapply(.SD, function(x) unique(na.omit(x))), .SDcols = col_items]){
+    if(!val %in% unlist(unique(df[, col_items, with=F]))){
       stop(paste("The choice value", val, "is not present in the dataset hesper items"))
     }
   }
@@ -117,8 +117,8 @@ add_hesper_main <- function(df,
   
   ## check that any of arguments in this vector c(hesper_item_male, hesper_item_female, hesper_item_displaced, hesper_item_non_displaced) are contained in col_items or throw a message
   for (val in c(hesper_item_male, hesper_item_female, hesper_item_displaced, hesper_item_non_displaced)){
-    if(!val %in% col_items){
-        stop(paste("The hesper item", val, "is not present in the col_items vector"))
+    if(!val %in% unique(unlist(df[, cols_priority, with=F]))){
+        warning(paste("The hesper item", val, "is not present in the priority columns", cols_priority))
     }
   }
   
@@ -182,7 +182,7 @@ add_hesper_main <- function(df,
     if (sum(!cols_priority %in% colnames(df))>0) stop("The following columns are not present in the dataframe: ", cols_priority[!cols_priority %in% colnames(df)])
     
     ## unite the thre priority columns to have one select multiple hesper priorities
-      df <- df %>% add.top.three(new_col = col_name_hesper_top_three, cols_unite = cols_priority)
+      df <- df %>% add_top_three(new_col = col_name_hesper_top_three, cols_unite = cols_priority)
 
     ### expand parent column top three priorities and priority without accounting for subset
     df <- df %>% expand_bin(c(col_name_hesper_top_three))
