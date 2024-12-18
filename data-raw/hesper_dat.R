@@ -1,34 +1,34 @@
 set.seed(1234)
 
-# Variables and options 
+# Variables and options
 
 ## hesper
-hesper_vars <- c("hesper_drinking_water", 
-                 "hesper_food", 
-                 "hesper_shelter", 
-                 "hesper_toilet", 
-                 "hesper_clean", 
+hesper_vars <- c("hesper_drinking_water",
+                 "hesper_food",
+                 "hesper_shelter",
+                 "hesper_toilet",
+                 "hesper_clean",
                  "hesper_clean_female",
-                 "hesper_clothes_etc", 
+                 "hesper_clothes_etc",
                  "hesper_income_livelihood",
                  "hesper_health",
-                 "hesper_health_care_male", 
+                 "hesper_health_care_male",
                  "hesper_health_care_female",
-                 "hesper_distress", 
-                 "hesper_safety", 
-                 "hesper_education", 
-                 "hesper_care", 
-                 "hesper_support", 
-                 "hesper_separation", 
-                 "hesper_displaced", 
+                 "hesper_distress",
+                 "hesper_safety",
+                 "hesper_education",
+                 "hesper_care",
+                 "hesper_support",
+                 "hesper_separation",
+                 "hesper_displaced",
                  "hesper_information",
                  "hesper_aid",
-                 "hesper_respect", 
+                 "hesper_respect",
                  "hesper_movement",
-                 "hesper_time", 
+                 "hesper_time",
                  "hesper_law",
-                 "hesper_gbv", 
-                 "hesper_drug", 
+                 "hesper_gbv",
+                 "hesper_drug",
                  "hesper_mental_health",
                  "hesper_care_community",
                  "hesper_other")
@@ -50,20 +50,20 @@ l <- list(
 )
 
 # Prepare datasets
-hesper_df <- lapply(hesper_vars, \(x) x = sample(hesper_opts, 10000, replace = TRUE)) |> 
-  setNames(hesper_vars) |> 
+hesper_df <- lapply(hesper_vars, \(x) x = sample(hesper_opts, 10000, replace = TRUE)) |>
+  setNames(hesper_vars) |>
   as.data.frame()
 
-gender_df <- lapply(gender_vars, \(x) x = sample(gender_opts, 10000, replace = TRUE)) |> 
-  setNames(gender_vars) |> 
+gender_df <- lapply(gender_vars, \(x) x = sample(gender_opts, 10000, replace = TRUE)) |>
+  setNames(gender_vars) |>
   as.data.frame()
-dis_df <- lapply(dis_vars, \(x) x = sample(dis_opts, 10000, replace = TRUE)) |> 
-  setNames(dis_vars) |> 
+dis_df <- lapply(dis_vars, \(x) x = sample(dis_opts, 10000, replace = TRUE)) |>
+  setNames(dis_vars) |>
   as.data.frame()
 
 
 # Bind all and add key id
-hesper_dat <- cbind(gender_df, dis_df, hesper_df) 
+hesper_dat <- cbind(gender_df, dis_df, hesper_df)
 library(data.table)
 setDT(hesper_dat)
 hesper_dat[, uuid := .I]
@@ -76,7 +76,7 @@ hesper_dat[,
     # If not empty, sample
     if (length(probs)) paste(sample(probs, min(3, length(probs))), collapse = " ") else NA_character_
   },
-  by = "uuid", 
+  by = "uuid",
   .SDcols = hesper_vars]
 
 # Split by " " and add to the priority columns

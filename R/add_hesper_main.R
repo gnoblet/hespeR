@@ -82,12 +82,11 @@ add_hesper_main <- function(df,
                             hesper_item_non_displaced = NULL,
                             add_binaries = TRUE,
                             add_binaries_subset = TRUE,
-                            subset = TRUE,
                             add_binaries_undefined = TRUE
                             ){
 
   ## check that all columns are present in dataframe and print the non matching columns
-  col_not_matching <- col_items |> unname() |> unlist() |> purrr::keep(!. %in% colnames(df))
+  col_not_matching <- col_items |> unname() |> unlist() |> purrr::keep(\(x) !x %in% colnames(df))
   if(length(col_not_matching) > 0){warning(paste("The following columns are not present in the dataframe:\n", paste0(col_not_matching, collapse="; ")))}
 
   ## all response choices that should not be counted in the total nb of items
@@ -156,7 +155,7 @@ add_hesper_main <- function(df,
       ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
       add_val_in_set_binaries(cols_character = hesper_item_subset,
                               value_1 = c(choice_serious),
-                              value_0 = c(choice_no_serious),
+                              value_0 = c(choice_no_serious, choice_na, choice_dnk, choice_pnta),
                               value_na = NULL,
                               value_default = NA_integer_,
                               replace = F,
@@ -167,12 +166,12 @@ add_hesper_main <- function(df,
   ## Add binary columns across all HESPER items recording if response is undefined
   if (add_binaries_undefined){
     df <- df %>%
-      ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices]
+      ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices] calculated on subset
       add_val_in_set_binaries(cols_character = col_items,
                               value_1 = c(choice_na, choice_dnk, choice_pnta),
-                              value_0 = NULL,
-                              value_na = NULL,
-                              value_default = 0,
+                              value_0 = c(choice_serious, choice_no_serious),
+                              value_na = NA_integer_,
+                              value_default = NULL,
                               replace = F,
                               name_suffix = "binary_undefined",
                               sep = ".")
@@ -185,73 +184,68 @@ add_hesper_main <- function(df,
     if (sum(!cols_priority %in% colnames(df))>0) stop("The following columns are not present in the dataframe: ", cols_priority[!cols_priority %in% colnames(df)])
 
     ## unite the thre priority columns to have one select multiple hesper priorities
-    df <-  add_top_three(df, new_var = col_hesper_top_three, vars_unite = cols_priority)
+    df <-  add_top3(df, new_var = col_hesper_top_three, vars_unite = cols_priority)
 
     ### expand parent column top three priorities and priority without accounting for subset
-    df <- expand_bin(df, c(col_hesper_top_three))
-    # df <- df %>% expand_bin(c(cols_priority)) ## for now commented
+    df <- expand_bin(df, c(col_hesper_top_three, cols_priority))
 
-    ### ensure that skip logic are respected
-    ### to avoid having binaries with zero for items that are not applicable to the respondent
+    ### ensure that skip logic are respected to avoid having binaries with zero for items that are not applicable to the respondent
+    # mutate all subset binaries with _subset at the end before reworking them, only for subset present in the function's arguments
+    col_hesper_male <- if (is_not_empty(hesper_item_male)) paste0(col_hesper_top_three, ".", hesper_item_male, "_subset") else NULL
+    col_hesper_female <- if (is_not_empty(hesper_item_female)) paste0(col_hesper_top_three, ".", hesper_item_female, "_subset") else NULL
+    col_hesper_displaced <- if (is_not_empty(hesper_item_displaced)) paste0(col_hesper_top_three, ".", hesper_item_displaced, "_subset") else NULL
+    col_hesper_non_displaced <- if (is_not_empty(hesper_item_non_displaced)) paste0(col_hesper_top_three, ".", hesper_item_non_displaced, "_subset") else NULL
+    col_hesper_subset <- c(col_hesper_male, col_hesper_female, col_hesper_displaced, col_hesper_non_displaced)
+    col_hesper_item_subset <- col_hesper_subset |> stringr::str_replace_all("_subset$", "")
 
-    if (subset){
+    ## create new variables with _subset name suffix for any match of col_hesper_item_subset with data.table syntax
+    df[, paste0(col_hesper_item_subset, "_subset") := .SD, .SDcols = col_hesper_item_subset]
 
-      # mutate all subset binaries with _subset at the end before reworking them, only for subset present in the function's arguments
-      col_hesper_male <- if (is_not_empty(hesper_item_male)) paste0(col_hesper_top_three, ".", hesper_item_male, "_subset") else NULL
-      col_hesper_female <- if (is_not_empty(hesper_item_female)) paste0(col_hesper_top_three, ".", hesper_item_female, "_subset") else NULL
-      col_hesper_displaced <- if (is_not_empty(hesper_item_displaced)) paste0(col_hesper_top_three, ".", hesper_item_displaced, "_subset") else NULL
-      col_hesper_non_displaced <- if (is_not_empty(hesper_item_non_displaced)) paste0(col_hesper_top_three, ".", hesper_item_non_displaced, "_subset") else NULL
-      col_hesper_subset <- c(col_hesper_male, col_hesper_female, col_hesper_displaced, col_hesper_non_displaced)
-      col_hesper_item_subset <- col_hesper_subset |> stringr::str_replace_all("_subset$", "")
-
-      ## create new variables with _subset name suffix for any match of col_hesper_item_subset with data.table syntax
-      df[, paste0(col_hesper_item_subset, "_subset") := .SD, .SDcols = col_hesper_item_subset]
-
-      ## replace any male specific top three priority child columns with NA for relevant respondents
-      if (is_not_empty(hesper_item_male)) {
-        df <- replace_na_subset(
-          df,
-          subset_col = col_gender,
-          subset_value = choices_male,
-          sep = ".",
-          col_parent = col_hesper_top_three,
-          choice_vals = paste0(hesper_item_male, "_subset")
-        )
-      }
-      if (is_not_empty(hesper_item_female)) {
-        df <- replace_na_subset(
-          df,
-          subset_col = col_gender,
-          subset_value = choices_female,
-          sep = ".",
-          col_parent = col_hesper_top_three,
-          choice_vals = paste0(hesper_item_female, "_subset")
-        )
-      }
-      if (is_not_empty(hesper_item_displaced)) {
-        df <- replace_na_subset(
-          df,
-          subset_col = col_displacement,
-          subset_value = choices_displaced,
-          sep = ".",
-          col_parent = col_hesper_top_three,
-          choice_vals = paste0(hesper_item_displaced, "_subset")
-        )
-      }
-      if (is_not_empty(hesper_item_non_displaced)) {
-        df <- replace_na_subset(
-          df,
-          subset_col = col_hesper_non_displaced,
-          subset_value = choices_non_displaced,
-          sep = ".",
-          col_parent = col_hesper_top_three,
-          choice_vals = paste0(hesper_item_non_displaced, "_subset")
-        )
-      }
-
+    ## replace any male specific top three priority child columns with NA for relevant respondents
+    if (is_not_empty(hesper_item_male)) {
+      df <- replace_na_subset(
+        df,
+        subset_col = col_gender,
+        subset_value = choices_male,
+        sep = ".",
+        col_parent = col_hesper_top_three,
+        choice_vals = paste0(hesper_item_male, "_subset")
+      )
+    }
+    if (is_not_empty(hesper_item_female)) {
+      df <- replace_na_subset(
+        df,
+        subset_col = col_gender,
+        subset_value = choices_female,
+        sep = ".",
+        col_parent = col_hesper_top_three,
+        choice_vals = paste0(hesper_item_female, "_subset")
+      )
+    }
+    if (is_not_empty(hesper_item_displaced)) {
+      df <- replace_na_subset(
+        df,
+        subset_col = col_displacement,
+        subset_value = choices_displaced,
+        sep = ".",
+        col_parent = col_hesper_top_three,
+        choice_vals = paste0(hesper_item_displaced, "_subset")
+      )
+    }
+    if (is_not_empty(hesper_item_non_displaced)) {
+      df <- replace_na_subset(
+        df,
+        subset_col = col_hesper_non_displaced,
+        subset_value = choices_non_displaced,
+        sep = ".",
+        col_parent = col_hesper_top_three,
+        choice_vals = paste0(hesper_item_non_displaced, "_subset")
+      )
     }
 
   }
+
+
 
   return(df)
 
