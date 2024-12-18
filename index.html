@@ -82,6 +82,21 @@
 <li><p><code><a href="reference/clean_top_priorities_subset.html">clean_top_priorities_subset()</a></code>: clean top one/two/three priorities child binary columns with NA for subset of data. Needs helper functions: <code><a href="reference/replace_na_subset.html">replace_na_subset()</a></code>, <code><a href="reference/is_not_empty.html">is_not_empty()</a></code></p></li>
 </ol>
 </div>
+<div class="section level2">
+<h2 id="handling-subsets-and-missing-values">Handling subsets and missing values<a class="anchor" aria-label="anchor" href="#handling-subsets-and-missing-values"></a>
+</h2>
+<p>There are 3 metrics we are interested in. The two first metrics are applied on the data as is. In case a specific item is only asked to a subset of respondents (skip logic), the metrics are as is, meaning calculated on the subset. 1) Prevalence of serious problems for each Hesper item, i.e. % of individuals/households that reported a serious problem 2) Prevalence of undefined, i.e. % of individuals/households that reported not applicable (not_applicable), prefer not to answer (pnta) or do not know (dnk)</p>
+<p>THe last metric is applied to all households</p>
+<ol start="3" style="list-style-type: decimal">
+<li>(complex) Prevalence of serious problems for each Hesper item over all respondents (regardless of subsets)</li>
+</ol>
+<div class="section level3">
+<h3 id="details-on-initial-wrangling">Details on initial wrangling<a class="anchor" aria-label="anchor" href="#details-on-initial-wrangling"></a>
+</h3>
+<p>For metrics (1) and (2): - ensure that items asked only to a subset of respondents are cleaned, i.e. if <code>subset_var</code> is in a set of values <code>subset_vals</code>, then <code>hesper_var</code> is set to <code>NA_character_</code> - if all hesper items are NA, then <code>hesper_var</code> is set to <code>NA_character_</code> - add binaries for each metric</p>
+<p>For metrics 3: - add new binaries (<code>hesper_var_overall</code>) for all hesper items regardless of subsets that take 1 if <code>hesper_var</code> is “serious_problem” and 0 otherwise - if all hesper items are NA, then <code>hesper_var</code> is set to <code>NA_character_</code></p>
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
