@@ -127,7 +127,6 @@ choice_host = c("hosts")
 ## Use add_hesper_main function to calculate nb hesper serious problems, binary columns for all items, with subset when relevant
 ## unite the three priority columns to have a single select multiple column with space separator and its child binary columns
 ## Create as many child binary columns as subset choice (relevant for sub-population group only) set as NA when choice not available for respondent
-
 subset_list <- list(
   displaced =list(
     hesper_vars = val.hesper.displaced,
