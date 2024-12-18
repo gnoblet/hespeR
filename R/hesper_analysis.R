@@ -128,31 +128,20 @@ choice_host = c("hosts")
 ## unite the three priority columns to have a single select multiple column with space separator and its child binary columns
 ## Create as many child binary columns as subset choice (relevant for sub-population group only) set as NA when choice not available for respondent
 
-# data <- data %>%
-#   add_hesper_main(col_items = col.hesp,
-#                   choice_serious = parameters$choice_serious,
-#                   choice_no_serious = parameters$choice_no_serious,
-#                   choice_dnk = parameters$choice_dnk,
-#                   choice_pnta = parameters$choice_pnta,
-#                   choice_na = parameters$choice_na,
-#                   cols_priority = col.prio,
-#                   col_hesper_top_three = "hesper_top_three_priorities",
-#                   col_gender = parameters$col_gender,
-#                   choices_male = parameters$choice_male,
-#                   choices_female = parameters$choice_female,
-#                   hesper_item_male = val.hesper.men,
-#                   hesper_item_female = val.hesper.women,
-#                   col_displacement = parameters$col_displacement,
-#                   choices_displaced = parameters$choice_displaced,
-#                   choices_non_displaced = parameters$choice_host,
-#                   hesper_item_displaced = val.hesper.displaced,
-#                   hesper_item_non_displaced = val.hesper.host,
-#                   add_binaries = T,
-#                   add_binaries_subset = T,
-#                   subset = T,
-#                   add_binaries_undefined=T)
+subset_list <- list(
+  displaced =list(
+    hesper_vars = val.hesper.displaced,
+    subset_var = parameters$col_displacement,
+    subset_vals = parameters$choice_displaced
+  ),
+  resp_gender_female =list(
+    hesper_vars = val.hesper.women,
+    subset_var = parameters$col_gender,
+    subset_vals = parameters$choice_female
+  )
+)
 
-data <- data %>%
+data <- data |>
   add_hesper_bin(
     hesper_vars = col.hesp,
     hesper_serious_problem = parameters$choice_serious,
@@ -161,20 +150,14 @@ data <- data %>%
     hesper_pnta = parameters$choice_pnta,
     hesper_na = parameters$choice_na,
     sv = T,
-    sv_l =list(
-      displaced =list(
-        hesper_vars = val.hesper.displaced,
-        subset_var = parameters$col_displacement,
-        subset_vals = parameters$choice_displaced
-      ),
-      resp_gender_female =list(
-        hesper_vars = val.hesper.women,
-        subset_var = parameters$col_gender,
-        subset_vals = parameters$choice_female
-      )
-    )
+    sv_l = subset_list
   )
 
+## add top three priorities + top 1 2 3 child columns, cleaned for skip logic
+data <- data |>
+  add_hesper_top3(vars_priority = col.prio,
+                  var_hesper_top_three = "hesper_top_three_priorities",
+                  sv_l = subset_list)
 
 ### use HESPER functions to calculate composite indicators based on categories regrouping hesper items
 ## ensure that you update the choice serious / choice no serious arguments

@@ -52,18 +52,18 @@ clean_top_priorities_subset <- function(
   }
 
   ## Check that the col_prio are in data
-  check_vars_in_df(df, col_prio)
+  check_vars_in_df(data, col_prio)
 
-  # sv_l is a named list
-  checkmate::assertList(sv_l, names = "unique")
+  # sv_l_val is a named list
+  checkmate::assertList(sv_l_val, names = "unique")
 
-  # sv_l items has three items only that are named hesper_vars, subset_var and subset_vals:
-  check_sv_l(sv_l, df, hesper_vars)
+  # sv_l_val items has three items only that are named hesper_vars, subset_var and subset_vals:
+  check_sv_l(sv_l_val, data, hesper_vars)
 
-  # replace_na_subset for each sv_l as above with the new list structure to clean chid binary for all relevant subset
-  for (i in seq_along(sv_l)){
-    sv <- sv_l[[i]]
-    name_subset <- names(sv_l)[i]
+  # replace_na_subset for each sv_l_val as above with the new list structure to clean chid binary for all relevant subset
+  for (i in seq_along(sv_l_val)){
+    sv <- sv_l_val[[i]]
+    name_subset <- names(sv_l_val)[i]
 
     message(paste0("Cleaning the top priorities child columns for the subset '", name_subset,"' corresponding to: ", sv$subset_var, " in '", paste0(sv$subset_vals, collapse = ", "),
                    "' for the following hesper choices: ", sv$hesper_vars))

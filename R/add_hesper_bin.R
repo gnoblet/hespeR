@@ -128,7 +128,38 @@ add_hesper_bin<- function(
   # Expand bin
   df <- expand_bin(df, hesper_vars)
 
+  ## This will expand binaries for all hesper items, for all choices (no added value to classic select one analysis?)
+  ## Percentages calculated with these binaries would still be over subset excluding skipped respondents + data set to NA during cleaning
+
   # Iterate over subset
+  # if (sv) {
+  #   for (sv_el in sv_l) {
+  #
+  #     df <- recode_subset_to_missing(
+  #       df,
+  #       vars = sv_el$hesper_vars,
+  #       subset_var = sv_el$subset_var,
+  #       subset_vals = sv_el$subset_vals,
+  #       suffix = "_subset"
+  #     )
+  #     ## From what I understand, this would clean the var to ensure the skip logic is respected (set NA if respondent is not in the subset)
+  #     ## would be good to use this step to recode not as NA but as "skipped", so that then the overall prevalence is calculated over all respondents - data set to NA during cleaning?
+  #     df <- expand_bin(
+  #       df,
+  #       vars = paste0(sv_el$hesper_vars, "_subset")
+  #     )
+  #     ## Again here, it would expand the binary for all hesper items, for all choices, for the subset only (after ensuring skip logic consistency)
+  #   }
+  # }
+
+  ## Proposed change: use recode_subset_to_missing() using additional feature => recode to "NA_skip" instead of NA to distinguish from cleaning?
+  ## Then use the cleaned data to calculate all prevalences using add_val_set_in_binaries()
+
+  # 1. save original columns before skip logic cleaning with name suffix "_raw"
+  hesper_vars_subset <- unlist(map(sv_l, ~.x$hesper_vars))
+  df[, paste0(hesper_vars_subset, "_raw"):=.SD, .SDcols =c(hesper_vars_subset)]
+
+  # 2. clean skip logic
   if (sv) {
     for (sv_el in sv_l) {
 
@@ -137,33 +168,48 @@ add_hesper_bin<- function(
         vars = sv_el$hesper_vars,
         subset_var = sv_el$subset_var,
         subset_vals = sv_el$subset_vals,
-        suffix = "_subset"
+        suffix = NULL,
+        missing_code = "NA_skip"
       )
 
-      df <- expand_bin(
-        df,
-        vars = paste0(sv_el$hesper_vars, "_subset")
-      )
     }
   }
 
-  if (sv){
-    for (sv_el in sv_l) {
+  ## Based on data cleaned for subset with NA_skip when skip logic, compute binaries for the three metrics
+  ## Could be done maybe through other function => basically a fcase mapping choices to 1, 0 and NA.
 
-      df <- recode_subset_to_missing(
-        df,
-        vars = sv_el$hesper_vars,
-        subset_var = sv_el$subset_var,
-        subset_vals = sv_el$subset_vals,
-        suffix = "_subset"
-      )
+  ## Add HESPER binaries - global => prevalence of serious problem on all sample (not considering NA apart from NA_skip corresponding to skip logic from the tool)
+  df <- df |>
+    add_val_in_set_binaries(cols_character = hesper_vars,
+                            value_1 = c(hesper_serious_problem),
+                            value_0 = c(hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na, "NA_skip"),
+                            value_na = NULL,
+                            value_default = 0,
+                            replace = F,
+                            name_suffix = "binary",
+                            sep = ".")
 
-      df <- expand_bin(
-        df,
-        vars = paste0(sv_el$hesper_vars, "_subset")
-      )
-    }
-  }
+  # Add HESPER binaries - subset => prevalence of serious problem on subset only, excluding skipped respondents and NA
+  df <- df |>
+    add_val_in_set_binaries(cols_character = hesper_vars,
+                            value_1 = c(hesper_serious_problem),
+                            value_0 = c(hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na),
+                            value_na = NULL,
+                            value_default = 0,
+                            replace = F,
+                            name_suffix = "binary_subset",
+                            sep = ".")
+
+  # Add HESPER binaries - undefined => prevalence of undefined responses on subset only, excluding skipped respondents and NA
+  df <- df |>
+    add_val_in_set_binaries(cols_character = hesper_vars,
+                            value_1 = c(hesper_dnk, hesper_pnta, hesper_na),
+                            value_0 = c(hesper_serious_problem, hesper_no_serious_problem),
+                            value_na = NULL,
+                            value_default = 0,
+                            replace = F,
+                            name_suffix = "binary_undefined",
+                            sep = ".")
 
 
   return(df)

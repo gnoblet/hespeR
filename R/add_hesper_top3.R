@@ -52,45 +52,50 @@ add_hesper_top3 <- function(df,
   check_dupes(vars_priority, "The following vars are duplicated: ")
 
   # check that there are three vars in vars_priority
-  if (length(hesper_vars) != 3) {
+  if (length(vars_priority) != 3) {
     rlang::abort("vars_priority should contain three variables names.")
   }
 
   # all vars are in df
-  check_vars_in_df(vars_priority)
+  check_vars_in_df(df, vars_priority)
 
   # hesper_vars are character vars in df
   check_vars_class_in_df(df, vars_priority, "character")
 
-  # check that col_gender col_displacement are character
-  checkmate::assert_character(c(col_gender, col_displacement))
+  # sv_l is a named list
+  checkmate::assertList(sv_l, names = "unique")
 
-  # check that c(choices_male, choices_female) are character
-  checkmate::assert_character(c(choices_male, choices_female, choices_displaced, choices_non_displaced))
+  # sv_l items has three items only that are named hesper_vars, subset_var and subset_vals:
+  check_sv_l(sv_l, df, hesper_vars)
 
-  # check that c(choices_male, choices_female) are contained in df in col col_gender
-  check_vars_in_set(df, col_gender, c(choices_male, choices_female))
-
-  # check that c(choices_displaced, choices_non_displaced) are contained in df in col_displacement
-  check_vars_in_set(df, col_displacement, c(choices_displaced, choices_non_displaced))
-
-  # check that hesper_item_female, hesper_item_male, hesper_item_displaced, hesper_item_non_displaced are character
-  checkmate::assert_character(c(hesper_item_female, hesper_item_male, hesper_item_displaced, hesper_item_non_displaced))
-
-  # check that hesper_item_female, hesper_item_male, hesper_item_displaced, hesper_item_non_displaced are in df
-  check_vars_in_df(df, c(hesper_item_female, hesper_item_male, hesper_item_displaced, hesper_item_non_displaced))
+  # # check that col_gender col_displacement are character
+  # checkmate::assert_character(c(col_gender, col_displacement))
+  #
+  # # check that c(choices_male, choices_female) are character
+  # checkmate::assert_character(c(choices_male, choices_female, choices_displaced, choices_non_displaced))
+  #
+  # # check that c(choices_male, choices_female) are contained in df in col col_gender
+  # check_vars_in_set(df, col_gender, c(choices_male, choices_female))
+  #
+  # # check that c(choices_displaced, choices_non_displaced) are contained in df in col_displacement
+  # check_vars_in_set(df, col_displacement, c(choices_displaced, choices_non_displaced))
+  #
+  # # check that hesper_item_female, hesper_item_male, hesper_item_displaced, hesper_item_non_displaced are character
+  # checkmate::assert_character(c(hesper_item_female, hesper_item_male, hesper_item_displaced, hesper_item_non_displaced))
+  #
+  # # check that hesper_item_female, hesper_item_male, hesper_item_displaced, hesper_item_non_displaced are in df
+  # check_vars_in_df(df, c(hesper_item_female, hesper_item_male, hesper_item_displaced, hesper_item_non_displaced))
 
   ## collapse priority columns to have a select multiple column, create dummy binary child columns (with & without subset) & ensure that skip logic is respected for top three binaries
 
   ## unite the thre priority columns to have one select multiple hesper priorities
-  df <-  add_top_three(df, new_var = col_hesper_top_three, vars_unite = vars_priority)
+  df <-  add_top3(df, new_var = var_hesper_top_three, vars_unite = vars_priority)
 
   ### expand parent column top three priorities and priority 1/2/3 without accounting for subset
-  df <- expand_bin(df, c(vars_priority, col_hesper_top_three))
+  df <- expand_bin(df, c(vars_priority, var_hesper_top_three))
 
   ### For each subset clean the child columns ensure that skip logic are respected for top three to avoid having binaries with zero for items that are not applicable to the respondent
-
-  df <- clean_top_priorities_subset(data = df,col_prio = c(vars_priority, var_hesper_top_three), sv_l_val=sv_l)
+  df <- clean_top_priorities_subset(data = df, col_prio = c(vars_priority, var_hesper_top_three), sv_l_val=sv_l)
 
   return(df)
 

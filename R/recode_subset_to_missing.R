@@ -1,4 +1,4 @@
-recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix = NULL) {
+recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix = NULL, missing_code=NULL) {
 
   #------ Checks
 
@@ -42,9 +42,16 @@ recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix =
     new_vars <- paste0(vars, suffix)
   }
 
+  # if missing_code not null with character value, use it instead of NA_character_
+  if (!is.null(missing_code)) {
+    checkmate::assertCharacter(missing_code, len = 1, min.chars = 1, any.missing = FALSE)
+  } else {
+    missing_code <- NA_character_
+  }
+
   # recode
   df[,
-    (new_vars) := lapply(.SD, \(x) ifelse(!get(subset_var) %in% subset_vals, NA_character_, x)),
+    (new_vars) := lapply(.SD, \(x) ifelse(!get(subset_var) %in% subset_vals, missing_code, x)),
     .SDcols = vars]
 
   return(df)
