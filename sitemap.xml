@@ -4,10 +4,15 @@
 <url><loc>https://gnoblet.github.io/hespeR/authors.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/index.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/news/index.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/add_binaries_from_set.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/reference/add_hesper_cat.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/reference/add_hesper_main.html</loc></url>
-<url><loc>https://gnoblet.github.io/hespeR/reference/add_top_three.html</loc></url>
-<url><loc>https://gnoblet.github.io/hespeR/reference/add_val_in_set_binaries.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/add_top3.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/check_dupes.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/check_sv_l.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/check_vars_class_in_df.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/check_vars_in_df.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/check_vars_in_set.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/reference/clean_top_priorities_subset.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/reference/drop_undefined.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/reference/expand_bin.html</loc></url>
@@ -15,5 +20,10 @@
 <url><loc>https://gnoblet.github.io/hespeR/reference/index.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/reference/is_not_empty.html</loc></url>
 <url><loc>https://gnoblet.github.io/hespeR/reference/replace_na_subset.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/sum_vals_across.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/warn_removal.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/warn_replace.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/warn_var_msg.html</loc></url>
+<url><loc>https://gnoblet.github.io/hespeR/reference/warn_var_no_vals.html</loc></url>
 </urlset>
 
