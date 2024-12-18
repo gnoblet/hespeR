@@ -155,7 +155,7 @@ add_hesper_main <- function(df,
       ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
       add_val_in_set_binaries(cols_character = hesper_item_subset,
                               value_1 = c(choice_serious),
-                              value_0 = c(choice_no_serious),
+                              value_0 = c(choice_no_serious, choice_na, choice_dnk, choice_pnta),
                               value_na = NULL,
                               value_default = NA_integer_,
                               replace = F,
@@ -166,12 +166,12 @@ add_hesper_main <- function(df,
   ## Add binary columns across all HESPER items recording if response is undefined
   if (add_binaries_undefined){
     df <- df %>%
-      ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices]
+      ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices] calculated on subset
       add_val_in_set_binaries(cols_character = col_items,
                               value_1 = c(choice_na, choice_dnk, choice_pnta),
-                              value_0 = NULL,
-                              value_na = NULL,
-                              value_default = 0,
+                              value_0 = c(choice_serious, choice_no_serious),
+                              value_na = NA_integer_,
+                              value_default = NULL,
                               replace = F,
                               name_suffix = "binary_undefined",
                               sep = ".")

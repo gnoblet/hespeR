@@ -147,6 +147,25 @@ add_hesper_bin<- function(
     }
   }
 
+  if (sv){
+    for (sv_el in sv_l) {
+
+      df <- recode_subset_to_missing(
+        df,
+        vars = sv_el$hesper_vars,
+        subset_var = sv_el$subset_var,
+        subset_vals = sv_el$subset_vals,
+        suffix = "_subset"
+      )
+
+      df <- expand_bin(
+        df,
+        vars = paste0(sv_el$hesper_vars, "_subset")
+      )
+    }
+  }
+
+
   return(df)
 
 }

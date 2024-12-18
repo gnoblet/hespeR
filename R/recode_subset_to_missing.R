@@ -35,7 +35,7 @@ recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix =
 
   #------ Recode
 
-  # prepare new_vars 
+  # prepare new_vars
   if (is.null(suffix)) {
     new_vars <- vars
   } else {
@@ -43,8 +43,8 @@ recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix =
   }
 
   # recode
-  df[, 
-    (new_vars) := lapply(.SD, \(x) ifelse(get(subset_var) %in% subset_vals, NA_character_, x)),
+  df[,
+    (new_vars) := lapply(.SD, \(x) ifelse(!get(subset_var) %in% subset_vals, NA_character_, x)),
     .SDcols = vars]
 
   return(df)
