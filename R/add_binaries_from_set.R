@@ -14,8 +14,8 @@
 #' @param sep A character vector: separator used to add name suffix to original column names
 #' @return A df.table or df.frame with the binary columns added.    
 #' 
-#' @importFrom df.table `:=`
-#' @importFrom df.table `.SD`
+#' @importFrom data.table `:=`
+#' @importFrom data.table `.SD`
 #' 
 #' @export
 #' 

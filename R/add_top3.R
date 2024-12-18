@@ -5,8 +5,6 @@
 #' @param new_var name of the new column
 #' @param vars_unite vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities
 #' 
-#' @importFrom rlang `:=`
-#' 
 #' @return dataframe with new column
 #' @export
 #' 
