@@ -9,6 +9,8 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ## list all scripts in R
 map(list.files(pattern = ".R$", full.names = TRUE) %>% str_subset("hesper_analysis", T), source) %>% invisible
 
+## just for now, to run old function and then analyse
+source("archive/add_val_in_set_binaries.R")
 source("../data-raw/hesper_dat.R")
 
 ### 1. Read data, survey, labels and define column names, choices and define parameters  ----
@@ -82,8 +84,8 @@ label="What are the top three priorities from the selected HESPER serious proble
 ## extract the hesper items choices from the key_hesper
 ## to be updated if there are more/less subset questions in the hesper tool
 val.hesper <-  key_hesper %>% pull(choice_name)
-val.hesper.men <- key_hesper %>% filter(subset == "men") %>% pull(choice_name)
-val.hesper.women <- key_hesper %>% filter(subset == "women") %>% pull(choice_name)
+val.hesper.men <- key_hesper %>% filter(subset == "male") %>% pull(choice_name)
+val.hesper.women <- key_hesper %>% filter(subset == "female") %>% pull(choice_name)
 val.hesper.displaced <- key_hesper %>% filter(subset == "displaced") %>% pull(choice_name)
 val.hesper.host <- key_hesper %>% filter(subset == "host") %>% pull(choice_name)
 
@@ -134,10 +136,10 @@ choice_host = c("hosts")
 #                   choice_pnta = parameters$choice_pnta,
 #                   choice_na = parameters$choice_na,
 #                   cols_priority = col.prio,
-#                   col_name_hesper_top_three = "hesper_top_three_priorities",
+#                   col_hesper_top_three = "hesper_top_three_priorities",
 #                   col_gender = parameters$col_gender,
-#                   choice_male = parameters$choice_male,
-#                   choice_female = parameters$choice_female,
+#                   choices_male = parameters$choice_male,
+#                   choices_female = parameters$choice_female,
 #                   hesper_item_male = val.hesper.men,
 #                   hesper_item_female = val.hesper.women,
 #                   col_displacement = parameters$col_displacement,
@@ -149,6 +151,30 @@ choice_host = c("hosts")
 #                   add_binaries_subset = T,
 #                   subset = T,
 #                   add_binaries_undefined=T)
+
+data <- data %>%
+  add_hesper_bin(
+    hesper_vars = col.hesp,
+    hesper_serious_problem = parameters$choice_serious,
+    hesper_no_serious_problem = parameters$choice_no_serious,
+    hesper_dnk = parameters$choice_dnk,
+    hesper_pnta = parameters$choice_pnta,
+    hesper_na = parameters$choice_na,
+    sv = T,
+    sv_l =list(
+      displaced =list(
+        hesper_vars = val.hesper.displaced,
+        subset_var = parameters$col_displacement,
+        subset_vals = parameters$choice_displaced
+      ),
+      resp_gender_female =list(
+        hesper_vars = val.hesper.women,
+        subset_var = parameters$col_gender,
+        subset_vals = parameters$choice_female
+      )
+    )
+  )
+
 
 ### use HESPER functions to calculate composite indicators based on categories regrouping hesper items
 ## ensure that you update the choice serious / choice no serious arguments
@@ -167,32 +193,32 @@ data <- data %>%
 # data %>% fwrite("../data_hesper.csv", row.names = F)
 
 ## Get all child columns for select one questions to then aggregate select one with binary columns only
-data_expanded <- data %>% expand_bin(so.questions, remove.new.bin = T, remove.other.bin = F)
+data_expanded <- data %>% expand_bin(so.questions, remove_new_bin = T, remove_other_bin = F)
 
 ### clean the top first/second/third priority questions depending on the subsets
 # define the general param_subset list for displacement and gender dimensions, for any of the two possible sub-choices
 list_param_subset <- list(
-"pop_group" = list("displaced" = list("subset_val" = parameters$choice_displaced,
-"col_val" = c(val.hesper.displaced)),
-"non_displaced" = list("subset_val" = parameters$choice_host,
-"col_val" = c(val.hesper.host))),
-"resp_gender" = list("female" = list("subset_val" = c(parameters$choice_female),
-"col_val" = c(val.hesper.women)),
-"male" = list("subset_val" = c(parameters$choice_male),
-"col_val" = c(val.hesper.men)))
+  "pop_group" = list("displaced" = list("subset_val" = parameters$choice_displaced,
+                                        "col_val" = c(val.hesper.displaced)),
+                     "non_displaced" = list("subset_val" = parameters$choice_host,
+                                            "col_val" = c(val.hesper.host))),
+  "resp_gender" = list("female" = list("subset_val" = c(parameters$choice_female),
+                                       "col_val" = c(val.hesper.women)),
+                       "male" = list("subset_val" = c(parameters$choice_male),
+                                     "col_val" = c(val.hesper.men)))
 )
 
 ## filter to keep only subset that are present in the version of the tool
 filtered_list <- list_param_subset %>%
-map(~ .x %>% keep(~ is_not_empty(.x$col_val))) %>% ## keep only subset values for which there is a hesper specific item (i.e., with a skip logic)
-keep(~ length(.x) > 0) ## ensure that there is at least one subset
+  map(~ .x %>% keep(~ is_not_empty(.x$col_val))) %>% ## keep only subset values for which there is a hesper specific item (i.e., with a skip logic)
+  keep(~ length(.x) > 0) ## ensure that there is at least one subset
 
 ## clean the hesper first, second and third priority child columns [i.e. replace with NA the relevant choices for the subset that have not been asked the hesper item]
 data_expanded <- data_expanded %>%
-clean_top_priorities_subset(
-col_prio = c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third"),
-subset_cols_vals = filtered_list
-)
+  clean_top_priorities_subset(
+    col_prio = c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third"),
+    subset_cols_vals = filtered_list
+  )
 
 
 #### NOTE for GUIGUI : starting this point, it's the old messy script =)
@@ -217,13 +243,13 @@ var_analyse <- c(binary_var, binary_var2, binary_var3, binary_prio)
 
 ## Label for the groups for each section/group in key_hesper, summarise to have the name of the components and the number
 sum_key <- function(key=key_hesper %>% filter(subset!="women"), col_group="Section Wide"){
-key %>%
-group_by(group_cat=!!sym(col_group)) %>%
-summarise(group=col_group, nb_items=n(),
-item_name=paste0(name, collapse=", "),
-question_name=paste0(Question, collapse=", "),
-severity_criteria=paste0(`Severity Criteria`, collapse=", "),
-label=paste0(name, collapse="\n")) %>% ungroup %>% relocate(group, .before=1)
+  key %>%
+    group_by(group_cat=!!sym(col_group)) %>%
+    summarise(group=col_group, nb_items=n(),
+              item_name=paste0(name, collapse=", "),
+              question_name=paste0(Question, collapse=", "),
+              severity_criteria=paste0(`Severity Criteria`, collapse=", "),
+              label=paste0(name, collapse="\n")) %>% ungroup %>% relocate(group, .before=1)
 }
 
 key_section_wide <- key_hesper %>% sum_key(col_group="Section Wide") %>% mutate(group="section_wide")
@@ -235,36 +261,36 @@ key_all <- key_all %>% bind_rows(key_all %>% mutate(group=paste0(group, "_priori
 
 ## Function to format hesper result table to incorporate labels for all composite indicators
 format_hesper <- function(df=res_hesper,
-df_key_hesper=key_hesper,
-col_lab = "label::french",
-col_prio = c(col.prio, "hesper_top_three_priorities")){
-df %>%
-mutate(group = case_when(str_detect(question, "item|overall_prop") ~ str_replace_all(question, ".*item(|s)_|overall_prop_hesper_", ""),
-str_detect(choice, "subset$") ~ "subset", T ~ NA_character_),
-metric= case_when(str_detect(question, group) ~ str_replace_all(question, paste0("_", group), ""),
-str_detect(choice, "binary") ~ "binary", question %in% c("nb_hesper", "prop_hesper") ~ paste0(question, ".", choice),
-T ~ NA_character_),
-choice = case_when(str_detect(choice, "binary") ~ question, str_detect(choice, "subset") ~ str_replace_all(choice, "_subset$", ""), T ~ choice),
-question = case_when(metric=="binary" & choice %in% col.hesp ~ "hesper_serious_problem", T ~ question),
-type = case_when(question %in% col_prio | str_detect(group, "_priority$") ~ "priority",
-(!str_detect(group, "_priority$") & !is.na(group)) | question == "hesper_serious_problem" ~ "serious_problem"),
-.before="choice") %>%
-left_join(survey %>% select(name, question_label=!!sym(col_lab)), by=c("question"="name")) %>%
-left_join(survey_combined %>% select(name, choice_name, choice_label), by=c("question"="name", "choice"="choice_name")) %>%
-left_join(key_all %>% select(-label, -item_name), by=c("group", "choice"="group_cat")) %>%
-mutate(choice_label = coalesce(choice_label, question_name),
-metric = coalesce(metric, choice),
-choice=ifelse(metric=="undefined", question, choice),
-question=ifelse(metric=="undefined", "item_undefined", question)) %>%
-select(-question_name) %>%
-left_join(ind_lab_hesper, by=c("metric")) %>% mutate(question_label=coalesce(question_label, metric_label)) %>% select(-metric_label) %>%
-left_join(df_key_hesper %>% select(choice=name, new_choice=choice_name)) %>% mutate(choice=coalesce(new_choice, choice)) %>% select(-new_choice) %>%
-left_join(df_key_hesper %>% select(choice=choice_name, item_label=Question, criteria=`Severity Criteria`)) %>%
-mutate(choice_label = coalesce(item_label, choice_label), severity_criteria = coalesce(severity_criteria, criteria)) %>% select(-item_label, -criteria) %>%
-mutate(question_label = case_when(
-question == "hesper_serious_problem" ~ "Hesper - Serious problem reported",
-question == "hesper_top_three_priorities" ~ "Out of these problems, which are the three most serious problems for the household?",
-T ~ question_label))
+                          df_key_hesper=key_hesper,
+                          col_lab = "label::french",
+                          col_prio = c(col.prio, "hesper_top_three_priorities")){
+  df %>%
+    mutate(group = case_when(str_detect(question, "item|overall_prop") ~ str_replace_all(question, ".*item(|s)_|overall_prop_hesper_", ""),
+                             str_detect(choice, "subset$") ~ "subset", T ~ NA_character_),
+           metric= case_when(str_detect(question, group) ~ str_replace_all(question, paste0("_", group), ""),
+                             str_detect(choice, "binary") ~ "binary", question %in% c("nb_hesper", "prop_hesper") ~ paste0(question, ".", choice),
+                             T ~ NA_character_),
+           choice = case_when(str_detect(choice, "binary") ~ question, str_detect(choice, "subset") ~ str_replace_all(choice, "_subset$", ""), T ~ choice),
+           question = case_when(metric=="binary" & choice %in% col.hesp ~ "hesper_serious_problem", T ~ question),
+           type = case_when(question %in% col_prio | str_detect(group, "_priority$") ~ "priority",
+                            (!str_detect(group, "_priority$") & !is.na(group)) | question == "hesper_serious_problem" ~ "serious_problem"),
+           .before="choice") %>%
+    left_join(survey %>% select(name, question_label=!!sym(col_lab)), by=c("question"="name")) %>%
+    left_join(survey_combined %>% select(name, choice_name, choice_label), by=c("question"="name", "choice"="choice_name")) %>%
+    left_join(key_all %>% select(-label, -item_name), by=c("group", "choice"="group_cat")) %>%
+    mutate(choice_label = coalesce(choice_label, question_name),
+           metric = coalesce(metric, choice),
+           choice=ifelse(metric=="undefined", question, choice),
+           question=ifelse(metric=="undefined", "item_undefined", question)) %>%
+    select(-question_name) %>%
+    left_join(ind_lab_hesper, by=c("metric")) %>% mutate(question_label=coalesce(question_label, metric_label)) %>% select(-metric_label) %>%
+    left_join(df_key_hesper %>% select(choice=name, new_choice=choice_name)) %>% mutate(choice=coalesce(new_choice, choice)) %>% select(-new_choice) %>%
+    left_join(df_key_hesper %>% select(choice=choice_name, item_label=Question, criteria=`Severity Criteria`)) %>%
+    mutate(choice_label = coalesce(item_label, choice_label), severity_criteria = coalesce(severity_criteria, criteria)) %>% select(-item_label, -criteria) %>%
+    mutate(question_label = case_when(
+      question == "hesper_serious_problem" ~ "Hesper - Serious problem reported",
+      question == "hesper_top_three_priorities" ~ "Out of these problems, which are the three most serious problems for the household?",
+      T ~ question_label))
 }
 
 ### ANALYSIS
@@ -291,23 +317,23 @@ list(result_hesper=result_hesper, res_hesper_group=res_hesper_group) %>% write_x
 
 ## Formatting function to pivot wider priority needs results
 format_top_three <- function(df = result_hesper,
-col_priority = all_var_parent){
-df %>%
-filter(! question %in% "nb_hesper") %>%
-filter(str_detect(question, paste0(col_priority, collapse="|")) | metric=="binary" | metric %in% "undefined") %>%
-mutate(choice_subset=case_when(group=="subset" ~ paste0(choice, "_", group), T ~ choice), .after="choice") %>%
-select(-nb_items, -question_label, -metric, -type)  %>% mutate(stat=paste0(count, " (", 100*round(mean,3), "%)")) %>%
-pivot_wider(names_from = question, values_from = any_of(c("stat", "mean", "count", "n", "mean/low", "mean/upp"))) %>%
-rename_with(~str_replace_all(., "(stat_hesper_|stat_.*_hesper_|^stat_)", ""))
+                             col_priority = all_var_parent){
+  df %>%
+    filter(! question %in% "nb_hesper") %>%
+    filter(str_detect(question, paste0(col_priority, collapse="|")) | metric=="binary" | metric %in% "undefined") %>%
+    mutate(choice_subset=case_when(group=="subset" ~ paste0(choice, "_", group), T ~ choice), .after="choice") %>%
+    select(-nb_items, -question_label, -metric, -type)  %>% mutate(stat=paste0(count, " (", 100*round(mean,3), "%)")) %>%
+    pivot_wider(names_from = question, values_from = any_of(c("stat", "mean", "count", "n", "mean/low", "mean/upp"))) %>%
+    rename_with(~str_replace_all(., "(stat_hesper_|stat_.*_hesper_|^stat_)", ""))
 }
 
 top_three_formatted <- result_hesper %>% format_top_three
 top_three_formatted_gender <- result_hesper_gender %>% format_top_three %>% arrange(-mean_hesper_serious_problem) %>%
-pivot_wider(names_from = !!sym(parameters$col_gender), values_from = -c(!!sym(parameters$col_gender):severity_criteria))
+  pivot_wider(names_from = !!sym(parameters$col_gender), values_from = -c(!!sym(parameters$col_gender):severity_criteria))
 top_three_formatted_pop <- result_hesper_pop %>% format_top_three %>% arrange(-mean_hesper_serious_problem) %>%
-pivot_wider(names_from = !!sym(parameters$col_displacement), values_from = -c(!!sym(parameters$col_displacement):severity_criteria))
+  pivot_wider(names_from = !!sym(parameters$col_displacement), values_from = -c(!!sym(parameters$col_displacement):severity_criteria))
 top_three_formatted_region <- result_hesper_region %>% format_top_three %>% arrange(-mean_hesper_serious_problem) %>%
-pivot_wider(names_from = !!sym(col_geo), values_from = -c(!!sym(col_geo):severity_criteria))
+  pivot_wider(names_from = !!sym(col_geo), values_from = -c(!!sym(col_geo):severity_criteria))
 
 list(top_serious=top_three_formatted, top_serious_gender=top_three_formatted_gender,
 top_three_formatted_pop=top_three_formatted_pop, top_three_formatted_region=top_three_formatted_region) %>%

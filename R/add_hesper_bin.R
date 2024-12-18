@@ -49,7 +49,7 @@ add_hesper_bin<- function(
     )
   )
 ){
-  
+
   #------ Checks
 
   # df is a dataframe
@@ -87,7 +87,7 @@ add_hesper_bin<- function(
   checkmate::assertCharacter(hesper_dnk, len = 1, min.chars = 1, any.missing = FALSE)
   checkmate::assertCharacter(hesper_pnta, len = 1, min.chars = 1, any.missing = FALSE)
   checkmate::assertCharacter(hesper_na, len = 1, min.chars = 1, any.missing = FALSE)
-  
+
   # hesper_vars only contains values in hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta and hesper_na
   check_vars_in_set(df, hesper_vars, c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na))
 
@@ -109,17 +109,17 @@ add_hesper_bin<- function(
   hesper_any <- c(hesper_serious_problem, hesper_no_serious_problem)
   hesper_exclude <- c(hesper_dnk, hesper_pnta, hesper_na)
 
-  # warn if there is no occurence of hesper_applicable 
-  # wonder if we, instead, write down something to produce a quick quality checks 
+  # warn if there is no occurence of hesper_applicable
+  # wonder if we, instead, write down something to produce a quick quality checks
   # warn if there is no occurence of hesper_exclude
 
-        
+
   #------ Finally, compose
 
   # Add number of serious problem, etc.
   df <- sum_vals_across(df, hesper_vars, hesper_serious_problem, "hesper_serious_problem_n")
   df <- sum_vals_across(df, hesper_vars, hesper_no_serious_problem, "hesper_no_serious_problem_n")
-  df <- sum_vals_across(df, hesper_vars, hesper_serious_problem, "hesper_any_n") 
+  df <- sum_vals_across(df, hesper_vars, hesper_serious_problem, "hesper_any_n")
   df <- sum_vals_across(df, hesper_vars, hesper_applicable, "hesper_applicable_n")
   df <- sum_vals_across(df, hesper_vars, hesper_exclude, "hesper_exclude_n")
   df <- sum_vals_across(df, hesper_vars, hesper_dnk, "hesper_dnk_n")
@@ -138,7 +138,7 @@ add_hesper_bin<- function(
         subset_var = sv_el$subset_var,
         subset_vals = sv_el$subset_vals,
         suffix = "_subset"
-      ) 
+      )
 
       df <- expand_bin(
         df,

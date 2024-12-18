@@ -9,22 +9,8 @@
 #' @param choice_pnta character string representing the choice for decline to answer
 #' @param choice_na character string representing the choice for not applicable to household
 #' @param vars_priority vector of three column names containing the first, second and third priority hesper items
-#' @param col_hesper_top_three character string representing the column name containing the three ordered priorities
-#' @param col_gender character string representing the column name containing the respondent's gender
-#' @param choices_male character string representing the choice corresponding to male respondent gender
-#' @param choices_female character string representing the choice corresponding to female respondent gender
-#' @param hesper_item_male vector of two choice names corresponding to the hesper items specific for male respondent
-#' @param hesper_item_female vector of two choice names corresponding to the hesper items specific for female respodent
-#' @param col_displacement character string representing the column name containing the respondent's displacement status
-#' @param choices_displaced character string representing the choice corresponding to displaced respondent
-#' @param choices_non_displaced character string representing the choice corresponding to not displaced respondent
-#' @param hesper_item_displaced vector of two choices name coresponding to the hesper items specific for displaced respondent
-#' @param hesper_item_non_displaced vector of two choices name coresponding to the hesper items specific for not displaced respondent
-#' @param add_binaries logical value indicating whether to add binary variables for each hesper item
-#' @param add_binaries_subset logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population
-#' @param subset logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population
-#' @param add_binaries_undefined logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population
-#'
+#' @param var_hesper_top_three character string representing the new column name containing the three ordered priorities collapsed into one select multiple column
+#' @param sv_l list of named lists for each element should be named and containing in hesper_vars the list of hesper item(s) asked only to the subset, in subset_var the name of the column which defines the subset (for example population_group or respondent_gender) and in subset_vals the set of values contained in subset_var defining the relevant subset
 #' @return dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
 #'
 #' @export
@@ -34,16 +20,18 @@ add_hesper_top3 <- function(df,
                                               "hesper_priority_second",
                                               "hesper_priority_third"),
                             var_hesper_top_three="hesper_top_three_priorities",
-                            col_gender = "gender",
-                            choices_male = "men",
-                            choices_female = "women",
-                            hesper_item_male = NULL,
-                            hesper_item_female = c("hesper_clean_women"),
-                            col_displacement = "pop_group",
-                            choices_displaced = c("refugees", "idp"),
-                            choices_non_displaced = c("hosts"),
-                            hesper_item_displaced = c("hesper_displaced"),
-                            hesper_item_non_displaced = NULL
+                            sv_l = list(
+                              displaced = list(
+                                hesper_vars = c("hesper_displaced"),
+                                subset_var  = "pop_group",
+                                subset_vals = c("refugees", "idp")
+                              ),
+                              resp_gender_female = list(
+                                hesper_vars = c("hesper_clean_female"),
+                                subset_var  = "resp_gender",
+                                subset_vals = c("female")
+                              )
+                            )
 ){
 
   #------ Checks
@@ -97,69 +85,12 @@ add_hesper_top3 <- function(df,
   ## unite the thre priority columns to have one select multiple hesper priorities
   df <-  add_top_three(df, new_var = col_hesper_top_three, vars_unite = vars_priority)
 
-  ### expand parent column top three priorities and priority without accounting for subset
-  df <- expand_bin(df, c(col_hesper_top_three))
+  ### expand parent column top three priorities and priority 1/2/3 without accounting for subset
+  df <- expand_bin(df, c(vars_priority, col_hesper_top_three))
 
-  ### ensure that skip logic are respected for top three to avoid having binaries with zero for items that are not applicable to the respondent
+  ### For each subset clean the child columns ensure that skip logic are respected for top three to avoid having binaries with zero for items that are not applicable to the respondent
 
-  # mutate all subset binaries with _subset at the end before reworking them, only for subset present in the function's arguments
-  col_hesper_male <- if (is_not_empty(hesper_item_male)) paste0(col_hesper_top_three, ".", hesper_item_male, "_subset") else NULL
-  col_hesper_female <- if (is_not_empty(hesper_item_female)) paste0(col_hesper_top_three, ".", hesper_item_female, "_subset") else NULL
-  col_hesper_displaced <- if (is_not_empty(hesper_item_displaced)) paste0(col_hesper_top_three, ".", hesper_item_displaced, "_subset") else NULL
-  col_hesper_non_displaced <- if (is_not_empty(hesper_item_non_displaced)) paste0(col_hesper_top_three, ".", hesper_item_non_displaced, "_subset") else NULL
-  col_hesper_subset <- c(col_hesper_male, col_hesper_female, col_hesper_displaced, col_hesper_non_displaced)
-  col_hesper_item_subset <- col_hesper_subset |> stringr::str_replace_all("_subset$", "")
-
-  ## create new variables with _subset name suffix for any match of col_hesper_item_subset with data.table syntax
-  df[, paste0(col_hesper_item_subset, "_subset") := .SD, .SDcols = col_hesper_item_subset]
-
-  # replace any male specific top three priority child columns with NA for relevant respondents
-  if (is_not_empty(hesper_item_male)) {
-    df <- replace_na_subset(
-      df,
-      subset_col = col_gender,
-      subset_value = choices_male,
-      sep = ".",
-      col_parent = col_hesper_top_three,
-      choice_vals = paste0(hesper_item_male, "_subset")
-    )
-  }
-
-  # replace any female specific top three priority child columns with NA for relevant respondents
-  if (is_not_empty(hesper_item_female)) {
-    df <- replace_na_subset(
-      df,
-      subset_col = col_gender,
-      subset_value = choices_female,
-      sep = ".",
-      col_parent = col_hesper_top_three,
-      choice_vals = paste0(hesper_item_female, "_subset")
-    )
-  }
-
-  # replace any displaced specific top three priority child columns with NA for relevant respondents
-  if (is_not_empty(hesper_item_displaced)) {
-    df <- replace_na_subset(
-      df,
-      subset_col = col_displacement,
-      subset_value = choices_displaced,
-      sep = ".",
-      col_parent = col_hesper_top_three,
-      choice_vals = paste0(hesper_item_displaced, "_subset")
-    )
-  }
-
-  # replace any non displaced specific top three priority child columns with NA for relevant respondents
-  if (is_not_empty(hesper_item_non_displaced)) {
-    df <- replace_na_subset(
-      df,
-      subset_col = col_hesper_non_displaced,
-      subset_value = choices_non_displaced,
-      sep = ".",
-      col_parent = col_hesper_top_three,
-      choice_vals = paste0(hesper_item_non_displaced, "_subset")
-    )
-  }
+  df <- clean_top_priorities_subset(data = df,col_prio = c(vars_priority, var_hesper_top_three), sv_l_val=sv_l)
 
   return(df)
 
