@@ -1,78 +1,24 @@
+warn_replace <- function(df, vars) {
 
-paste.remove.na <- function(...){return(trimws(gsub("NA", "", paste(...))))}
-split.order.c <- function(x){paste(unique(sort(stringr::str_split(x, " ")[[1]])), collapse=" ")}
-reorder.select.multiple <- function(x){lapply(x, split.order.c) %>% unlist}
-# reorder.select.multiple <- function(x) {
-#   sapply(x, function(element) {
-#     if (stringr::str_detect(element, " ")) {
-#       split.order.c(element)
-#     } else {
-#       element
-#     }
-#   })
-# }
-
-expand.select.one <- function(df, var, val.parent.na=NA){
-  unique <- df %>% dplyr::pull(!!rlang::sym(var)) %>% unique %>% na.omit %>% as.character
-  lapply(unique,
-         function(val) {
-           bin.col <- paste0(var, ".", val)
-           df <<- df %>% 
-             dplyr::mutate(!!rlang::sym(bin.col) := dplyr::case_when(!!rlang::sym(var) %in% val.parent.na ~ NA_real_, 
-                                                !!rlang::sym(var) == val ~ 1,
-                                                TRUE ~ 0), .after=!!rlang::sym(var))
-         })
-  return(df)
+    # Remove from df the names.bin binary columns if they exist, and warn for replacement
+    vars_in_lgl <- vars %in% colnames(df)
+    if (any(vars_in_lgl)){
+      vars_in <- vars[vars_in_lgl]
+      rlang::warn(paste0("Variable(s) ", paste(vars_in, collapse = ", "), " already present in df. They will be replaced."))
+    }
 }
 
-expand.select.one.vec <- function(df, x=c()){
-  lapply(x, function(var) {df <<- df %>% expand.select.one(var)})
-  return(df)
+warn_removal <- function(df, vars) {
+
+  # Remove from df the names.bin binary columns if they exist, and warn for removal
+  vars_in_lgl <- vars %in% colnames(df)
+  if (any(vars_in_lgl)){
+    vars_in <- vars[vars_in_lgl]
+    rlang::warn(paste0("Variable(s) ", paste(vars_in, collapse = ", "), " will be removed."))
+  }
 }
 
 
-collapse.select.multiple <- function(df, cols, name=unique(gsub("(\\.|__|/).*","",cols))){
-  if (sum(!cols %in% colnames(df))>0) print("some binary columns are not present in the dataset")
-  if (length(name)>1) stop("Cannot find unique name for the parent column from the binary columns.")
-  if (sum(unlist(list(df[,cols]>1)), na.rm = T)>1) stop("Not binary variable.")
-  
-  cols <- sort(cols)
-  var.parent <- name
-  df <- df %>% dplyr::mutate(!!rlang::sym(var.parent) := NA_character_)
-  lapply(cols, function(c){
-    df <<- df %>% 
-      dplyr::mutate(!!rlang::sym(var.parent) := dplyr::case_when(
-        !!rlang::sym(c) > 0 & !!rlang::sym(c) <= 1 ~ paste.remove.na(!!rlang::sym(var.parent), gsub(paste0("^", var.parent, "(\\.|__)"), "", c)),
-        TRUE ~ !!rlang::sym(var.parent)
-      )
-      )
-  })
-  df <- df %>% dplyr::mutate(!!rlang::sym(var.parent) := reorder.select.multiple(!!rlang::sym(var.parent)))
-  return(df)
-}
-
-
-expand.select.multiple <- function(df, var, val.parent.na=NA){
-  unique <- df %>% dplyr::pull(!!rlang::sym(var)) %>% str_split(" ") %>% unlist %>% unique %>% na.omit %>% as.character
-  unique <- unique[!unique %in% ""]
-  lapply(unique,
-         function(val) {
-           bin.col <- paste0(var, ".", val)
-           df <<- df %>% 
-             dplyr::dplyr::mutate(!!rlang::sym(bin.col) := dplyr::case_when(!!rlang::sym(var) %in% val.parent.na ~ NA_real_, 
-                                                       stringr::str_detect(!!rlang::sym(var), paste0("(^| )", 
-                                                                                     stringr::str_replace_all(val, c("\\("="\\\\\\(", "\\)"="\\\\\\)", "\\'"="\\\\\\'", "\\/"="\\\\\\/")), 
-                                                                                     "($| )")) ~ 1,
-                                                       TRUE ~ 0), .after=!!rlang::sym(var))
-         })
-  return(df)
-}
-
-
-expand.select.multiple.vec <- function(df, x=c(),...){
-  lapply(x, function(var) {df <<- df %>% expand.select.multiple(var,...)})
-  return(df)
-}
 
 colors_reach <- c(
   main_red = "#EE5859",
@@ -219,36 +165,63 @@ colors_reach <- c(
 
 
 
-## quick utils function to run weighted analysis
-analyse_ci <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
-  if (any(!var %in% colnames(df))) {
-    print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
-    var <- var[var %in% colnames(df)]
-  } 
-  
-  df <- df %>% 
-    srvyr::as_survey_design(weights=!!rlang::sym(col_weight), strata=!!rlang::sym(col_strata)) %>% srvyr::dplyr::group_by(!!!syms(group_var)) 
-  
-  df <- df %>% 
-    srvyr::summarise(srvyr::across(srvyr::all_of(var), list(mean=~srvyr::survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
-    dplyr::rename_with(.fn = ~stringr::str_replace_all(., c("_(?=(low|upp))"="\\/"))) %>% 
-    tidyr::pivot_longer(where(is.numeric)) %>% tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
-    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value)
-}
+# ## quick utils function to run weighted analysis
+# analyse_ci <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
+#   if (any(!var %in% colnames(df))) {
+#     print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
+#     var <- var[var %in% colnames(df)]
+#   }
 
-analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
-  if (any(!var %in% colnames(df))) {
-    print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
-    var <- var[var %in% colnames(df)]
-  }
-  df <- df %>% dplyr::group_by(!!!syms(group_var)) %>%
-    dplyr::summarise(dplyr::across(dplyr::all_of(var), list(mean=~weighted.mean(., w=!!rlang::sym(col_weight), na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
-    tidyr::pivot_longer(where(is.numeric)) %>% tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
-    tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value)
-}
+#   df <- df |>
+#     srvyr::as_survey_design(weights=!!rlang::sym(col_weight), strata=!!rlang::sym(col_strata)) |> srvyr::group_by(!!!syms(group_var))
 
-mark_significance <- function(df=sum.hoh.gender, treshold=0.01){
-  df %>% dplyr::group_by(country, question, choice) %>%
-    dplyr::mutate(no_overlap=ifelse(max(`mean/low`)>min(`mean/upp`) & mean(mean)>treshold, "*", "")) %>%
-    dplyr::arrange(country, question, choice)
-}
+# <<<<<<< HEAD
+#   df <- df %>%
+#     srvyr::summarise(srvyr::across(srvyr::all_of(var), list(mean=~srvyr::survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
+#     dplyr::rename_with(.fn = ~stringr::str_replace_all(., c("_(?=(low|upp))"="\\/"))) %>%
+#     tidyr::pivot_longer(where(is.numeric)) %>% tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
+#     tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value) %>%
+#     add_key(group_var)
+# }
+#
+# analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
+#   if (any(!var %in% colnames(df))) {
+#     print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
+#     var <- var[var %in% colnames(df)]
+#   }
+#   df <- df %>% dplyr::group_by(!!!syms(group_var)) %>%
+#     dplyr::summarise(dplyr::across(dplyr::all_of(var), list(mean=~weighted.mean(., w=!!rlang::sym(col_weight), na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) %>%
+#     tidyr::pivot_longer(where(is.numeric)) %>% tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) %>%
+#     tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) %>% tidyr::pivot_wider(names_from = fn, values_from = value) %>%
+#     add_key(group_var)
+# }
+# =======
+#   df <- df |>
+#     srvyr::summarise(srvyr::across(dplyr::all_of(var), list(mean=~srvyr::survey_mean(., vartype="ci", na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) |>
+#     dplyr::rename_with(.fn = ~stringr::str_replace_all(., c("_(?=(low|upp))"="\\/"))) |>
+#     tidyr::pivot_longer(where(is.numeric)) |> tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) |>
+#     tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) |> tidyr::pivot_wider(names_from = fn, values_from = value)
+# }
+
+# analyse <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){
+#   if (any(!var %in% colnames(df))) {
+#     print(paste0("Colnames ", paste0(var[!var %in% colnames(df)], collapse="; ") , " not in dataset. Will be excluded from analysis"))
+#     var <- var[var %in% colnames(df)]
+#   }
+#   df <- df |> dplyr::group_by(!!!syms(group_var)) |>
+#     dplyr::summarise(dplyr::across(dplyr::all_of(var), list(mean=~weighted.mean(., w=!!rlang::sym(col_weight), na.rm=T), count=~sum(., na.rm=T), n=~sum(!is.na(.))))) |>
+#     tidyr::pivot_longer(where(is.numeric)) |> tidyr::separate(name, c("question", "choice.key"), sep = "\\.", remove = T) |>
+#     tidyr::separate(choice.key, c("choice", "fn"), sep = "_(?=[^_]*$)", remove = T) |> tidyr::pivot_wider(names_from = fn, values_from = value)
+# }
+# >>>>>>> 8977479f8a3e972b03a3d1fadb5d83396b1a40a6
+
+# mark_significance <- function(df=sum.hoh.gender, treshold=0.01){
+#   df |> dplyr::group_by(country, question, choice) |>
+#     dplyr::mutate(no_overlap=ifelse(max(`mean/low`)>min(`mean/upp`) & mean(mean)>treshold, "*", "")) %>%
+#     dplyr::arrange(country, question, choice)
+# }
+
+# first_up <- function(x) {
+#   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+#   return(x)
+# }

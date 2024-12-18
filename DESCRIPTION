@@ -15,5 +15,13 @@ Suggests:
 Config/testthat/edition: 3
 URL: https://gnoblet.github.io/hespeR/
 Imports: 
-    assertr,
-    checkmate
+    dplyr,
+    purrr,
+    stringr,
+    tidyr,
+    checkmate,
+    data.table,
+    rlang (>= 1.1.0)
+Depends: 
+    R (>= 3.5)
+LazyData: true
