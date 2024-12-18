@@ -4,19 +4,18 @@
 #' For HESPER package, can be used to create binaries for all HESPER items select one columns, to either record if it's a serious problem, undefined, serious problem with subset
 #' Additionnal argument can be used to add a suffix to the column names of the binary created
 
-#' @param data A data.table or data.frame: The data to be processed.
+#' @param df A df.table or df.frame: The df to be processed.
 #' @param cols_character A character vector: The name of the columns that will be used to create binary columns.
 #' @param value_1 A character vector: Set of values for which binary columns will be populated with 1 if `cols_character` is inside this set.
 #' @param value_0 A character vector: Set of values for which binary columns will be populated with 0 if `cols_character` is inside this set.
 #' @param value_na A character vector: Set of values for which binary columns will be populated with NA if `cols_character` is inside this set. 
 #' @param value_default A character vector: Set of values for which binary columns will be populated with otherwise. Will be overriden with 0 if value_0 = NULL and with NA if value_na = NULL
-#' @param replace A logical: If TRUE, the original columns will be replaced by the binary columns. Default is FALSE.
-#' @param name_suffix A character vector: The suffix to be added to the binary column names. Default is "binary".
+#' @param suffix A character vector: The suffix to be added to the added binary vars. If NULL, vars are replaced by binary vars.
 #' @param sep A character vector: separator used to add name suffix to original column names
-#' @return A data.table or data.frame with the binary columns added.    
+#' @return A df.table or df.frame with the binary columns added.    
 #' 
-#' @importFrom data.table `:=`
-#' @importFrom data.table `.SD`
+#' @importFrom df.table `:=`
+#' @importFrom df.table `.SD`
 #' 
 #' @export
 #' 
@@ -33,7 +32,7 @@
 # #'                          value_na = NULL,
 # #'                          value_default = 0,
 # #'                          replace = F, 
-# #'                          name_suffix = "binary", 
+# #'                          suffix = "binary", 
 # #'                          sep = ".") %>%
 # #'      ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
 # #'      add_val_in_set_binaries(cols_character = hesper_vars, 
@@ -42,7 +41,7 @@
 # #'                              value_na = NULL,
 # #'                              value_default = NA_integer_,
 # #'                              replace = F, 
-# #'                              name_suffix = "binary_subset", 
+# #'                              suffix = "binary_subset", 
 # #'                              sep = ".") %>%
 # #'      ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices]
 # #'      add_val_in_set_binaries(cols_character = hesper_vars, 
@@ -51,56 +50,75 @@
 # #'                              value_na = NULL,
 # #'                              value_default = 0,
 # #'                              replace = F, 
-# #'                              name_suffix = "binary_undefined", 
+# #'                              suffix = "binary_undefined", 
 # #'                              sep = ".")
-add_val_in_set_binaries <- function(
-  data,
-  cols_character,
-  value_1,
-  value_0,
-  value_na = NA,
-  value_default = NA,
-  replace  =  F,
-  name_suffix = "binary",
+add_binaries_from_set <- function(
+  df,
+  vars,
+  vals_0,
+  vals_1,
+  vals_na = NULL,
+  default_val = NULL,
+  suffix = NULL,
   sep = "."
 ) {
-  
-  ## if replace=T, force arguments name_suffix to "" and sep to ""
-  if (replace) {
-    name_suffix <- ""
-    sep <- ""
+
+  #------ Checks
+
+  # df is a data.frame
+  checkmate::assert_data_frame(df)
+
+  # df is not data.table, convert it
+  if (!checkmate::testDataTable(df)) {
+    rlang::warn("Converting df to data.table.")
+    data.table::setDT(df)
   }
+
+  # vars is a character vector
+  checkmate::assertCharacter(vars, min.chars = 1, any.missing = FALSE)
+
+  # vars are in df
+  check_vars_in_df(df, vars)
+
+  # vars are of class character
+  check_vars_class_in_df(df, vars, "character")
+
+  # are all vars in set 
+  # TO DO:
+  # should we check if all vars are in set when vals_na is not null?
+  #check_vars_in_vals(df, vars, c(vals_0, vals_1, vals_na))
+
+  # default value is integer
+  checkmate::assertInteger(default_val, len = 1, null.ok = TRUE)
+
+  # suffix is a character scalar or NULL
+  checkmate::assertCharacter(suffix, len = 1, null.ok = TRUE)
     
-  ## if checkmate:: datatable not true, transform in DT
-  if (!checkmate::testDataTable(data)){
-    data <- data.table::as.data.table(data)
+  # if value_0 is NULL, and default_val is not 0 or is NA_integer_ ensure that defaut_val is overridden to 0 
+  if (is.null(vals_0) && !(default_val %in% c(0, NA_integer_))) {
+    default_val <- 0
+    rlang::warn("vals_0 is NULL, default_val will be overridden to 0.")
   }
   
-  ## check that cols_character are in data, or stop and print colnames
-  if (!all(cols_character %in% colnames(data))) {
-    col_not_in_data <- cols_character |> setdiff(colnames(data))
-    stop(paste0("The following columns are not in the data: ", paste(col_not_in_data, collapse = ", ")))
-  }  
-  
-  ## checkmate that cols_character are character
-  checkmate::assert_character(cols_character)
-  
-  ## if value_0=NULL ensure that default is overridden to 0 
-  if (all(is.null(value_0) & value_default!=0)){
-    value_default <- 0
-    warning("value_0 is NULL, default value is overridden to 0")
+  #------ Compose
+
+  # Prepare new variable names and warn if replacement
+  if (!is.null(suffix)) { 
+    new_vars <- paste0(vars, sep, suffix)
+  } else {
+    new_vars <- vars
   }
+  warn_replace(df, new_vars)
+
+  # Add binary variables
+  df[, 
+    (new_vars) := lapply(.SD, \(x) data.table::fcase(
+      x %in% vals_1, 1L,
+      x %in% vals_0, 0L,   
+      x %in% vals_na, NA_integer_, 
+      default = default_val)),
+    .SDcols = vars]
   
-  data[, (paste0(cols_character, sep, name_suffix)) := 
-         lapply(.SD, \(x)
-                data.table::fcase(
-                  x %in% value_1, as.double(1),              # Assign 1 if x is in the set of values in vector `value_1`
-                  x %in% value_0, as.double(0),              # Assign 0 if x is in the set of values in vector `value_0`
-                  x %in% value_na, as.double(NA),    # Assign NA if x is in the set of values in vector `value_na` (NA_integer by default) 
-                  default = as.double(value_default)          # Default value of NA for any other case, can be changed in parameters
-                )
-         ), .SDcols = cols_character]
-  
-  return(data)
+  return(df)
   
 }    

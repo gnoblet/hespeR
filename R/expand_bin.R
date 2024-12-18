@@ -47,11 +47,11 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
   # vars is a character vector 
   checkmate::assertCharacter(vars, min.chars = 1)
 
-  # all vars are in df and of class character
-  for (var in vars) {
-    if (!(var %in% colnames(df))) rlang::abort(paste0("Variable ", var, " not found in df."))
-    checkmate::assertClass(df[[var]], "character", .var.name = var)
-  }
+  # all vars are in df
+  check_vars_in_df(df, vars)
+
+  # all vars are of class character
+  check_vars_class_in_df(df, vars, "character")
 
   # drop_undefined is a character vector or NULL
   checkmate::assertCharacter(drop_undefined, null.ok = TRUE)

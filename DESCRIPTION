@@ -21,7 +21,8 @@ Imports:
     tidyr,
     checkmate,
     data.table,
-    rlang (>= 1.1.0)
+    rlang (>= 1.1.0),
+    glue
 Depends: 
     R (>= 3.5)
 LazyData: true

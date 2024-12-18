@@ -8,12 +8,12 @@ hesper_vars <- c("hesper_drinking_water",
                  "hesper_shelter", 
                  "hesper_toilet", 
                  "hesper_clean", 
-                 "hesper_clean_women",
+                 "hesper_clean_female",
                  "hesper_clothes_etc", 
                  "hesper_income_livelihood",
                  "hesper_health",
-                 "hesper_health_care_men", 
-                 "hesper_health_care_women",
+                 "hesper_health_care_male", 
+                 "hesper_health_care_female",
                  "hesper_distress", 
                  "hesper_safety", 
                  "hesper_education", 
@@ -70,7 +70,7 @@ hesper_dat[, uuid := .I]
 
 # Sample priorities out of the existing serious problems
 hesper_dat[,
-  hesper_priorities := {
+  'hesper_priorities' := {
     # Get serious problems var names
     probs <- names(.SD)[.SD == "serious_problem"]
     # If not empty, sample

@@ -10,7 +10,7 @@
 #' @return dataframe with new column
 #' @export
 #' 
-add_top_three <- function(df, new_var, vars_unite){
+add_top3 <- function(df, new_var, vars_unite){
 
   #------ Checks
 

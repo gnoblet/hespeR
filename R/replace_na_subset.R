@@ -44,12 +44,14 @@ replace_na_subset <- function(data,
                               choice_vals
                               ) {
   
-  ## if checkmate:: datatable not true, transform in DT
+  #------ Checks
+  
+  # if checkmate:: datatable not true, transform in DT
   if (!checkmate::testDataTable(data)){
     data <- data.table::as.data.table(data)
   }
   
-  ## check that subset_col and col_parent are in data, or stop and print colnames
+  # subset_col and col_parent are in data, or stop and print colnames
   if (!all(c(subset_col, col_parent) %in% colnames(data))) {
     col_not_in_data <- c(subset_col, col_parent) |> setdiff(colnames(data))
     stop(paste0("The following columns are not in the data: ", paste(col_not_in_data, collapse = ", ")))

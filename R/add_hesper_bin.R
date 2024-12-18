@@ -1,0 +1,152 @@
+
+add_hesper_bin<- function(
+  df,
+  hesper_vars = c("hesper_drinking_water",
+                  "hesper_food",
+                  "hesper_shelter",
+                  "hesper_toilet",
+                  "hesper_clean",
+                  "hesper_clean_female",
+                  "hesper_clothes_etc",
+                  "hesper_income_livelihood",
+                  "hesper_health",
+                  "hesper_health_care_male",
+                  "hesper_health_care_female",
+                  "hesper_distress",
+                  "hesper_safety",
+                  "hesper_education",
+                  "hesper_care",
+                  "hesper_support",
+                  "hesper_separation",
+                  "hesper_displaced",
+                  "hesper_information",
+                  "hesper_aid",
+                  "hesper_respect",
+                  "hesper_movement",
+                  "hesper_time",
+                  "hesper_law",
+                  "hesper_gbv",
+                  "hesper_drug",
+                  "hesper_mental_health",
+                  "hesper_care_community",
+                  "hesper_other"),
+  hesper_serious_problem = "serious_problem",
+  hesper_no_serious_problem = "no_serious_problem",
+  hesper_dnk = "dnk",
+  hesper_pnta = "pnta",
+  hesper_na = "not_applicable",
+  sv = TRUE,
+  sv_l = list(
+    displaced = list(
+      hesper_vars = c("hesper_displaced"),
+      subset_var  = "pop_group",
+      subset_vals = c("refugees", "idp")
+    ),
+    resp_gender_female = list(
+      hesper_vars = c("hesper_clean_female"),
+      subset_var  = "resp_gender",
+      subset_vals = c("female")
+    )
+  )
+){
+  
+  #------ Checks
+
+  # df is a dataframe
+  checkmate::assertDataFrame(df)
+
+  # df is not data.table, convert it
+  if (!checkmate::testDataTable(df)) {
+    rlang::warn("Converting df to data.table.")
+    data.table::setDT(df)
+  }
+
+  # hesper_vars is a character vector
+  checkmate::assertCharacter(hesper_vars, min.chars = 1, any.missing = FALSE)
+
+  # warning from deviations from defaults
+  if (length(hesper_vars) > 29) {
+    rlang::warn("More than 29 hesper_vars provided. Make sure you are using the correct variable names.")
+  }
+  if (length(hesper_vars) < 29) {
+    rlang::warn("Less than 29 hesper_vars provided. Make sure you are using the correct variable names.")
+  }
+
+  # hesper_vars are unique
+  check_dupes(hesper_vars, "The following vars are duplicated: ")
+
+  # hesper_vars are in df
+  check_vars_in_df(df, hesper_vars)
+
+  # hesper_vars are character vars in df
+  check_vars_class_in_df(df, hesper_vars, "character")
+
+  # *_problem are character scalar and cannot be NA or NULL
+  checkmate::assertCharacter(hesper_serious_problem, len = 1, min.chars = 1, any.missing = FALSE)
+  checkmate::assertCharacter(hesper_no_serious_problem, len = 1, min.chars = 1, any.missing = FALSE)
+  checkmate::assertCharacter(hesper_dnk, len = 1, min.chars = 1, any.missing = FALSE)
+  checkmate::assertCharacter(hesper_pnta, len = 1, min.chars = 1, any.missing = FALSE)
+  checkmate::assertCharacter(hesper_na, len = 1, min.chars = 1, any.missing = FALSE)
+  
+  # hesper_vars only contains values in hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta and hesper_na
+  check_vars_in_set(df, hesper_vars, c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na))
+
+  # sv is a logical scalar
+  checkmate::assertLogical(sv, len = 1, any.missing = FALSE)
+
+  if (sv) {
+    # sv_l is a named list
+    checkmate::assertList(sv_l, names = "unique")
+    # sv_l items has three items only that are named hesper_vars, subset_var and subset_vals:
+    check_sv_l(sv_l, df, hesper_vars)
+  }
+
+
+
+  #------ Prepare intermediate variables
+
+  hesper_applicable <- c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta)
+  hesper_any <- c(hesper_serious_problem, hesper_no_serious_problem)
+  hesper_exclude <- c(hesper_dnk, hesper_pnta, hesper_na)
+
+  # warn if there is no occurence of hesper_applicable 
+  # wonder if we, instead, write down something to produce a quick quality checks 
+  # warn if there is no occurence of hesper_exclude
+
+        
+  #------ Finally, compose
+
+  # Add number of serious problem, etc.
+  df <- sum_vals_across(df, hesper_vars, hesper_serious_problem, "hesper_serious_problem_n")
+  df <- sum_vals_across(df, hesper_vars, hesper_no_serious_problem, "hesper_no_serious_problem_n")
+  df <- sum_vals_across(df, hesper_vars, hesper_serious_problem, "hesper_any_n") 
+  df <- sum_vals_across(df, hesper_vars, hesper_applicable, "hesper_applicable_n")
+  df <- sum_vals_across(df, hesper_vars, hesper_exclude, "hesper_exclude_n")
+  df <- sum_vals_across(df, hesper_vars, hesper_dnk, "hesper_dnk_n")
+  df <- sum_vals_across(df, hesper_vars, hesper_pnta, "hesper_pnta_n")
+
+  # Expand bin
+  df <- expand_bin(df, hesper_vars)
+
+  # Iterate over subset
+  if (sv) {
+    for (sv_el in sv_l) {
+
+      df <- recode_subset_to_missing(
+        df,
+        vars = sv_el$hesper_vars,
+        subset_var = sv_el$subset_var,
+        subset_vals = sv_el$subset_vals,
+        suffix = "_subset"
+      ) 
+
+      df <- expand_bin(
+        df,
+        vars = paste0(sv_el$hesper_vars, "_subset")
+      )
+    }
+  }
+
+  return(df)
+
+}
