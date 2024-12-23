@@ -1,9 +1,79 @@
-#' @title Align column names and choices to match standard HESPER names compatible with heseR package
+#' @title Align column names and choices in dataset and kobo tool to match standard HESPER names compatible with hespeR package
 #'
+#' @description Align column names and choices in dataset and kobo tool to match standard HESPER names compatible with hespeR package
 #'
-#'
-#'
-#'
+#' @param data A data frame with the HESPER data
+#' @param hesper_serious_problem A character corresponding to the choice for serious problem
+#' @param hesper_no_serious_problem A character corresponding to the choice for no serious problem
+#' @param hesper_dnk A character corresponding to the choice for do not know
+#' @param hesper_pnta A character corresponding to the choice for prefer not to answer
+#' @param hesper_na A character corresponding to the choice for not applicable
+#' @param hesper_drinking_water A character corresponding to the hesper item column name in dataset for drinking water
+#' @param hesper_food A character corresponding to the hesper item column name in dataset for food
+#' @param hesper_shelter A character corresponding to the hesper item column name in dataset for shelter
+#' @param hesper_toilet A character corresponding to the hesper item column name in dataset for toilet
+#' @param hesper_clean A character corresponding to the hesper item column name in dataset for clean (hygiene for whole household,  only for household level hesper)
+#' @param hesper_clean_female A character corresponding to the hesper item column name in dataset for clean_female (menstrual hygiene for women specifically if household level, otherwise hygiene for women respondent if individual level hesper)
+#' @param hesper_clothes_etc A character corresponding to the hesper item column name in dataset for clothes_etc (clothes, shoes, etc.)
+#' @param hesper_income_livelihood A character corresponding to the hesper item column name in dataset for income_livelihood (income and livelihood)
+#' @param hesper_health A character corresponding to the hesper item column name in dataset for physical health
+#' @param hesper_health_care_male A character corresponding to the hesper item column name in dataset for health care for men
+#' @param hesper_health_care_female A character corresponding to the hesper item column name in dataset for health care for women
+#' @param hesper_distress A character corresponding to the hesper item column name in dataset for distress
+#' @param hesper_safety A character corresponding to the hesper item column name in dataset for safety
+#' @param hesper_education A character corresponding to the hesper item column name in dataset for education
+#' @param hesper_care A character corresponding to the hesper item column name in dataset for care for other members of household
+#' @param hesper_support A character corresponding to the hesper item column name in dataset for support to community members
+#' @param hesper_separation A character corresponding to the hesper item column name in dataset for separation
+#' @param hesper_displaced A character corresponding to the hesper item column name in dataset for displacement
+#' @param hesper_information A character corresponding to the hesper item column name in dataset for information
+#' @param hesper_aid A character corresponding to the hesper item column name in dataset for the way aid is provided
+#' @param hesper_respect A character corresponding to the hesper item column name in dataset for respect
+#' @param hesper_movement A character corresponding to the hesper item column name in dataset for lack of movement
+#' @param hesper_time A character corresponding to the hesper item column name in dataset for too much free time
+#' @param hesper_law A character corresponding to the hesper item column name in dataset for law and order in community
+#' @param hesper_gbv A character corresponding to the hesper item column name in dataset for lack of safety for women in public spaces in community
+#' @param hesper_drug A character corresponding to the hesper item column name in dataset for problem related to drug and alcohol use in community
+#' @param hesper_mental_health A character corresponding to the hesper item column name in dataset for mental health in community
+#' @param hesper_care_community A character corresponding to the hesper item column name in dataset for lack of care for others in community
+#' @param hesper_other A character corresponding to the hesper item column name in dataset for other problem in community
+#' @param hesper_clean_male A character corresponding to the hesper item column name in dataset for clean_male (hygiene for male respondent parameter, only for individual level hesper)
+#' @param hesper_priority_first A character corresponding to the hesper item column name in dataset for priority_first (first priority among reported serious problems)
+#' @param hesper_priority_second A character corresponding to the hesper item column name in dataset for priority_second (second priority among reported serious problems)
+#' @param hesper_priority_third A character corresponding to the hesper item column name in dataset for priority_third (third priority among reported serious problems)
+#' @param hesper_drinking_water_choice A character corresponding to the choice value for hesper priority corresponding to drinking water
+#' @param hesper_food_choice A character corresponding to the choice value for hesper priority corresponding to food
+#' @param hesper_shelter_choice A character corresponding to the choice value for hesper priority corresponding to shelter
+#' @param hesper_toilet_choice A character corresponding to the choice value for hesper priority corresponding to toilet
+#' @param hesper_clean_choice A character corresponding to the choice value for hesper priority corresponding to clean (hygiene for whole household, only for household level hesper)
+#' @param hesper_clean_female_choice A character corresponding to the choice value for hesper priority corresponding to clean_female (menstrual hygiene for women only if household level hesper, otherwise hygiene for women respondent if individual level hesper)
+#' @param hesper_clothes_etc_choice A character corresponding to the choice value for hesper priority corresponding to clothes_etc (clothes, shoes, etc.)
+#' @param hesper_income_livelihood_choice A character corresponding to the choice value for hesper priority corresponding to income_livelihood (income and livelihood)
+#' @param hesper_health_choice A character corresponding to the choice value for hesper priority corresponding to physical health
+#' @param hesper_health_male_choice A character corresponding to the choice value for hesper priority corresponding to health care male
+#' @param hesper_health_female_choice A character corresponding to the choice value for hesper priority corresponding to health care female
+#' @param hesper_distress_choice A character corresponding to the choice value for hesper priority corresponding to distress
+#' @param hesper_safety_choice A character corresponding to the choice value for hesper priority corresponding to safety
+#' @param hesper_education_choice A character corresponding to the choice value for hesper priority corresponding to education
+#' @param hesper_care_choice A character corresponding to the choice value for hesper priority corresponding to care for other members of household
+#' @param hesper_support_choice A character corresponding to the choice value for hesper priority corresponding to support to community members
+#' @param hesper_separation_choice A character corresponding to the choice value for hesper priority corresponding to separation
+#' @param hesper_displaced_choice A character corresponding to the choice value for hesper priority corresponding to displacement
+#' @param hesper_information_choice A character corresponding to the choice value for hesper priority corresponding to information
+#' @param hesper_aid_choice A character corresponding to the choice value for hesper priority corresponding to the way aid is provided
+#' @param hesper_respect_choice A character corresponding to the choice value for hesper priority corresponding to respect
+#' @param hesper_movement_choice A character corresponding to the choice value for hesper priority corresponding to lack of movement
+#' @param hesper_time_choice A character corresponding to the choice value for hesper priority corresponding to too much free time
+#' @param hesper_law_choice A character corresponding to the choice value for hesper priority corresponding to law and order in community
+#' @param hesper_gbv_choice A character corresponding to the choice value for hesper priority corresponding to lack of safety for women in public spaces
+#' @param hesper_drug_choice A character corresponding to the choice value for hesper priority corresponding to problem related to drug and alcohol use
+#' @param hesper_mental_health_choice A character corresponding to the choice value for hesper priority corresponding to mental health
+#' @param hesper_care_community_choice A character corresponding to the choice value for hesper priority corresponding to lack of care for others in community
+#' @param hesper_other_choice A character corresponding to the choice value for hesper priority corresponding to other problem
+#' @param hesper_clean_male_choice A character corresponding to the choice value for hesper priority corresponding to clean_male (hygiene for male respondent parameter, only for individual level hesper)
+#' @param sep A character corresponding to the separator used to separate parent from child choice binary columns in the colum names of dataset
+#' @param kobo_survey A dataframe containing hesper kobo survey sheet as data.frame, set to NULL as default value
+#' @param hesper_survey A dataframe containing hesper survey sheet as data.frame, set to NULL as default value
 #'
 #'
 align_hesper_data <- function(
@@ -189,6 +259,9 @@ align_hesper_data <- function(
       rlang::warn("Converting kobo_choices to data.table.")
       data.table::setDT(kobo_choices)
     }
+
+    kobo_survey <- copy(kobo_survey)
+    kobo_choices <- copy(kobo_choices)
 
     ## 1. clean tool names
     pattern.replacement <- setNames(hesper_item_standard, paste0("^", hesper_item_data, "$"))
