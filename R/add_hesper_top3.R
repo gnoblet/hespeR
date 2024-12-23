@@ -89,7 +89,7 @@ add_hesper_top3 <- function(df,
   ## collapse priority columns to have a select multiple column, create dummy binary child columns (with & without subset) & ensure that skip logic is respected for top three binaries
 
   ## unite the thre priority columns to have one select multiple hesper priorities
-  df <-  add_top3(df, new_var = var_hesper_top_three, vars_unite = vars_priority)
+  df <- add_top3(df, new_var = var_hesper_top_three, vars_unite = vars_priority)
 
   ### expand parent column top three priorities and priority 1/2/3 without accounting for subset
   df <- expand_bin(df, c(vars_priority, var_hesper_top_three))
