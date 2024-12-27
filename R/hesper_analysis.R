@@ -19,22 +19,115 @@ source("../data-raw/hesper_dat.R")
 # path.data <- "C:/Users/raphael.bacot/ACTED/IMPACT HQ-Accountability & Inclusion - Documents/General/12_Accountability to Affected People Specialist/07_Hesper Scale/4. REACH HESPER Pilots/DRC MSNA/Data/REACH_DRC2404_MSNA2024_Clean-Data.xlsx"
 # sheet.data <- "hh data"
 # data <- read_excel(path.data, sheet=sheet.data, guess_max=10000)
-data <- hesper_dat
+# data <- hesper_dat
+kobo_survey <- read_excel("../resources/REACH_MLI2402__tool.xlsx", "survey")
+kobo_choices <- read_excel("../resources/REACH_MLI2402__tool.xlsx", "choices")
+data <- fread("../data/mli_msna_24_hh.csv")
+## clean top three with NA if equal to "" with data.table syntax .SD
+col_prio <- c("hesper_most_serious_1", "hesper_most_serious_2", "hesper_most_serious_3")
+data[, c(col_prio, "hesper_5_1_keep_clean") := lapply(.SD, function(x) ifelse(x=="", NA, x)), .SDcols = c(col_prio, "hesper_5_1_keep_clean")]
+
+## align dataset
+aligned_data <- align_hesper_data(
+
+  data,
+
+  hesper_serious_problem = "probleme_grave",
+  hesper_no_serious_problem = "pas_probleme",
+  hesper_dnk = "nsp",
+  hesper_pnta = "pnpr",
+  hesper_na = "pas_concerne",
+
+  hesper_drinking_water = "hesper_1_water",
+  hesper_food = "hesper_2_food",
+  hesper_shelter = "hesper_3_live_place",
+  hesper_toilet = "hesper_4_toilet",
+  hesper_clean = "hesper_5_keep_clean",
+  hesper_clean_female = "hesper_5_1_keep_clean",
+  hesper_clothes_etc = "hesper_6_dress",
+  hesper_income_livelihood = "hesper_7_revenu",
+  hesper_health = "hesper_8_phisical_health",
+  hesper_health_care_male = "hesper_9_health_care_men",
+  hesper_health_care_female = "hesper_9_health_care_women",
+  hesper_distress = "hesper_10_distress",
+  hesper_safety = "hesper_11_safety",
+  hesper_education = "hesper_12_education_for_child",
+  hesper_care = "hesper_13_family_care",
+  hesper_support = "hesper_14_support_from_other",
+  hesper_separation = "hesper_15_family_separation",
+  hesper_displaced = "hesper_16_being_displaced",
+  hesper_information = "hesper_17_information",
+  hesper_aid = "hesper_18_way_aid_provided",
+  hesper_respect = "hesper_19_respect",
+  hesper_movement = "hesper_20_moving_place",
+  hesper_time = "hesper_21_too_much_time",
+  hesper_law = NULL,
+  hesper_gbv = NULL,
+  hesper_drug = NULL,
+  hesper_mental_health = NULL,
+  hesper_care_community = NULL,
+  hesper_other = NULL,
+  hesper_clean_male=NULL,
+
+  hesper_priority_first="hesper_most_serious_1",
+  hesper_priority_second="hesper_most_serious_2",
+  hesper_priority_third="hesper_most_serious_3",
+
+  hesper_drinking_water_choice = "water",
+  hesper_food_choice = "food",
+  hesper_shelter_choice = "live_place",
+  hesper_toilet_choice = "toilet",
+  hesper_clean_choice = "clean",
+  hesper_clean_female_choice = "clean",
+  hesper_clothes_etc_choice = "dress",
+  hesper_income_livelihood_choice = "revenu",
+  hesper_health_choice = "phisical_health",
+  hesper_health_care_male_choice = "health_care_men",
+  hesper_health_care_female_choice = "health_care_women",
+  hesper_distress_choice = "distress",
+  hesper_safety_choice = "safety",
+  hesper_education_choice = "education_for_child",
+  hesper_care_choice = "family_care",
+  hesper_support_choice = "support_from_other",
+  hesper_separation_choice = "family_separation",
+  hesper_displaced_choice = "being_displaced",
+  hesper_information_choice = "information",
+  hesper_aid_choice = "way_aid_provided",
+  hesper_respect_choice = "respect",
+  hesper_movement_choice = "moving_place",
+  hesper_time_choice = "too_much_time",
+  hesper_law_choice = NULL,
+  hesper_gbv_choice = NULL,
+  hesper_drug_choice = NULL,
+  hesper_mental_health_choice = NULL,
+  hesper_care_community_choice = NULL,
+  hesper_other_choice = NULL,
+  hesper_clean_male_choice = NULL,
+
+  sep=".",
+
+  kobo_survey=kobo_survey,
+  kobo_choices=kobo_choices
+)
+
+data <- aligned_data$data
+survey <- aligned_data$kobo_survey  %>% mutate(row=row_number()) %>% separate(type, into = c("q.type", "list_name"), sep = " ", remove = F)
+choices <- aligned_data$kobo_choices  %>% rename("label::french"=any_of("label"))
 
 ## convert as numeric if unique values are in "0" "1" and "NA" NA
 data <- data %>%
-mutate(across(matches("\\."), as.numeric)) %>%
-mutate(across(where(is.character), ~ifelse(. %in% c("0", "1", "NA"), as.numeric(.), .)))
+  mutate(across(matches("\\."), as.numeric)) %>%
+  mutate(across(where(is.character), ~ifelse(. %in% c("0", "1", "NA"), as.numeric(.), .)))
 if (!"weights" %in% colnames(data)) data$weights <- 1
 # str(data)
 
 ## read tool and key hesper table
-path.tool <- "../resources/template_tool_hh.xlsx"
+# path.tool <- "../resources/template_tool_hh.xlsx"
 path.hesper.key <- "../resources/hesper_key.xlsx"
 
-survey <- read_excel(path.tool, "survey") %>% mutate(row=row_number()) %>% separate(type, into = c("q.type", "list_name"), sep = " ", remove = F)
-choices <- read_excel(path.tool, "choices") %>% rename("label::french"=any_of("label"))
-col_label <- "label::english"
+# survey <- read_excel(path.tool, "survey") %>% mutate(row=row_number()) %>% separate(type, into = c("q.type", "list_name"), sep = " ", remove = F)
+# choices <- read_excel(path.tool, "choices") %>% rename("label::french"=any_of("label"))
+col_label <- "label::french"
 
 ## Extract variables names
 so.questions <- survey %>% filter(q.type=="select_one") %>% pull(name) %>% keep(. %in% colnames(data)) %>% str_subset("hesper")
@@ -46,27 +139,27 @@ ind_lab_hesper <- read_excel(path.hesper.key, "lab")
 ## create name and subset columns, pulling from HH or ind version depending on the type of tool
 type.tool <- "hh" ## to be updated if the tool is individual or household level
 if (type.tool=="hh") {
-key_hesper <- key_hesper %>% mutate(name=name_hh, subset=subset_hh)
+  key_hesper <- key_hesper %>% mutate(name=name_hh, subset=subset_hh)
 } else if (type.tool=="ind") {
-key_hesper <- key_hesper %>% mutate(name=name_ind, subset=subset_ind)
+  key_hesper <- key_hesper %>% mutate(name=name_ind, subset=subset_ind)
 } else {
-stop("type.tool must be either ind or hh")
+  stop("type.tool must be either ind or hh")
 }
 
 ## combine survey and choices
 survey_combined <- survey %>%
-filter(q.type %in% c("select_one", "select_multiple")) %>%
-right_join(choices %>% select(list_name, choice_name=name, choice_label=!!sym(col_label))) %>%
-bind_rows(survey %>% filter(!str_detect(type, "^select"))) %>% arrange(row) %>% select(-row) %>% filter(!is.na(name))
+  filter(q.type %in% c("select_one", "select_multiple")) %>%
+  right_join(choices %>% select(list_name, choice_name=name, choice_label=!!sym(col_label))) %>%
+  bind_rows(survey %>% filter(!str_detect(type, "^select"))) %>% arrange(row) %>% select(-row) %>% filter(!is.na(name))
 
 ## extract colnames from key hesper
 ## to be updated if there are more/less subset questions in the hesper tool
-col.hesp <- key_hesper %>% pull(name)
-col.men <- key_hesper %>% filter(subset=="men") %>% pull(name)
-col.women <- key_hesper %>% filter(subset=="women") %>% pull(name)
-col.displaced <- key_hesper %>% filter(subset=="displaced") %>% pull(name)
-col.host <- key_hesper %>% filter(subset=="host") %>% pull(name)
-col.subset <- c(col.men, col.women, col.host, col.displaced)
+col.hesp <- key_hesper %>% pull(name) %>% keep(. %in% colnames(data))
+col.men <- key_hesper %>% filter(subset=="male") %>% pull(name) %>% keep(. %in% colnames(data))
+col.women <- key_hesper %>% filter(subset=="female") %>% pull(name) %>% keep(. %in% colnames(data))
+col.displaced <- key_hesper %>% filter(subset=="displaced") %>% pull(name) %>% keep(. %in% colnames(data))
+col.host <- key_hesper %>% filter(subset=="host") %>% pull(name) %>% keep(. %in% colnames(data))
+col.subset <- c(col.men, col.women, col.host, col.displaced) %>% keep(. %in% colnames(data))
 
 ## define name pattern in kobo tool associated with the hesper priority needs question
 pattern.prio <- "hesper_priority_"
@@ -75,11 +168,11 @@ col.prio <- col.prio %>% str_subset("priority_support", negate = T)
 
 ## Add as well choice list for "hesper_top_three_priorities" to have label
 survey_combined <- survey_combined %>%
-bind_rows(survey_combined %>% filter(name==col.prio[1]) %>%
-mutate(name="hesper_top_three_priorities",
-label="What are the top three priorities from the selected HESPER serious problems?"
-# label="Quels sont les trois priorités les plus importantes parmi les problèmes graves HESPER sélectionnés?"
-))
+  bind_rows(survey_combined %>% filter(name==col.prio[1]) %>%
+  mutate(name="hesper_top_three_priorities",
+         # label="What are the top three priorities from the selected HESPER serious problems?"
+         label="Quels sont les trois priorités les plus importantes parmi les problèmes graves HESPER sélectionnés?"
+         ))
 
 ## extract the hesper items choices from the key_hesper
 ## to be updated if there are more/less subset questions in the hesper tool
@@ -118,8 +211,8 @@ col_gender = "resp_gender",
 choice_male = "male",
 choice_female = "female",
 col_displacement = "pop_group",
-choice_displaced = c("refugees", "idp"),
-choice_host = c("hosts")
+choice_displaced = c("REF", "PDI"),
+choice_host = c("PND")
 )
 
 ### 2. Composition of needed columns  -------------------------------------------------------
@@ -149,7 +242,8 @@ data <- data |>
     hesper_pnta = parameters$choice_pnta,
     hesper_na = parameters$choice_na,
     sv = T,
-    sv_l = subset_list
+    sv_l = subset_list,
+    stop_if_subset_no_match = F
   )
 
 ## add top three priorities + top 1 2 3 child columns, cleaned for skip logic

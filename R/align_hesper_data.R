@@ -213,7 +213,7 @@ align_hesper_data <- function(
                          paste0(hesper_item_data, " to ", hesper_item_standard, collapse="\n")))
 
   ## Replace old hesper item choices with standard "serious_problem" etc...
-  pattern.replacement <- setNames(c("serious_problem", "no_serious_problem", "dnk", "pnta", "na"),
+  pattern.replacement <- setNames(c("serious_problem", "no_serious_problem", "dnk", "pnta", "not_applicable"),
                                   c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na))
   ## subset hesper items in data only
   hesper_vars_in_data <- hesper_arg_names_items[hesper_arg_names_items %in% colnames(data)]
@@ -286,14 +286,14 @@ align_hesper_data <- function(
     )
 
     ## clean hesper serious problem / no serious problem etc...
-    pattern.replacement <- setNames(c("serious_problem", "no_serious_problem", "dnk", "pnta", "na"),
+    pattern.replacement <- setNames(c("serious_problem", "no_serious_problem", "dnk", "pnta", "not_applicable"),
                                     c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na))
     kobo_choices[, name:=str_replace_all(name, pattern.replacement)]
     rlang::warn(
       glue::glue("Cleaning choices for hesper items in kobo tool choices\n",
                  "The name column has been aligned in kobo_choices according to these new values:\n\n",
                  paste0(names(pattern.replacement), " to ", unname(pattern.replacement), collapse="\n"),
-                 "n")
+                 "\n")
     )
 
     return(list(data=data, kobo_survey=kobo_survey, kobo_choices=kobo_choices))} else {
@@ -476,169 +476,3 @@ align_hesper_data <- function(
 # args_val <- lapply(args, get)
 # call_args <- setNames(args_val, args)
 
-
-
-# hesper_vars <- c(
-#   "hesper_drinking_water" = hesper_drinking_water,
-#   "hesper_food" = hesper_food,
-#   "hesper_shelter" = hesper_shelter,
-#   "hesper_toilet" = hesper_toilet,
-#   "hesper_clean" = hesper_clean,
-#   "hesper_clean_female" = hesper_clean_female,
-#   "hesper_clothes_etc" = hesper_clothes_etc,
-#   "hesper_income_livelihood" = hesper_income_livelihood,
-#   "hesper_health" = hesper_health,
-#   "hesper_health_care_male" = hesper_health_care_male,
-#   "hesper_health_care_female" = hesper_health_care_female,
-#   "hesper_distress" = hesper_distress,
-#   "hesper_safety" = hesper_safety,
-#   "hesper_education" = hesper_education,
-#   "hesper_care" = hesper_care,
-#   "hesper_support" = hesper_support,
-#   "hesper_separation" = hesper_separation,
-#   "hesper_displaced" = hesper_displaced,
-#   "hesper_information" = hesper_information,
-#   "hesper_aid" = hesper_aid,
-#   "hesper_respect" = hesper_respect,
-#   "hesper_movement" = hesper_movement,
-#   "hesper_time" = hesper_time,
-#   "hesper_law" = hesper_law,
-#   "hesper_gbv" = hesper_gbv,
-#   "hesper_drug" = hesper_drug,
-#   "hesper_mental_health" = hesper_mental_health,
-#   "hesper_care_community" = hesper_care_community,
-#   "hesper_other" = hesper_other,
-#   "hesper_clean_male" = hesper_clean_male
-# )
-#
-# ## Same for the choices
-# hesper_choices <- c(
-#   "hesper_drinking_water" = hesper_drinking_water_choice,
-#   "hesper_food" = hesper_food_choice,
-#   "hesper_shelter" = hesper_shelter_choice,
-#   "hesper_toilet" = hesper_toilet_choice,
-#   "hesper_clean" = hesper_clean_choice,
-#   "hesper_clean_female" = hesper_clean_female_choice,
-#   "hesper_clothes_etc" = hesper_clothes_etc_choice,
-#   "hesper_income_livelihood" = hesper_income_livelihood_choice,
-#   "hesper_health" = hesper_health_choice,
-#   "hesper_health_care_male" = hesper_health_care_male,
-#   "hesper_health_care_female" = hesper_health_care_female,
-#   "hesper_distress" = hesper_distress_choice,
-#   "hesper_safety" = hesper_safety_choice,
-#   "hesper_education" = hesper_education_choice,
-#   "hesper_care" = hesper_care_choice,
-#   "hesper_support" = hesper_support_choice,
-#   "hesper_separation" = hesper_separation_choice,
-#   "hesper_displaced" = hesper_displaced_choice,
-#   "hesper_information" = hesper_information_choice,
-#   "hesper_aid" = hesper_aid_choice,
-#   "hesper_respect" = hesper_respect_choice,
-#   "hesper_movement" = hesper_movement_choice,
-#   "hesper_time" = hesper_time_choice,
-#   "hesper_law" = hesper_law_choice,
-#   "hesper_gbv" = hesper_gbv_choice,
-#   "hesper_drug" = hesper_drug_choice,
-#   "hesper_mental_health" = hesper_mental_health_choice,
-#   "hesper_care_community" = hesper_care_community_choice,
-#   "hesper_other" = hesper_other_choice,
-#   "hesper_clean_male" = hesper_clean_male
-# )
-#
-# ### Identify the differing column names i.e. when the parameter differ from its default value
-# hesper_vars_default <- hesper_vars <- c("hesper_drinking_water",
-#                                         "hesper_food",
-#                                         "hesper_shelter",
-#                                         "hesper_toilet",
-#                                         "hesper_clean",
-#                                         "hesper_clean_female",
-#                                         "hesper_clothes_etc",
-#                                         "hesper_income_livelihood",
-#                                         "hesper_health",
-#                                         "hesper_health_care_male",
-#                                         "hesper_health_care_female",
-#                                         "hesper_distress",
-#                                         "hesper_safety",
-#                                         "hesper_education",
-#                                         "hesper_care",
-#                                         "hesper_support",
-#                                         "hesper_separation",
-#                                         "hesper_displaced",
-#                                         "hesper_information",
-#                                         "hesper_aid",
-#                                         "hesper_respect",
-#                                         "hesper_movement",
-#                                         "hesper_time",
-#                                         "hesper_law",
-#                                         "hesper_gbv",
-#                                         "hesper_drug",
-#                                         "hesper_mental_health",
-#                                         "hesper_care_community",
-#                                         "hesper_other",
-#                                         "hesper_clean_male")
-#
-# hesper_var_differ <- hesper_vars[hesper_vars != hesper_vars_default]
-# ### combine all the column name parameters into hesper_vars
-# hesper_vars <- c(hesper_drinking_water,
-#                  hesper_food,
-#                  hesper_shelter,
-#                  hesper_toilet,
-#                  hesper_clean,
-#                  hesper_clean_female,
-#                  hesper_clothes_etc,
-#                  hesper_income_livelihood,
-#                  hesper_health,
-#                  hesper_health_care_male,
-#                  hesper_health_care_female,
-#                  hesper_distress,
-#                  hesper_safety,
-#                  hesper_education,
-#                  hesper_care,
-#                  hesper_support,
-#                  hesper_separation,
-#                  hesper_displaced,
-#                  hesper_information,
-#                  hesper_aid,
-#                  hesper_respect,
-#                  hesper_movement,
-#                  hesper_time,
-#                  hesper_law,
-#                  hesper_gbv,
-#                  hesper_drug,
-#                  hesper_mental_health,
-#                  hesper_care_community,
-#                  hesper_other,
-#                  hesper_clean_male)
-#
-#
-# ### combine all the column name parameters into hesper_choices
-# hesper_choices <- c(hesper_drinking_water_choice,
-#                     hesper_food_choice,
-#                     hesper_shelter_choice,
-#                     hesper_toilet_choice,
-#                     hesper_clean_choice,
-#                     hesper_clean_female_choice,
-#                     hesper_clothes_etc_choice,
-#                     hesper_income_livelihood_choice,
-#                     hesper_health_choice,
-#                     hesper_health_care_male_choice,
-#                     hesper_health_care_female_choice,
-#                     hesper_distress_choice,
-#                     hesper_safety_choice,
-#                     hesper_education_choice,
-#                     hesper_care_choice,
-#                     hesper_support_choice,
-#                     hesper_separation_choice,
-#                     hesper_displaced_choice,
-#                     hesper_information_choice,
-#                     hesper_aid_choice,
-#                     hesper_respect_choice,
-#                     hesper_movement_choice,
-#                     hesper_time_choice,
-#                     hesper_law_choice,
-#                     hesper_gbv_choice,
-#                     hesper_drug_choice,
-#                     hesper_mental_health_choice,
-#                     hesper_care_community_choice,
-#                     hesper_other_choice,
-#                     hesper_clean_male_choice)

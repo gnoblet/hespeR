@@ -1,11 +1,22 @@
+#' @title Custom function that is either warn or stop depending on logical parameter warn
+#'
+#' @param warn A logical: If TRUE, the message will be a warning. Default is FALSE.
+#'
+notify <- function(warn=FALSE, ...) {
+  if (warn) {
+    rlang::warn(...)
+  } else {
+    rlang::abort(...)
+  }
+}
 
 #' @title Check if variables are in data frame
-#' 
+#'
 #' @param df A data frame
 #' @param vars A vector of variable names
-#' 
+#'
 #' @return A stop statement
-check_vars_in_df <- function(df, vars) {
+check_vars_in_df <- function(df, vars, warn=F) {
   vars_nin <- setdiff(vars, colnames(df))
   if (length(vars_nin) > 0) {
     rlang::abort(glue::glue("Variables ", glue::glue_collapse(vars_nin, sep = ", ", last = ", and "), " not found in data frame."))
@@ -14,10 +25,10 @@ check_vars_in_df <- function(df, vars) {
 
 
 #' @title Check for duplicate values
-#' 
+#'
 #' @param vec A vector
 #' @param msg A message
-#' 
+#'
 #' @return A stop statement
 check_dupes <- function(vec, msg) {
   dupes_vec <- unique(vec[duplicated(vec)])
@@ -25,25 +36,25 @@ check_dupes <- function(vec, msg) {
     rlang::abort(
       glue::glue(
         msg,
-        glue::glue_collapse(dupes_vec, sep = ", ", last = ", and "),    
+        glue::glue_collapse(dupes_vec, sep = ", ", last = ", and "),
       )
     )
   }
 }
 
 #' @title Check if variables are of any given class(es)
-#' 
+#'
 #' @param df A data frame
 #' @param vars A vector of variable names
 #' @param class A vector of classes
-#' 
+#'
 #' @return A stop statement
 check_vars_class_in_df <- function(df, vars, class) {
   vars_not_class <- vars[!sapply(df[, ..vars], function(x) checkmate::testClass(x, class))]
   if (length(vars_not_class) > 0) {
     rlang::abort(glue::glue(
-      "Variables ", 
-      glue::glue_collapse(vars_not_class, sep = ", ", last = ", and "), 
+      "Variables ",
+      glue::glue_collapse(vars_not_class, sep = ", ", last = ", and "),
       " are not of class ",
       glue::glue_collapse(class, sep = ", ", last = ", or "),
       "."))
@@ -51,14 +62,14 @@ check_vars_class_in_df <- function(df, vars, class) {
 }
 
 #' @title Check if lists of subset are in the right format
-#' 
+#'
 #' @param sv_l A list of subset dictionaries
-#' 
+#'
 #' @return A stop statement
-check_sv_l <- function(sv_l, df, hesper_vars) {
-    
+check_sv_l <- function(sv_l, df, hesper_vars, warn_subset_val_no_match=F) {
+
   sv_l_assess <- list()
-  
+
   for (sv_el in names(sv_l)) {
 
     # Get sublist
@@ -113,7 +124,15 @@ check_sv_l <- function(sv_l, df, hesper_vars) {
 
     # warn if there is no occurence of "subset_vals" in "subset_var" in df
     if (!any(sublist[["subset_vals"]] %in% df[[sublist[["subset_var"]]]])) {
-      rlang::warn(paste("For subset dictionary", sv_el, "no'subset_vals' exist in 'subset_var' in df"))
+      notify(
+        paste0("For subset dictionary ", sv_el, " none of the following 'subset_vals' {",
+               paste0(setdiff(sublist[["subset_vals"]], df[[sublist[["subset_var"]]]]), collapse="; "),
+               "} exist in the column 'subset_var' {",
+               sublist[["subset_var"]],
+               "} in df:"),
+        warn=warn_subset_val_no_match
+      )
+
     }
 
   }
