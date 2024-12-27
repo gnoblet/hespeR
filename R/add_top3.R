@@ -4,10 +4,10 @@
 #' @param df input dataframe
 #' @param new_var name of the new column
 #' @param vars_unite vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities
-#' 
+#'
 #' @return dataframe with new column
 #' @export
-#' 
+#'
 add_top3 <- function(df, new_var, vars_unite){
 
   #------ Checks
@@ -34,16 +34,13 @@ add_top3 <- function(df, new_var, vars_unite){
   }
 
   #------ Do stuff
-  
-  df[, (new_var) := do.call(paste, c(.SD, sep = " ", na.rm = TRUE)), .SDcols = vars_unite]
-  df[, (new_var) := data.table::fifelse(
-    get(new_var) == "", 
-    NA_character_, 
-    stringr::str_trim(get(new_var)))]
-  
+
+  df[, (new_var) := do.call(paste, c(lapply(.SD, function(x) fifelse(is.na(x), "", x)), sep = " ")),
+     .SDcols = vars_unite]
+  df[, (new_var) := data.table::fifelse(get(new_var) == "", NA_character_, stringr::str_trim(get(new_var)))]
+
   return(df)
 
 }
 
 
-  

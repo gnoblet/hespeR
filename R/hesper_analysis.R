@@ -208,8 +208,8 @@ choice_dnk = "dnk",
 choice_pnta = "pnta",
 choice_na = "not_applicable",
 col_gender = "resp_gender",
-choice_male = "male",
-choice_female = "female",
+choice_male = "masculin",
+choice_female = "feminin",
 col_displacement = "pop_group",
 choice_displaced = c("REF", "PDI"),
 choice_host = c("PND")
@@ -243,7 +243,8 @@ data <- data |>
     hesper_na = parameters$choice_na,
     sv = T,
     sv_l = subset_list,
-    stop_if_subset_no_match = F
+    stop_if_subset_no_match = F,
+    all_bin=F
   )
 
 ## add top three priorities + top 1 2 3 child columns, cleaned for skip logic

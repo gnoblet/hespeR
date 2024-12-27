@@ -129,7 +129,7 @@ check_sv_l <- function(sv_l, df, hesper_vars, warn_subset_val_no_match=F) {
                paste0(setdiff(sublist[["subset_vals"]], df[[sublist[["subset_var"]]]]), collapse="; "),
                "} exist in the column 'subset_var' {",
                sublist[["subset_var"]],
-               "} in df:"),
+               "} in df."),
         warn=warn_subset_val_no_match
       )
 

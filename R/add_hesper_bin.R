@@ -48,7 +48,8 @@ add_hesper_bin<- function(
       subset_vals = c("female")
     )
   ),
-  stop_if_subset_no_match=T
+  stop_if_subset_no_match=T,
+  all_bin=F
 ){
 
   #------ Checks
@@ -61,6 +62,9 @@ add_hesper_bin<- function(
     rlang::warn("Converting df to data.table.")
     data.table::setDT(df)
   }
+
+  # create a shallow copy of df
+  df <- copy(df)
 
   # hesper_vars is a character vector
   checkmate::assertCharacter(hesper_vars, min.chars = 1, any.missing = FALSE)
@@ -124,8 +128,8 @@ add_hesper_bin<- function(
   df <- sum_vals_across(df, hesper_vars, hesper_dnk, "hesper_dnk_n")
   df <- sum_vals_across(df, hesper_vars, hesper_pnta, "hesper_pnta_n")
 
-  # Expand bin
-  # df <- expand_bin(df, hesper_vars)
+  # Expand bin if all_bin=T
+  if (all_bin) df <- expand_bin(df, hesper_vars)
 
   ## This will expand binaries for all hesper items, for all choices (no added value to classic select one analysis?)
   ## Percentages calculated with these binaries would still be over subset excluding skipped respondents + data set to NA during cleaning
@@ -183,6 +187,7 @@ add_hesper_bin<- function(
                             value_1 = c(hesper_serious_problem),
                             value_0 = c(hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na, "NA_skip"),
                             replace = F,
+                            warn_if_no_match = !stop_if_subset_no_match,
                             name_suffix = "binary",
                             sep = ".")
 
@@ -192,6 +197,7 @@ add_hesper_bin<- function(
                             value_1 = c(hesper_serious_problem),
                             value_0 = c(hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na),
                             replace = F,
+                            warn_if_no_match =!stop_if_subset_no_match,
                             name_suffix = "binary_subset",
                             sep = ".")
 
@@ -201,6 +207,7 @@ add_hesper_bin<- function(
                             value_1 = c(hesper_dnk, hesper_pnta, hesper_na),
                             value_0 = c(hesper_serious_problem, hesper_no_serious_problem),
                             replace = F,
+                            warn_if_no_match =!stop_if_subset_no_match,
                             name_suffix = "binary_undefined",
                             sep = ".")
 
