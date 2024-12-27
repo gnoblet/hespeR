@@ -34,10 +34,10 @@ add_top3 <- function(df, new_var, vars_unite){
   }
 
   #------ Do stuff
-
-  df[, (new_var) := do.call(paste, c(lapply(.SD, function(x) fifelse(is.na(x), "", x)), sep = " ")),
-     .SDcols = vars_unite]
-  df[, (new_var) := data.table::fifelse(get(new_var) == "", NA_character_, stringr::str_trim(get(new_var)))]
+  df[, (new_var) := {
+    temp <- do.call(paste, c(lapply(.SD, function(x) fifelse(is.na(x), "", x)), sep = " "))
+    fifelse(stringr::str_trim(temp) == "", NA_character_, stringr::str_trim(temp))
+  }, .SDcols = vars_unite]
 
   return(df)
 
