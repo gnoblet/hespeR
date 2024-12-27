@@ -47,7 +47,9 @@ add_hesper_bin<- function(
       subset_var  = "resp_gender",
       subset_vals = c("female")
     )
-  )
+  ),
+  stop_if_subset_no_match=T,
+  all_bin=F
 ){
 
   #------ Checks
@@ -60,6 +62,9 @@ add_hesper_bin<- function(
     rlang::warn("Converting df to data.table.")
     data.table::setDT(df)
   }
+
+  # create a shallow copy of df
+  df <- copy(df)
 
   # hesper_vars is a character vector
   checkmate::assertCharacter(hesper_vars, min.chars = 1, any.missing = FALSE)
@@ -88,8 +93,8 @@ add_hesper_bin<- function(
   checkmate::assertCharacter(hesper_pnta, len = 1, min.chars = 1, any.missing = FALSE)
   checkmate::assertCharacter(hesper_na, len = 1, min.chars = 1, any.missing = FALSE)
 
-  # hesper_vars only contains values in hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta and hesper_na
-  check_vars_in_set(df, hesper_vars, c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na))
+  # hesper_vars only contains values in hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta and hesper_na and NA_skip
+  check_vars_in_set(df, hesper_vars, c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na, "NA_skip"))
 
   # sv is a logical scalar
   checkmate::assertLogical(sv, len = 1, any.missing = FALSE)
@@ -98,10 +103,8 @@ add_hesper_bin<- function(
     # sv_l is a named list
     checkmate::assertList(sv_l, names = "unique")
     # sv_l items has three items only that are named hesper_vars, subset_var and subset_vals:
-    check_sv_l(sv_l, df, hesper_vars)
+    check_sv_l(sv_l, df, hesper_vars, warn_subset_val_no_match=!stop_if_subset_no_match)
   }
-
-
 
   #------ Prepare intermediate variables
 
@@ -125,8 +128,8 @@ add_hesper_bin<- function(
   df <- sum_vals_across(df, hesper_vars, hesper_dnk, "hesper_dnk_n")
   df <- sum_vals_across(df, hesper_vars, hesper_pnta, "hesper_pnta_n")
 
-  # Expand bin
-  df <- expand_bin(df, hesper_vars)
+  # Expand bin if all_bin=T
+  if (all_bin) df <- expand_bin(df, hesper_vars)
 
   ## This will expand binaries for all hesper items, for all choices (no added value to classic select one analysis?)
   ## Percentages calculated with these binaries would still be over subset excluding skipped respondents + data set to NA during cleaning
@@ -183,9 +186,8 @@ add_hesper_bin<- function(
     add_val_in_set_binaries(cols_character = hesper_vars,
                             value_1 = c(hesper_serious_problem),
                             value_0 = c(hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na, "NA_skip"),
-                            value_na = NULL,
-                            value_default = 0,
                             replace = F,
+                            warn_if_no_match = !stop_if_subset_no_match,
                             name_suffix = "binary",
                             sep = ".")
 
@@ -194,9 +196,8 @@ add_hesper_bin<- function(
     add_val_in_set_binaries(cols_character = hesper_vars,
                             value_1 = c(hesper_serious_problem),
                             value_0 = c(hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na),
-                            value_na = NULL,
-                            value_default = 0,
                             replace = F,
+                            warn_if_no_match =!stop_if_subset_no_match,
                             name_suffix = "binary_subset",
                             sep = ".")
 
@@ -205,9 +206,8 @@ add_hesper_bin<- function(
     add_val_in_set_binaries(cols_character = hesper_vars,
                             value_1 = c(hesper_dnk, hesper_pnta, hesper_na),
                             value_0 = c(hesper_serious_problem, hesper_no_serious_problem),
-                            value_na = NULL,
-                            value_default = 0,
                             replace = F,
+                            warn_if_no_match =!stop_if_subset_no_match,
                             name_suffix = "binary_undefined",
                             sep = ".")
 
