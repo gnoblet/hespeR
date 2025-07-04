@@ -15,25 +15,27 @@
 #'
 #' @export
 #'
-add_hesper_top3 <- function(df,
-                            vars_priority = c("hesper_priority_first",
-                                              "hesper_priority_second",
-                                              "hesper_priority_third"),
-                            var_hesper_top_three="hesper_top_three_priorities",
-                            sv_l = list(
-                              displaced = list(
-                                hesper_vars = c("hesper_displaced"),
-                                subset_var  = "pop_group",
-                                subset_vals = c("refugees", "idp")
-                              ),
-                              resp_gender_female = list(
-                                hesper_vars = c("hesper_clean_female"),
-                                subset_var  = "resp_gender",
-                                subset_vals = c("female")
-                              )
-                            )
-){
-
+add_hesper_top3 <- function(
+  df,
+  vars_priority = c(
+    "hesper_priority_first",
+    "hesper_priority_second",
+    "hesper_priority_third"
+  ),
+  var_hesper_top_three = "hesper_top_three_priorities",
+  sv_l = list(
+    displaced = list(
+      hesper_vars = c("hesper_displaced"),
+      subset_var = "pop_group",
+      subset_vals = c("refugees", "idp")
+    ),
+    resp_gender_female = list(
+      hesper_vars = c("hesper_clean_female"),
+      subset_var = "resp_gender",
+      subset_vals = c("female")
+    )
+  )
+) {
   #------ Checks
 
   # df is a dataframe
@@ -77,9 +79,12 @@ add_hesper_top3 <- function(df,
   df <- expand_bin(df, c(vars_priority, var_hesper_top_three))
 
   ## For each subset clean the child columns ensure that skip logic are respected for top three to avoid having binaries with zero for items that are not applicable to the respondent
-  df <- clean_top_priorities_subset(df, col_prio = c(vars_priority, var_hesper_top_three), sv_l_val=sv_l, choice_suffix_subset=NULL)
+  df <- clean_top_priorities_subset(
+    df,
+    col_prio = c(vars_priority, var_hesper_top_three),
+    sv_l_val = sv_l,
+    choice_suffix_subset = NULL
+  )
 
   return(df)
-
 }
-

@@ -36,18 +36,18 @@
 # #'                     sep = ".",
 # #'                     col_parent = "hesper_top_three_priorities",
 # #'                     choice_vals = c("hesper_displaced", "hesper_info_displaced", "cleaning_displaced"))
-replace_na_subset <- function(df,
-                              subset_col,
-                              subset_value,
-                              sep=".",
-                              col_parent,
-                              choice_vals
-                              ) {
-
+replace_na_subset <- function(
+  df,
+  subset_col,
+  subset_value,
+  sep = ".",
+  col_parent,
+  choice_vals
+) {
   #------ Checks
 
   # if checkmate:: datatable not true, transform in DT
-  if (!checkmate::testDataTable(df)){
+  if (!checkmate::testDataTable(df)) {
     df <- data.table::as.data.table(df)
   }
 
@@ -57,7 +57,14 @@ replace_na_subset <- function(df,
   ## check that subset_value is in subset_col, or stop and print unique values
   if (!any(subset_value %in% unique(df[[subset_col]]))) {
     unique_values <- unique(df[[subset_col]])
-    rlang::abort(paste0("The value ", subset_value, " is not in the column ", subset_col, ". Unique values are: ", paste(unique_values, collapse = ", ")))
+    rlang::abort(paste0(
+      "The value ",
+      subset_value,
+      " is not in the column ",
+      subset_col,
+      ". Unique values are: ",
+      paste(unique_values, collapse = ", ")
+    ))
   }
 
   ## if sep is special character, escape it with \\ (use checkmate)
@@ -67,19 +74,37 @@ replace_na_subset <- function(df,
   }
 
   ## check that choice separator is the relevant one
-  all.cols <- purrr::map(col_parent, \(x) colnames(df)[grepl(paste0(x, sep.escaped), colnames(df))]) |> unlist()
+  all.cols <- purrr::map(col_parent, \(x) {
+    colnames(df)[grepl(paste0(x, sep.escaped), colnames(df))]
+  }) |>
+    unlist()
 
   if (length(all.cols) == 0) {
-    rlang::abort(paste0("No child columns with the parent column ", col_parent, " and choice separator ", sep, " were found in df."))
+    rlang::abort(paste0(
+      "No child columns with the parent column ",
+      col_parent,
+      " and choice separator ",
+      sep,
+      " were found in df."
+    ))
   }
   ## if not all choice_vals in df, stop and print the missing cols
   missing_cols <- paste0(col_parent, sep, choice_vals) |> setdiff(all.cols)
   if (length(missing_cols) > 0) {
-    rlang::abort(paste0("The following child columns are missing: ", paste(missing_cols, collapse = ", ")))
+    rlang::abort(paste0(
+      "The following child columns are missing: ",
+      paste(missing_cols, collapse = ", ")
+    ))
   }
 
   ## replace binary columns with NA for the subset of the df if there is a match
-  cols.subset <- purrr::map(col_parent, \(x) colnames(df)[grepl(paste0(x, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"), colnames(df))]) |> unlist()
+  cols.subset <- purrr::map(col_parent, \(x) {
+    colnames(df)[grepl(
+      paste0(x, sep.escaped, "(", paste0(choice_vals, collapse = "|"), ")"),
+      colnames(df)
+    )]
+  }) |>
+    unlist()
   df[get(subset_col) %in% subset_value, (cols.subset) := NA]
 
   return(df)

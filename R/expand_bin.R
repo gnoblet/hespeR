@@ -14,19 +14,28 @@
 #' @param remove_new_bin A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.
 #' @param remove_other_bin A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.
 #' @return The modified dataframe with as many binary columns as there are choices in the original variable.
-#' 
+#'
 #' @importFrom data.table `.SD`
 #' @importFrom data.table `:=`
 #' @importFrom data.table `.I`
-#' 
+#'
 #' @examples
 #' df <- data.frame(var1 = c("a b c", "a c", "d", NA), var2 = c("a b c", "a c", "c a", NA))
 #' df <- expand_bin(df, c("var1", "var2"))
 #' df
-#' 
+#'
 #' @export
-expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined = NULL, value_in = NULL, value_in_suffix = NULL, remove_new_bin = TRUE, remove_other_bin = TRUE) {
-
+expand_bin <- function(
+  df,
+  vars,
+  split_by = " ",
+  bin_sep = ".",
+  drop_undefined = NULL,
+  value_in = NULL,
+  value_in_suffix = NULL,
+  remove_new_bin = TRUE,
+  remove_other_bin = TRUE
+) {
   #------ Checks
 
   # df is a dataframe
@@ -44,7 +53,7 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
   # bin_sep is character of length 1
   checkmate::assertCharacter(bin_sep, len = 1, min.chars = 1)
 
-  # vars is a character vector 
+  # vars is a character vector
   checkmate::assertCharacter(vars, min.chars = 1)
 
   # all vars are in df
@@ -69,15 +78,13 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
   checkmate::assertLogical(remove_other_bin, len = 1)
 
   #------ Do stuff
-    
 
-  # Create a unique id for each row 
+  # Create a unique id for each row
   df[, 'key_id' := .I]
 
   for (var in vars) {
-
     # Step 1: Create binary indicators for each choice in `var`
-      
+
     # Drop undefined
     if (!is.null(drop_undefined)) {
       df_bin <- drop_undefined(df, var, vals_undefined = drop_undefined)
@@ -85,72 +92,92 @@ expand_bin <- function(df, vars, split_by = " ", bin_sep = ".", drop_undefined =
       df_bin <- df
     }
 
-    # Split longer (removing NAs) 
+    # Split longer (removing NAs)
     df_bin <- df_bin[
-      !is.na(get(var)), 
-      list(temp = unlist(strsplit(get(var), split_by, fixed = TRUE))), 
-      by = "key_id"]
-    
+      !is.na(get(var)),
+      list(temp = unlist(strsplit(get(var), split_by, fixed = TRUE))),
+      by = "key_id"
+    ]
+
     # Remove duplicates
     df_bin <- unique(df_bin, by = c("key_id", "temp"))
-      
+
     # Reshape to wide format, filling missing values with 0
-    df_bin <- data.table::dcast(df_bin, key_id ~ paste0(var, bin_sep, temp), value.var = "temp", fun.aggregate = length, fill = 0)
-      
+    df_bin <- data.table::dcast(
+      df_bin,
+      key_id ~ paste0(var, bin_sep, temp),
+      value.var = "temp",
+      fun.aggregate = length,
+      fill = 0
+    )
+
     # Get new binary column names
     names_bin <- setdiff(colnames(df_bin), "key_id")
-    
-    if (remove_new_bin){
+
+    if (remove_new_bin) {
       # Remove from df the names_bin binary columns if they exist, and warn for replacement
       names_bin_replace <- names_bin[names_bin %in% colnames(df)]
-      if (length(names_bin_replace) > 0){
+      if (length(names_bin_replace) > 0) {
         warn_replace(df, names_bin)
         df[, (names_bin_replace) := NULL]
       }
     }
-      
-    if (remove_other_bin){
+
+    if (remove_other_bin) {
       # Also remove all variables starting with "varbinsep" to avoid confusion
-      names_bin_removal <- colnames(df)[startsWith(colnames(df), paste0(var, "."))]
-      if (length(names_bin_removal) > 0){
+      names_bin_removal <- colnames(df)[startsWith(
+        colnames(df),
+        paste0(var, ".")
+      )]
+      if (length(names_bin_removal) > 0) {
         warn_removal(df, names_bin_removal)
         df[, (names_bin_removal) := NULL]
       }
     }
-      
+
     # Intermediate step - value in
     if (!is.null(value_in)) {
-
       names_bin.value_in <- paste0(var, bin_sep, value_in)
-      
+
       # if this binary variables does not exist, create it and add NAs when var is NA
       for (name in names_bin.value_in) {
-
         if (!(name %in% colnames(df_bin))) {
           df_bin[, (name) := ifelse(is.na(get(var)), NA, 0)]
         }
       }
 
-      # if any of names_bin.value_in is 1, then add 1 to a new variable 
+      # if any of names_bin.value_in is 1, then add 1 to a new variable
       if (is.null(value_in_suffix)) {
         name.bin.suffix <- paste0(var, ".", "value_in")
       } else {
         name.bin.suffix <- paste0(var, ".", value_in_suffix)
-      } 
-      df_bin[, (name.bin.suffix) := data.table::fifelse(rowSums(.SD) > 0, 1, 0), .SDcols = names_bin.value_in]
-
+      }
+      df_bin[,
+        (name.bin.suffix) := data.table::fifelse(rowSums(.SD) > 0, 1, 0),
+        .SDcols = names_bin.value_in
+      ]
     }
-    
+
     # Step 2: Merge back the binary columns to the original dataframe and remove row_id
     df <- merge(df, df_bin, by = "key_id", all.x = TRUE)
-    
+
     # Step 3: Reorder columns to place binary columns after `var`
-    data.table::setcolorder(df, c(setdiff(colnames(df), c(var, names_bin)), var, names_bin))
+    data.table::setcolorder(
+      df,
+      c(setdiff(colnames(df), c(var, names_bin)), var, names_bin)
+    )
     # reorder value_in columns
     if (!is.null(value_in)) {
-      data.table::setcolorder(df, c(setdiff(colnames(df), c(var, names_bin, name.bin.suffix)), var, names_bin, name.bin.suffix))
+      data.table::setcolorder(
+        df,
+        c(
+          setdiff(colnames(df), c(var, names_bin, name.bin.suffix)),
+          var,
+          names_bin,
+          name.bin.suffix
+        )
+      )
     }
-
   }
 
   # Step 4: Remove key_id

@@ -8,8 +8,7 @@
 #' @return dataframe with new column
 #' @export
 #'
-add_top3 <- function(df, new_var, vars_unite){
-
+add_top3 <- function(df, new_var, vars_unite) {
   #------ Checks
 
   # df is a dataframe
@@ -29,18 +28,27 @@ add_top3 <- function(df, new_var, vars_unite){
 
   # all vars are in df and of class character
   for (var in vars_unite) {
-    if (!(var %in% colnames(df))) rlang::abort(paste0("Variable ", var, " not found in df."))
+    if (!(var %in% colnames(df))) {
+      rlang::abort(paste0("Variable ", var, " not found in df."))
+    }
     checkmate::assertClass(df[[var]], "character", .var.name = var)
   }
 
   #------ Do stuff
-  df[, (new_var) := {
-    temp <- do.call(paste, c(lapply(.SD, function(x) fifelse(is.na(x), "", x)), sep = " "))
-    fifelse(stringr::str_trim(temp) == "", NA_character_, stringr::str_trim(temp))
-  }, .SDcols = vars_unite]
+  df[,
+    (new_var) := {
+      temp <- do.call(
+        paste,
+        c(lapply(.SD, function(x) fifelse(is.na(x), "", x)), sep = " ")
+      )
+      fifelse(
+        stringr::str_trim(temp) == "",
+        NA_character_,
+        stringr::str_trim(temp)
+      )
+    },
+    .SDcols = vars_unite
+  ]
 
   return(df)
-
 }
-
-

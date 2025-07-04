@@ -1,23 +1,28 @@
 warn_replace <- function(df, vars) {
-
-    # Remove from df the names.bin binary columns if they exist, and warn for replacement
-    vars_in_lgl <- vars %in% colnames(df)
-    if (any(vars_in_lgl)){
-      vars_in <- vars[vars_in_lgl]
-      rlang::warn(paste0("Variable(s) ", paste(vars_in, collapse = ", "), " already present in df. They will be replaced."))
-    }
-}
-
-warn_removal <- function(df, vars) {
-
-  # Remove from df the names.bin binary columns if they exist, and warn for removal
+  # Remove from df the names.bin binary columns if they exist, and warn for replacement
   vars_in_lgl <- vars %in% colnames(df)
-  if (any(vars_in_lgl)){
+  if (any(vars_in_lgl)) {
     vars_in <- vars[vars_in_lgl]
-    rlang::warn(paste0("Variable(s) ", paste(vars_in, collapse = ", "), " will be removed."))
+    rlang::warn(paste0(
+      "Variable(s) ",
+      paste(vars_in, collapse = ", "),
+      " already present in df. They will be replaced."
+    ))
   }
 }
 
+warn_removal <- function(df, vars) {
+  # Remove from df the names.bin binary columns if they exist, and warn for removal
+  vars_in_lgl <- vars %in% colnames(df)
+  if (any(vars_in_lgl)) {
+    vars_in <- vars[vars_in_lgl]
+    rlang::warn(paste0(
+      "Variable(s) ",
+      paste(vars_in, collapse = ", "),
+      " will be removed."
+    ))
+  }
+}
 
 
 colors_reach <- c(
@@ -162,8 +167,6 @@ colors_reach <- c(
   blue_7_6 = "#0c596b",
   blue_7_7 = "#0c3842"
 )
-
-
 
 # ## quick utils function to run weighted analysis
 # analyse_ci <- function(df, group_var=NULL, var, col_weight, col_strata=NULL){

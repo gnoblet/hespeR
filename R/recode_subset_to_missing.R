@@ -1,5 +1,11 @@
-recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix = NULL, missing_code=NULL) {
-
+recode_subset_to_missing <- function(
+  df,
+  vars,
+  subset_var,
+  subset_vals,
+  suffix = NULL,
+  missing_code = NULL
+) {
   #------ Checks
 
   # df is a dataframe
@@ -15,7 +21,12 @@ recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix =
   checkmate::assertCharacter(vars, min.chars = 1, any.missing = FALSE)
 
   # subset_var is character of length 1
-  checkmate::assertCharacter(subset_var, len = 1, min.chars = 1, any.missing = FALSE)
+  checkmate::assertCharacter(
+    subset_var,
+    len = 1,
+    min.chars = 1,
+    any.missing = FALSE
+  )
 
   # subset_vals is a character vector
   checkmate::assertCharacter(subset_vals, min.chars = 1, any.missing = FALSE)
@@ -32,7 +43,6 @@ recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix =
   # suffix is a character scalar or NULL
   checkmate::assertCharacter(suffix, len = 1, null.ok = TRUE)
 
-
   #------ Recode
 
   # prepare new_vars
@@ -44,15 +54,23 @@ recode_subset_to_missing <- function(df, vars, subset_var, subset_vals, suffix =
 
   # if missing_code not null with character value, use it instead of NA_character_
   if (!is.null(missing_code)) {
-    checkmate::assertCharacter(missing_code, len = 1, min.chars = 1, any.missing = FALSE)
+    checkmate::assertCharacter(
+      missing_code,
+      len = 1,
+      min.chars = 1,
+      any.missing = FALSE
+    )
   } else {
     missing_code <- NA_character_
   }
 
   # recode
   df[,
-    (new_vars) := lapply(.SD, \(x) ifelse(!get(subset_var) %in% subset_vals, missing_code, x)),
-    .SDcols = vars]
+    (new_vars) := lapply(.SD, \(x) {
+      ifelse(!get(subset_var) %in% subset_vals, missing_code, x)
+    }),
+    .SDcols = vars
+  ]
 
   return(df)
 }

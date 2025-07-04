@@ -20,10 +20,14 @@
 #' # Drop undefined values
 #' result <- drop_undefined(df, vars, vals_undefined)
 #' print(result)
-#' 
-#' @export 
- drop_undefined <- function(df, vars, vals_undefined = c("pnta", "dnk"), suffix = NULL){
-
+#'
+#' @export
+drop_undefined <- function(
+  df,
+  vars,
+  vals_undefined = c("pnta", "dnk"),
+  suffix = NULL
+) {
   #------ Checks
 
   # df is a dataframe
@@ -43,7 +47,9 @@
 
   # all vars are in df and of class character
   for (var in vars) {
-    if (!(var %in% colnames(df))) rlang::abort(paste0("Variable ", var, " not found in df."))
+    if (!(var %in% colnames(df))) {
+      rlang::abort(paste0("Variable ", var, " not found in df."))
+    }
     checkmate::assertClass(df[[var]], "character", .var.name = var)
   }
 
@@ -56,9 +62,12 @@
   vars_suffix <- paste0(vars, suffix)
 
   # Drop undefined values
-  df[,(vars_suffix) := lapply(.SD, \(x) ifelse(x %in% vals_undefined, NA_character_, x))
-     , .SDcols = vars]
+  df[,
+    (vars_suffix) := lapply(.SD, \(x) {
+      ifelse(x %in% vals_undefined, NA_character_, x)
+    }),
+    .SDcols = vars
+  ]
 
   return(df)
- 
 }

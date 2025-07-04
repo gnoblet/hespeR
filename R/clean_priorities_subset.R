@@ -30,24 +30,28 @@
 #'
 clean_top_priorities_subset <- function(
   df,
-  col_prio=c("hesper_priority_first", "hesper_priority_second", "hesper_priority_third"),
+  col_prio = c(
+    "hesper_priority_first",
+    "hesper_priority_second",
+    "hesper_priority_third"
+  ),
   sv_l_val = list(
     displaced = list(
       hesper_vars = c("hesper_displaced"),
-      subset_var  = "pop_group",
+      subset_var = "pop_group",
       subset_vals = c("refugees", "idp")
     ),
     resp_gender_female = list(
       hesper_vars = c("hesper_clean_female"),
-      subset_var  = "resp_gender",
+      subset_var = "resp_gender",
       subset_vals = c("female")
     )
   ),
-  sep_val=".",
-  choice_suffix_subset=NULL
-){
+  sep_val = ".",
+  choice_suffix_subset = NULL
+) {
   ## if checkmate:: datatable not true, transform in DT
-  if (!checkmate::testDataTable(df)){
+  if (!checkmate::testDataTable(df)) {
     df <- data.table::as.data.table(df)
   }
 
@@ -61,7 +65,7 @@ clean_top_priorities_subset <- function(
   check_sv_l(sv_l_val, df, hesper_vars)
 
   # replace_na_subset for each sv_l_val as above with the new list structure to clean chid binary for all relevant subset
-  for (i in seq_along(sv_l_val)){
+  for (i in seq_along(sv_l_val)) {
     sv <- sv_l_val[[i]]
     name_subset <- names(sv_l_val)[i]
 
@@ -69,37 +73,63 @@ clean_top_priorities_subset <- function(
     col_prio_sub <- paste0(col_prio, sep_val, sv$hesper_vars)
     col_prio_sub_in_data <- col_prio_sub[col_prio_sub %in% names(df)]
 
-    if (length(col_prio_sub_in_data)>0){
-      message(paste0("Cleaning the top priorities child columns for the subset '",
-                     name_subset,"' corresponding to: ", sv$subset_var, " in '", paste0(sv$subset_vals, collapse = "', '"),
-                     "' for the following hesper choices: ", sv$hesper_vars))
+    if (length(col_prio_sub_in_data) > 0) {
+      message(paste0(
+        "Cleaning the top priorities child columns for the subset '",
+        name_subset,
+        "' corresponding to: ",
+        sv$subset_var,
+        " in '",
+        paste0(sv$subset_vals, collapse = "', '"),
+        "' for the following hesper choices: ",
+        sv$hesper_vars
+      ))
 
       # retrieve choices in df
       ## if sep is special character, escape it with \\ (use checkmate)
       special_chars <- "[\\.\\|\\(|\\)|\\[|\\]|\\{|\\}|\\^|\\$|\\*|\\+|\\?|\\\\|\\.]"
-      if (grepl(special_chars, sep_val)) {sep.escaped <- paste0("\\", sep_val)}
-      choice_prio_in_data <- gsub(paste0(paste0(col_prio, sep.escaped), collapse="|"), "", col_prio_sub_in_data) |> unique()
+      if (grepl(special_chars, sep_val)) {
+        sep.escaped <- paste0("\\", sep_val)
+      }
+      choice_prio_in_data <- gsub(
+        paste0(paste0(col_prio, sep.escaped), collapse = "|"),
+        "",
+        col_prio_sub_in_data
+      ) |>
+        unique()
 
       ## create a new column paste0(col_prio, sep, choice_vals, choice_suffix_subset) with the subset suffix to be cleaned
-      if (!is.null(choice_suffix_subset)){
-        df[, paste0(col_prio_sub_in_data, choice_suffix_subset) := df[, col_prio_sub_in_data, with=F]]
+      if (!is.null(choice_suffix_subset)) {
+        df[,
+          paste0(col_prio_sub_in_data, choice_suffix_subset) := df[,
+            col_prio_sub_in_data,
+            with = F
+          ]
+        ]
       }
 
-      df <- replace_na_subset(df,
-                              subset_col = sv$subset_var,
-                              subset_value = sv$subset_vals,
-                              col_parent = col_prio,
-                              choice_vals = paste0(choice_prio_in_data, choice_suffix_subset),
-                              sep = sep_val)
+      df <- replace_na_subset(
+        df,
+        subset_col = sv$subset_var,
+        subset_value = sv$subset_vals,
+        col_parent = col_prio,
+        choice_vals = paste0(choice_prio_in_data, choice_suffix_subset),
+        sep = sep_val
+      )
     } else {
-      message(paste0("No top priorities child columns found for the subset '",
-                     name_subset,"' corresponding to: ", sv$subset_var, " in '", paste0(sv$subset_vals, collapse = "', '"),
-                     "' for the following hesper choices: ", sv$hesper_vars, ".\nNo cleaning done as no matching child columns."))
+      message(paste0(
+        "No top priorities child columns found for the subset '",
+        name_subset,
+        "' corresponding to: ",
+        sv$subset_var,
+        " in '",
+        paste0(sv$subset_vals, collapse = "', '"),
+        "' for the following hesper choices: ",
+        sv$hesper_vars,
+        ".\nNo cleaning done as no matching child columns."
+      ))
     }
-
   }
 
   return(df)
 }
-
-

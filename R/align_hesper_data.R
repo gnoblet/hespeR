@@ -77,87 +77,85 @@
 #'
 #'
 align_hesper_data <- function(
-    data,
+  data,
 
-    hesper_serious_problem = "serious_problem",
-    hesper_no_serious_problem = "no_serious_problem",
-    hesper_dnk = "dnk",
-    hesper_pnta = "pnta",
-    hesper_na = "not_applicable",
+  hesper_serious_problem = "serious_problem",
+  hesper_no_serious_problem = "no_serious_problem",
+  hesper_dnk = "dnk",
+  hesper_pnta = "pnta",
+  hesper_na = "not_applicable",
 
-    hesper_drinking_water = "hesper_drinking_water",
-    hesper_food = "hesper_food",
-    hesper_shelter = "hesper_shelter",
-    hesper_toilet = "hesper_toilet",
-    hesper_clean = "hesper_clean",
-    hesper_clean_female = "hesper_clean_female",
-    hesper_clothes_etc = "hesper_clothes_etc",
-    hesper_income_livelihood = "hesper_income_livelihood",
-    hesper_health = "hesper_health",
-    hesper_health_care_male = "hesper_health_care_male",
-    hesper_health_care_female = "hesper_health_care_female",
-    hesper_distress = "hesper_distress",
-    hesper_safety = "hesper_safety",
-    hesper_education = "hesper_education",
-    hesper_care = "hesper_care",
-    hesper_support = "hesper_support",
-    hesper_separation = "hesper_separation",
-    hesper_displaced = "hesper_displaced",
-    hesper_information = "hesper_information",
-    hesper_aid = "hesper_aid",
-    hesper_respect = "hesper_respect",
-    hesper_movement = "hesper_movement",
-    hesper_time = "hesper_time",
-    hesper_law = "hesper_law",
-    hesper_gbv = "hesper_gbv",
-    hesper_drug = "hesper_drug",
-    hesper_mental_health = "hesper_mental_health",
-    hesper_care_community = "hesper_care_community",
-    hesper_other = "hesper_other",
-    hesper_clean_male = NULL, ## if individual level HESPER, standard name and item is hesper_clean_male, and replaces hesper_clean
+  hesper_drinking_water = "hesper_drinking_water",
+  hesper_food = "hesper_food",
+  hesper_shelter = "hesper_shelter",
+  hesper_toilet = "hesper_toilet",
+  hesper_clean = "hesper_clean",
+  hesper_clean_female = "hesper_clean_female",
+  hesper_clothes_etc = "hesper_clothes_etc",
+  hesper_income_livelihood = "hesper_income_livelihood",
+  hesper_health = "hesper_health",
+  hesper_health_care_male = "hesper_health_care_male",
+  hesper_health_care_female = "hesper_health_care_female",
+  hesper_distress = "hesper_distress",
+  hesper_safety = "hesper_safety",
+  hesper_education = "hesper_education",
+  hesper_care = "hesper_care",
+  hesper_support = "hesper_support",
+  hesper_separation = "hesper_separation",
+  hesper_displaced = "hesper_displaced",
+  hesper_information = "hesper_information",
+  hesper_aid = "hesper_aid",
+  hesper_respect = "hesper_respect",
+  hesper_movement = "hesper_movement",
+  hesper_time = "hesper_time",
+  hesper_law = "hesper_law",
+  hesper_gbv = "hesper_gbv",
+  hesper_drug = "hesper_drug",
+  hesper_mental_health = "hesper_mental_health",
+  hesper_care_community = "hesper_care_community",
+  hesper_other = "hesper_other",
+  hesper_clean_male = NULL, ## if individual level HESPER, standard name and item is hesper_clean_male, and replaces hesper_clean
 
-    hesper_priority_first="hesper_priority_first",
-    hesper_priority_second="hesper_priority_second",
-    hesper_priority_third="hesper_priority_third",
+  hesper_priority_first = "hesper_priority_first",
+  hesper_priority_second = "hesper_priority_second",
+  hesper_priority_third = "hesper_priority_third",
 
-    hesper_drinking_water_choice = "hesper_drinking_water",
-    hesper_food_choice = "hesper_food",
-    hesper_shelter_choice = "hesper_shelter",
-    hesper_toilet_choice = "hesper_toilet",
-    hesper_clean_choice = "hesper_clean",
-    hesper_clean_female_choice = "hesper_clean_female",
-    hesper_clothes_etc_choice = "hesper_clothes_etc",
-    hesper_income_livelihood_choice = "hesper_income_livelihood",
-    hesper_health_choice = "hesper_health",
-    hesper_health_care_male_choice = "hesper_health_care_male",
-    hesper_health_care_female_choice = "hesper_health_care_female",
-    hesper_distress_choice = "hesper_distress",
-    hesper_safety_choice = "hesper_safety",
-    hesper_education_choice = "hesper_education",
-    hesper_care_choice = "hesper_care",
-    hesper_support_choice = "hesper_support",
-    hesper_separation_choice = "hesper_separation",
-    hesper_displaced_choice = "hesper_displaced",
-    hesper_information_choice = "hesper_information",
-    hesper_aid_choice = "hesper_aid",
-    hesper_respect_choice = "hesper_respect",
-    hesper_movement_choice = "hesper_movement",
-    hesper_time_choice = "hesper_time",
-    hesper_law_choice = "hesper_law",
-    hesper_gbv_choice = "hesper_gbv",
-    hesper_drug_choice = "hesper_drug",
-    hesper_mental_health_choice = "hesper_mental_health",
-    hesper_care_community_choice = "hesper_care_community",
-    hesper_other_choice = "hesper_other",
-    hesper_clean_male_choice = NULL,
+  hesper_drinking_water_choice = "hesper_drinking_water",
+  hesper_food_choice = "hesper_food",
+  hesper_shelter_choice = "hesper_shelter",
+  hesper_toilet_choice = "hesper_toilet",
+  hesper_clean_choice = "hesper_clean",
+  hesper_clean_female_choice = "hesper_clean_female",
+  hesper_clothes_etc_choice = "hesper_clothes_etc",
+  hesper_income_livelihood_choice = "hesper_income_livelihood",
+  hesper_health_choice = "hesper_health",
+  hesper_health_care_male_choice = "hesper_health_care_male",
+  hesper_health_care_female_choice = "hesper_health_care_female",
+  hesper_distress_choice = "hesper_distress",
+  hesper_safety_choice = "hesper_safety",
+  hesper_education_choice = "hesper_education",
+  hesper_care_choice = "hesper_care",
+  hesper_support_choice = "hesper_support",
+  hesper_separation_choice = "hesper_separation",
+  hesper_displaced_choice = "hesper_displaced",
+  hesper_information_choice = "hesper_information",
+  hesper_aid_choice = "hesper_aid",
+  hesper_respect_choice = "hesper_respect",
+  hesper_movement_choice = "hesper_movement",
+  hesper_time_choice = "hesper_time",
+  hesper_law_choice = "hesper_law",
+  hesper_gbv_choice = "hesper_gbv",
+  hesper_drug_choice = "hesper_drug",
+  hesper_mental_health_choice = "hesper_mental_health",
+  hesper_care_community_choice = "hesper_care_community",
+  hesper_other_choice = "hesper_other",
+  hesper_clean_male_choice = NULL,
 
-    sep=".",
+  sep = ".",
 
-    kobo_survey=NULL,
-    kobo_choices=NULL
-
-){
-
+  kobo_survey = NULL,
+  kobo_choices = NULL
+) {
   # data is a dataframe
   checkmate::assertDataFrame(data)
 
@@ -171,25 +169,44 @@ align_hesper_data <- function(
 
   ## get arguments names and organise
   hesper_arg_names = names(formals(sys.function()))[-1] ## excluding data
-  hesper_arg_names_items_ch <- hesper_arg_names[grepl("(problem|dnk|pnta|na)$", hesper_arg_names)]
-  hesper_arg_names_choices = hesper_arg_names[grepl("choice$", hesper_arg_names)]
-  hesper_arg_names_prio = hesper_arg_names[grepl("priority_(first|second|third)$", hesper_arg_names)]
-  hesper_arg_names_items = hesper_arg_names[grepl("^hesper_", hesper_arg_names, perl = TRUE) &
-                                              !grepl("_(choice|priority_(first|second|third)|problem|dnk|pnta|na)$", hesper_arg_names, perl = TRUE)]
+  hesper_arg_names_items_ch <- hesper_arg_names[grepl(
+    "(problem|dnk|pnta|na)$",
+    hesper_arg_names
+  )]
+  hesper_arg_names_choices = hesper_arg_names[grepl(
+    "choice$",
+    hesper_arg_names
+  )]
+  hesper_arg_names_prio = hesper_arg_names[grepl(
+    "priority_(first|second|third)$",
+    hesper_arg_names
+  )]
+  hesper_arg_names_items = hesper_arg_names[
+    grepl("^hesper_", hesper_arg_names, perl = TRUE) &
+      !grepl(
+        "_(choice|priority_(first|second|third)|problem|dnk|pnta|na)$",
+        hesper_arg_names,
+        perl = TRUE
+      )
+  ]
 
   ## get entered arguments
-  call_args <- as.list(match.call())[-c(1,2)] # Exclude the function name and data
+  call_args <- as.list(match.call())[-c(1, 2)] # Exclude the function name and data
   all_args <- as.list(formals(sys.function())) # Retrieve all arguments and their default values
   combined_args <- modifyList(all_args, call_args) # Combine entered values and defaults (entered values override defaults)
   combined_args <- combined_args[!sapply(combined_args, is.null)]
 
   ## entered arguments items non null
   combined_args_items <- combined_args[c(hesper_arg_names_items)]
-  combined_args_items <- combined_args_items[!sapply(combined_args_items, is.null)]
+  combined_args_items <- combined_args_items[
+    !sapply(combined_args_items, is.null)
+  ]
 
   ## entered arguments choices non null
   combined_args_choices <- combined_args[hesper_arg_names_choices]
-  combined_args_choices <- combined_args_choices[!sapply(combined_args_choices, is.null)]
+  combined_args_choices <- combined_args_choices[
+    !sapply(combined_args_choices, is.null)
+  ]
 
   ## entered arguments prio non null
   combined_args_prio <- combined_args[hesper_arg_names_prio]
@@ -198,54 +215,134 @@ align_hesper_data <- function(
   check_vars_in_df(data, combined_args_items)
 
   ## ensure that all combined_args corresponding to hesper_choice are in data
-  check_vars_in_set(data, unlist(unname(combined_args_prio)), combined_args_choices)
+  check_vars_in_set(
+    data,
+    unlist(unname(combined_args_prio)),
+    combined_args_choices
+  )
 
   # hesper_vars only contains values in hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta and hesper_na
-  check_vars_in_set(data, unlist(unname(combined_args_items)), c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na))
+  check_vars_in_set(
+    data,
+    unlist(unname(combined_args_items)),
+    c(
+      hesper_serious_problem,
+      hesper_no_serious_problem,
+      hesper_dnk,
+      hesper_pnta,
+      hesper_na
+    )
+  )
 
   ## Rename column names of hesper items with standard values
-  hesper_item_standard <- unlist(names(c(combined_args_items, combined_args_prio)))
+  hesper_item_standard <- unlist(names(c(
+    combined_args_items,
+    combined_args_prio
+  )))
   hesper_item_data <- unlist(unname(c(combined_args_items, combined_args_prio)))
-  data <- data.table::setnames(data,
-                               hesper_item_data,
-                               hesper_item_standard)
-  rlang::warn(glue::glue("The following columns have been renamed:\n\n",
-                         paste0(hesper_item_data, " to ", hesper_item_standard, collapse="\n")))
+  data <- data.table::setnames(data, hesper_item_data, hesper_item_standard)
+  rlang::warn(glue::glue(
+    "The following columns have been renamed:\n\n",
+    paste0(hesper_item_data, " to ", hesper_item_standard, collapse = "\n")
+  ))
 
   ## Replace old hesper item choices with standard "serious_problem" etc...
-  pattern.replacement <- setNames(c("serious_problem", "no_serious_problem", "dnk", "pnta", "not_applicable"),
-                                  c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na))
+  pattern.replacement <- setNames(
+    c("serious_problem", "no_serious_problem", "dnk", "pnta", "not_applicable"),
+    c(
+      hesper_serious_problem,
+      hesper_no_serious_problem,
+      hesper_dnk,
+      hesper_pnta,
+      hesper_na
+    )
+  )
   ## subset hesper items in data only
-  hesper_vars_in_data <- hesper_arg_names_items[hesper_arg_names_items %in% colnames(data)]
-  data[, c(hesper_vars_in_data) := lapply(.SD,  \(x) str_replace_all(x, pattern.replacement)), .SDcols = hesper_vars_in_data]
-  rlang::warn(glue::glue("The following columns have been aligned:\n",
-                         paste0(hesper_vars_in_data, collapse="; "), "\n\nAccording to these choice values:\n\n",
-                         paste0(names(pattern.replacement), " to ", unname(pattern.replacement), collapse="\n"),
-                         "\n"))
-
+  hesper_vars_in_data <- hesper_arg_names_items[
+    hesper_arg_names_items %in% colnames(data)
+  ]
+  data[,
+    c(hesper_vars_in_data) := lapply(.SD, \(x) {
+      str_replace_all(x, pattern.replacement)
+    }),
+    .SDcols = hesper_vars_in_data
+  ]
+  rlang::warn(glue::glue(
+    "The following columns have been aligned:\n",
+    paste0(hesper_vars_in_data, collapse = "; "),
+    "\n\nAccording to these choice values:\n\n",
+    paste0(
+      names(pattern.replacement),
+      " to ",
+      unname(pattern.replacement),
+      collapse = "\n"
+    ),
+    "\n"
+  ))
 
   ## If any child column for top three starting with combined_args_prio and then ".", remove it
-  if (any(grepl(paste0(paste0("^", unlist(names(combined_args_prio)), sep), collapse="|"), names(data)))){
-    data <- data[, !grepl(paste0(paste0("^", unlist(names(combined_args_prio)), sep), collapse="|"), names(data)), with=F]
-    rlang::warn(glue::glue("The following columns have been removed:\n\n",
-                           paste0(names(data)[grepl(paste0(paste0("^", unlist(names(combined_args_prio)), sep), collapse="|"), names(data))], collapse="; "),
-                           "\n"))
+  if (
+    any(grepl(
+      paste0(
+        paste0("^", unlist(names(combined_args_prio)), sep),
+        collapse = "|"
+      ),
+      names(data)
+    ))
+  ) {
+    data <- data[,
+      !grepl(
+        paste0(
+          paste0("^", unlist(names(combined_args_prio)), sep),
+          collapse = "|"
+        ),
+        names(data)
+      ),
+      with = F
+    ]
+    rlang::warn(glue::glue(
+      "The following columns have been removed:\n\n",
+      paste0(
+        names(data)[grepl(
+          paste0(
+            paste0("^", unlist(names(combined_args_prio)), sep),
+            collapse = "|"
+          ),
+          names(data)
+        )],
+        collapse = "; "
+      ),
+      "\n"
+    ))
   }
 
   ## replace occurence in top 1 2 3 with standard names
-  hesper_choice_standard <- gsub("_choice$", "", unlist(names(combined_args_choices)))
+  hesper_choice_standard <- gsub(
+    "_choice$",
+    "",
+    unlist(names(combined_args_choices))
+  )
   hesper_choice_data <- unlist(unname(combined_args_choices))
-  pattern.replacement <- setNames(hesper_choice_standard, paste0("^", hesper_choice_data, "$"))
-  data[, c(hesper_arg_names_prio) := lapply(.SD,  \(x) str_replace_all(x, pattern.replacement)), .SDcols = hesper_arg_names_prio]
-  rlang::warn(glue::glue("The following columns have been aligned:\n",
-                         paste0(hesper_arg_names_prio, collapse="; "), "\n\nAccording to these new choice values:\n\n",
-                         paste0(hesper_choice_data, " to ", hesper_choice_standard, collapse="\n"),
-                         "\n"))
-
+  pattern.replacement <- setNames(
+    hesper_choice_standard,
+    paste0("^", hesper_choice_data, "$")
+  )
+  data[,
+    c(hesper_arg_names_prio) := lapply(.SD, \(x) {
+      str_replace_all(x, pattern.replacement)
+    }),
+    .SDcols = hesper_arg_names_prio
+  ]
+  rlang::warn(glue::glue(
+    "The following columns have been aligned:\n",
+    paste0(hesper_arg_names_prio, collapse = "; "),
+    "\n\nAccording to these new choice values:\n\n",
+    paste0(hesper_choice_data, " to ", hesper_choice_standard, collapse = "\n"),
+    "\n"
+  ))
 
   ## if kobo survey and choices supplied, replace all old names with new names + old choices with new choices similarly in
-  if(!is.null(kobo_survey) & !is.null(kobo_choices)){
-
+  if (!is.null(kobo_survey) & !is.null(kobo_choices)) {
     # kobo_survey & kobo_choices are dataframes
     checkmate::assertDataFrame(kobo_survey)
     checkmate::assertDataFrame(kobo_choices)
@@ -264,43 +361,82 @@ align_hesper_data <- function(
     kobo_choices <- copy(kobo_choices)
 
     ## 1. clean tool names
-    pattern.replacement <- setNames(hesper_item_standard, paste0("^", hesper_item_data, "$"))
-    kobo_survey[, name:=str_replace_all(name, pattern.replacement)]
+    pattern.replacement <- setNames(
+      hesper_item_standard,
+      paste0("^", hesper_item_data, "$")
+    )
+    kobo_survey[, name := str_replace_all(name, pattern.replacement)]
     rlang::warn(
-      glue::glue("Cleaning names for hesper items and top three priorities in kobo tool choices\n",
-                 "The name column has been aligned in kobo_survey according to these new values:\n\n",
-                 paste0(hesper_item_data, " to ", hesper_item_data, collapse="\n"),
-                 "\n")
+      glue::glue(
+        "Cleaning names for hesper items and top three priorities in kobo tool choices\n",
+        "The name column has been aligned in kobo_survey according to these new values:\n\n",
+        paste0(hesper_item_data, " to ", hesper_item_data, collapse = "\n"),
+        "\n"
+      )
     )
 
     ## 2. clean tool choices
 
     ## clean hesper top three priorities
-    pattern.replacement <- setNames(hesper_choice_standard, paste0("^", hesper_choice_data, "$"))
-    kobo_choices[, name:=str_replace_all(name, pattern.replacement)]
+    pattern.replacement <- setNames(
+      hesper_choice_standard,
+      paste0("^", hesper_choice_data, "$")
+    )
+    kobo_choices[, name := str_replace_all(name, pattern.replacement)]
     rlang::warn(
-      glue::glue("Cleaning choices for top three priorities in kobo tool choices\n",
-                 "The name column has been aligned in kobo_choices according to these new values:\n\n",
-                 paste0(hesper_choice_data, " to ", hesper_choice_standard, collapse="\n"),
-                 "\n")
+      glue::glue(
+        "Cleaning choices for top three priorities in kobo tool choices\n",
+        "The name column has been aligned in kobo_choices according to these new values:\n\n",
+        paste0(
+          hesper_choice_data,
+          " to ",
+          hesper_choice_standard,
+          collapse = "\n"
+        ),
+        "\n"
+      )
     )
 
     ## clean hesper serious problem / no serious problem etc...
-    pattern.replacement <- setNames(c("serious_problem", "no_serious_problem", "dnk", "pnta", "not_applicable"),
-                                    c(hesper_serious_problem, hesper_no_serious_problem, hesper_dnk, hesper_pnta, hesper_na))
-    kobo_choices[, name:=str_replace_all(name, pattern.replacement)]
+    pattern.replacement <- setNames(
+      c(
+        "serious_problem",
+        "no_serious_problem",
+        "dnk",
+        "pnta",
+        "not_applicable"
+      ),
+      c(
+        hesper_serious_problem,
+        hesper_no_serious_problem,
+        hesper_dnk,
+        hesper_pnta,
+        hesper_na
+      )
+    )
+    kobo_choices[, name := str_replace_all(name, pattern.replacement)]
     rlang::warn(
-      glue::glue("Cleaning choices for hesper items in kobo tool choices\n",
-                 "The name column has been aligned in kobo_choices according to these new values:\n\n",
-                 paste0(names(pattern.replacement), " to ", unname(pattern.replacement), collapse="\n"),
-                 "\n")
+      glue::glue(
+        "Cleaning choices for hesper items in kobo tool choices\n",
+        "The name column has been aligned in kobo_choices according to these new values:\n\n",
+        paste0(
+          names(pattern.replacement),
+          " to ",
+          unname(pattern.replacement),
+          collapse = "\n"
+        ),
+        "\n"
+      )
     )
 
-    return(list(data=data, kobo_survey=kobo_survey, kobo_choices=kobo_choices))} else {
-      return(data)
+    return(list(
+      data = data,
+      kobo_survey = kobo_survey,
+      kobo_choices = kobo_choices
+    ))
+  } else {
+    return(data)
   }
-
-
 }
 #
 #
@@ -475,4 +611,3 @@ align_hesper_data <- function(
 # args <- ls(pattern = "^hesper") %>% str_subset("df|hesper_dat|hesper_vars|_arg_|hesper_opts|problem|dnk|pnta|_na$", negate=T)
 # args_val <- lapply(args, get)
 # call_args <- setNames(args_val, args)
-
