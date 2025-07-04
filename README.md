@@ -1,5 +1,9 @@
 # hespeR
 
+  <!-- badges: start -->
+  [![R-CMD-check](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svghttps://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svghttps://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
+
  R Handle of The Humanitarian Emergency Settings Perceived Needs Scale (HESPER)
 
 ## To install
