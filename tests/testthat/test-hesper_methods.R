@@ -1,5 +1,11 @@
 test_that("add_hesper_column works for HesperDefault and HesperEnhanced", {
-  hesper_levels <- c("serious_problem", "no_serious_problem", "dnk", "pnta", "not_applicable")
+  hesper_levels <- c(
+    "serious_problem",
+    "no_serious_problem",
+    "dnk",
+    "pnta",
+    "not_applicable"
+  )
   df <- HesperDefault(
     data = list(hesper_drinking_water = c("serious_problem", "dnk")),
     hesper_levels = hesper_levels
@@ -16,7 +22,13 @@ test_that("add_hesper_column works for HesperDefault and HesperEnhanced", {
 })
 
 test_that("apply_skip_logic sets NA correctly", {
-  hesper_levels <- c("serious_problem", "no_serious_problem", "dnk", "pnta", "not_applicable")
+  hesper_levels <- c(
+    "serious_problem",
+    "no_serious_problem",
+    "dnk",
+    "pnta",
+    "not_applicable"
+  )
   df <- HesperDefault(
     data = list(
       hesper_displaced = c("serious_problem", "dnk", "no_serious_problem"),
@@ -30,5 +42,8 @@ test_that("apply_skip_logic sets NA correctly", {
     subset_vals = c("refugees", "idp")
   )
   df2 <- apply_skip_logic(df, sl)
-  expect_equal(df2@data$hesper_displaced, c("serious_problem", NA, "no_serious_problem"))
+  expect_equal(
+    df2@data$hesper_displaced,
+    c("serious_problem", NA, "no_serious_problem")
+  )
 })
