@@ -4,7 +4,7 @@
 \alias{check_sv_l}
 \title{Check if lists of subset are in the right format}
 \usage{
-check_sv_l(sv_l, df, hesper_vars)
+check_sv_l(sv_l, df, hesper_vars, warn_subset_val_no_match = F)
 }
 \arguments{
 \item{sv_l}{A list of subset dictionaries}

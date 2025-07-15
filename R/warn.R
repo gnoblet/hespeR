@@ -62,9 +62,9 @@ warn_var_msg <- function(df, vars, msg) {
 #'
 #' @param df The data frame to check for existing variables
 #' @param var A variable name
-#' @param set A character vector of values to check for
+#' @param vals A character vector of values to check for
 #'
-#' @details This function checks if any of the variables in `vars` contain no values in `set`.
+#' @details This function checks if any of the variables in `vars` contain no values in `vals`.
 #'
 #' @export
 warn_var_no_vals <- function(df, var, vals) {

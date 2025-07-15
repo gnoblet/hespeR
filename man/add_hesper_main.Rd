@@ -35,7 +35,6 @@ add_hesper_main(
   hesper_item_non_displaced = NULL,
   add_binaries = TRUE,
   add_binaries_subset = TRUE,
-  subset = TRUE,
   add_binaries_undefined = TRUE
 )
 }
@@ -82,9 +81,9 @@ add_hesper_main(
 
 \item{add_binaries_subset}{logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population}
 
-\item{subset}{logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population}
-
 \item{add_binaries_undefined}{logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population}
+
+\item{subset}{logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population}
 }
 \value{
 dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column

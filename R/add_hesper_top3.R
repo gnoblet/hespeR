@@ -68,7 +68,7 @@ add_hesper_top3 <- function(
   checkmate::assertList(sv_l, names = "unique")
 
   # sv_l items has three items only that are named hesper_vars, subset_var and subset_vals:
-  check_sv_l(sv_l, df, hesper_vars)
+  check_sv_l(sv_l, df, 'hesper_vars')
 
   # collapse priority columns to a select multiple column, create dummy binary child columns (with/without subset) + ensure respect skip logic for top three child col
 

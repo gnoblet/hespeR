@@ -10,3 +10,4 @@
 ^data-raw$
 ^resources/
 ^test.R
+^README\.Rmd$

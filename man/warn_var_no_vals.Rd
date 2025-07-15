@@ -11,11 +11,11 @@ warn_var_no_vals(df, var, vals)
 
 \item{var}{A variable name}
 
-\item{set}{A character vector of values to check for}
+\item{vals}{A character vector of values to check for}
 }
 \description{
 Warn if a variable contains no values in a set
 }
 \details{
-This function checks if any of the variables in \code{vars} contain no values in \code{set}.
+This function checks if any of the variables in \code{vars} contain no values in \code{vals}.
 }

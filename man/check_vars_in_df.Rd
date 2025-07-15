@@ -4,7 +4,7 @@
 \alias{check_vars_in_df}
 \title{Check if variables are in data frame}
 \usage{
-check_vars_in_df(df, vars)
+check_vars_in_df(df, vars, warn = F)
 }
 \arguments{
 \item{df}{A data frame}

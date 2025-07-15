@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' # Create a sample data frame
-#' df <- data.table::data.frame(x = c("a", "b", "pnta", "dnk", "e"), y = c("a", "b", "c", "d", "e"))
+#' df <- data.frame(x = c("a", "b", "pnta", "dnk", "e"), y = c("a", "b", "c", "d", "e"))
 #'
 #' # Define variables and undefined values
 #' vars <- c("x", "y")

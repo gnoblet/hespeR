@@ -3,14 +3,25 @@
 \docType{data}
 \name{hesper_dat}
 \alias{hesper_dat}
-\title{Some Hesper  dummy data}
+\title{Some Hesper dummy data}
 \format{
-A list of variables, aka a data.frame
+A data.frame with columns:
+\describe{
+\item{hesper_*}{Character columns for each HESPER item, e.g., hesper_drinking_water, hesper_food, ...}
+\item{pop_group}{(optional) Character column for population group, e.g., refugees, host, idp}
+\item{...}{Other possible metadata columns}
+}
+}
+\source{
+Generated for hespeR package examples and tests.
 }
 \usage{
 hesper_dat
 }
 \description{
-A dataset with hesper columns
+A dataset with hesper columns, for example and testing purposes.
+}
+\details{
+This data frame contains columns corresponding to all possible HESPER items, as well as possible grouping or metadata columns (e.g., pop_group). Values in HESPER columns are restricted to the allowed HESPER response levels.
 }
 \keyword{datasets}

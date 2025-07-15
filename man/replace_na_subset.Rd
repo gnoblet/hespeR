@@ -5,7 +5,7 @@
 \title{Replace binary columns with NA for a subset of the data}
 \usage{
 replace_na_subset(
-  data,
+  df,
   subset_col,
   subset_value,
   sep = ".",
@@ -14,7 +14,7 @@ replace_na_subset(
 )
 }
 \arguments{
-\item{data}{A data.table or data.frame: The data to be processed.}
+\item{df}{A data.table or data.frame: The data to be processed.}
 
 \item{subset_col}{A character vector: The name of the column that defines the subset.}
 

@@ -5,11 +5,11 @@
 #' Additionnal argument can be used to add a suffix to the column names of the binary created
 
 #' @param df A df.table or df.frame: The df to be processed.
-#' @param cols_character A character vector: The name of the columns that will be used to create binary columns.
-#' @param value_1 A character vector: Set of values for which binary columns will be populated with 1 if `cols_character` is inside this set.
-#' @param value_0 A character vector: Set of values for which binary columns will be populated with 0 if `cols_character` is inside this set.
-#' @param value_na A character vector: Set of values for which binary columns will be populated with NA if `cols_character` is inside this set.
-#' @param value_default A character vector: Set of values for which binary columns will be populated with otherwise. Will be overriden with 0 if value_0 = NULL and with NA if value_na = NULL
+#' @param vars A character vector: The name of the columns that will be used to create binary columns.
+#' @param vals_1 A character vector: Set of values for which binary columns will be populated with 1 if `cols_character` is inside this set.
+#' @param vals_0 A character vector: Set of values for which binary columns will be populated with 0 if `cols_character` is inside this set.
+#' @param vals_na A character vector: Set of values for which binary columns will be populated with NA if `cols_character` is inside this set.
+#' @param default_val A character vector: Set of values for which binary columns will be populated with otherwise. Will be overriden with 0 if value_0 = NULL and with NA if value_na = NULL
 #' @param suffix A character vector: The suffix to be added to the added binary vars. If NULL, vars are replaced by binary vars.
 #' @param sep A character vector: separator used to add name suffix to original column names
 #' @return A df.table or df.frame with the binary columns added.
@@ -26,7 +26,7 @@
 # #'
 # #' hesper_dat_comp <- hesper_dat |>
 # #'      ## Add HESPER binaries - global => prevalence of serious problem on all sample (regardless of subset or cleaning or undefined)
-# #'      add_val_in_set_binaries(cols_character = hesper_vars,
+# #'      add_binaries_from_set(cols_character = hesper_vars,
 # #'                          value_1 = c("serious_problem"),
 # #'                          value_0 = NULL,
 # #'                          value_na = NULL,
@@ -35,7 +35,7 @@
 # #'                          suffix = "binary",
 # #'                          sep = ".") %>%
 # #'      ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
-# #'      add_val_in_set_binaries(cols_character = hesper_vars,
+# #'      add_binaries_from_set(cols_character = hesper_vars,
 # #'                              value_1 = c("serious_problem"),
 # #'                              value_0 = c("no_serious_problem"),
 # #'                              value_na = NULL,
@@ -44,7 +44,7 @@
 # #'                              suffix = "binary_subset",
 # #'                              sep = ".") %>%
 # #'      ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices]
-# #'      add_val_in_set_binaries(cols_character = hesper_vars,
+# #'      add_binaries_from_set(cols_character = hesper_vars,
 # #'                              value_1 = c("pnta", "dnk", "not_applicable"),
 # #'                              value_0 = NULL,
 # #'                              value_na = NULL,

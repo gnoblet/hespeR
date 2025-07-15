@@ -18,19 +18,19 @@ add_binaries_from_set(
 \arguments{
 \item{df}{A df.table or df.frame: The df to be processed.}
 
+\item{vars}{A character vector: The name of the columns that will be used to create binary columns.}
+
+\item{vals_0}{A character vector: Set of values for which binary columns will be populated with 0 if \code{cols_character} is inside this set.}
+
+\item{vals_1}{A character vector: Set of values for which binary columns will be populated with 1 if \code{cols_character} is inside this set.}
+
+\item{vals_na}{A character vector: Set of values for which binary columns will be populated with NA if \code{cols_character} is inside this set.}
+
+\item{default_val}{A character vector: Set of values for which binary columns will be populated with otherwise. Will be overriden with 0 if value_0 = NULL and with NA if value_na = NULL}
+
 \item{suffix}{A character vector: The suffix to be added to the added binary vars. If NULL, vars are replaced by binary vars.}
 
 \item{sep}{A character vector: separator used to add name suffix to original column names}
-
-\item{cols_character}{A character vector: The name of the columns that will be used to create binary columns.}
-
-\item{value_1}{A character vector: Set of values for which binary columns will be populated with 1 if \code{cols_character} is inside this set.}
-
-\item{value_0}{A character vector: Set of values for which binary columns will be populated with 0 if \code{cols_character} is inside this set.}
-
-\item{value_na}{A character vector: Set of values for which binary columns will be populated with NA if \code{cols_character} is inside this set.}
-
-\item{value_default}{A character vector: Set of values for which binary columns will be populated with otherwise. Will be overriden with 0 if value_0 = NULL and with NA if value_na = NULL}
 }
 \value{
 A df.table or df.frame with the binary columns added.

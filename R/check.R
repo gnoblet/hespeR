@@ -55,7 +55,7 @@ check_dupes <- function(vec, msg) {
 #' @return A stop statement
 check_vars_class_in_df <- function(df, vars, class) {
   vars_not_class <- vars[
-    !sapply(df[, ..vars], function(x) checkmate::testClass(x, class))
+    !sapply(df[, vars], function(x) checkmate::testClass(x, class))
   ]
   if (length(vars_not_class) > 0) {
     rlang::abort(glue::glue(
