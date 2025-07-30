@@ -2,15 +2,8 @@
 % Please edit documentation in R/check.R, R/internals.R
 \name{check_vars_in_set}
 \alias{check_vars_in_set}
-\title{Check}
+\title{Check if variables in a data frame are in a set of allowed values}
 \usage{
-check_vars_in_set(
-  df,
-  vars,
-  set,
-  main_message = "All vars must be in the following set: "
-)
-
 check_vars_in_set(
   df,
   vars,
@@ -35,16 +28,11 @@ check_vars_in_set(
 \item{main_message}{A main message}
 }
 \value{
-A stop statement
-
-A stop statement
+A stop statement if any values are not in the set
 
 A stop statement
 }
 \description{
-Check
-
-Stop statement values are not in set
-
-Stop statement values are not in set
+This function checks if the values in specified variables of a data frame are all within a given set of allowed values. If any values are not in the set, it generates an error message detailing the invalid values in which vars and the expected set.
 }
+\keyword{internal}

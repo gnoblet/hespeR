@@ -21,7 +21,7 @@ check_values_in_set <- function(x, allowed, property = 'hesper_opts') {
 #' @param df A data frame
 #' @param vars A vector of variable names to check
 #' @param property Name of the property being checked (default: 'hesper_vars').
-#' @return A stop statement if any variables are missing
+#' @return A stop statement if any variables are missing, otherwise returns TRUE.
 #' @keywords internal
 check_missing_vars <- function(df, vars, property = 'hesper_vars') {
   vars_nin <- setdiff(vars, colnames(df))
@@ -34,22 +34,31 @@ check_missing_vars <- function(df, vars, property = 'hesper_vars') {
   return(TRUE)
 }
 
-#' Check
+#' Check if variables in a data frame are in a set of allowed values
+#'
+#' This function checks if the values in specified variables of a data frame are all within a given set of allowed values. If any values are not in the set, it generates an error message detailing the invalid values in which vars and the expected set.
 #'
 #' @param df A data frame
 #' @param vars A vector of column names (quoted)
 #' @param set A vector of values
-#' @param main_message A main message
 #'
-#' @return A stop statement
+#' @return A stop statement if any values are not in the set
+#' @keywords internal
 check_vars_in_set <- function(
   df,
   vars,
-  set,
-  main_message = "All vars must be in the following set: "
+  set
 ) {
-  #------ Check for missing columns
-  check_vars_in_df(df, vars)
+  #------ Checks
+
+  # df is a data frame
+  checkmate::assert_data_frame(df)
+
+  # vars is a character vector
+  checkmate::assert_character(vars, min.len = 1)
+
+  # missing vars
+  check_missing_vars(df, vars)
 
   #------ Values not in set
   values_lgl <- purrr::map_lgl(
@@ -61,34 +70,18 @@ check_vars_in_set <- function(
 
   if (any(values_lgl)) {
     vars <- vars[values_lgl]
-    values_chr <- names(values_lgl)
-
     # Get values not in set for each column in df[vars]
-    values_chr <- purrr::map(df[vars], function(x) {
+    values_chr <- purrr::map_chr(df[vars], function(x) {
       x <- unique(x)
       x[!is.na(x) & !(x %in% set)]
     })
 
-    values_chr <- purrr::imap_chr(values_chr, \(x, idx) {
-      glue::glue("{idx}: {glue::glue_collapse(x, sep = ', ', last = ' and ')}")
-    })
-
-    rlang::abort(c(
-      glue::glue(main_message, glue::glue_collapse(set, sep = ", ")),
-      "i" = glue::glue(
-        "The following vars have values out of the set Please check.\n",
-        glue::glue_collapse(vars, sep = "\n")
-      ),
-      "x" = glue::glue(
-        "The values out of the set are:\n",
-        glue::glue_collapse(values_chr, sep = "\n")
-      )
-    ))
+    # Error message
+    rlang::abort(msg_invalid_values(values_chr, set, property = vars))
   }
 
   return(TRUE)
 }
-
 
 # #' @title Check if variables are in data frame
 # #'
@@ -268,58 +261,3 @@ check_vars_in_set <- function(
 #     }
 #   }
 # }
-
-#' @title Stop statement values are not in set
-#'
-#' @param df A data frame
-#' @param vars A vector of column names (quoted)
-#' @param set A vector of values
-#' @param main_message A main message
-#'
-#' @return A stop statement
-check_vars_in_set <- function(
-  df,
-  vars,
-  set,
-  main_message = "All vars must be in the following set: "
-) {
-  #------ Check for missing columns
-  check_vars_in_df(df, vars)
-
-  #------ Values not in set
-  values_lgl <- purrr::map_lgl(
-    df[vars],
-    \(x) {
-      !all(stats::na.omit(unique(x)) %in% set)
-    }
-  )
-
-  if (any(values_lgl)) {
-    vars <- vars[values_lgl]
-    values_chr <- names(values_lgl)
-
-    # Get values not in set for each column in df[vars]
-    values_chr <- purrr::map(df[vars], function(x) {
-      x <- unique(x)
-      x[!is.na(x) & !(x %in% set)]
-    })
-
-    values_chr <- purrr::imap_chr(values_chr, \(x, idx) {
-      glue::glue("{idx}: {glue::glue_collapse(x, sep = ', ', last = ' and ')}")
-    })
-
-    rlang::abort(c(
-      glue::glue(main_message, glue::glue_collapse(set, sep = ", ")),
-      "i" = glue::glue(
-        "The following vars have values out of the set Please check.\n",
-        glue::glue_collapse(vars, sep = "\n")
-      ),
-      "x" = glue::glue(
-        "The values out of the set are:\n",
-        glue::glue_collapse(values_chr, sep = "\n")
-      )
-    ))
-  }
-
-  return(TRUE)
-}
