@@ -14,7 +14,7 @@ check_missing_vars(df, vars, property = "hesper_vars")
 \item{property}{Name of the property being checked (default: 'hesper_vars').}
 }
 \value{
-A stop statement if any variables are missing
+A stop statement if any variables are missing, otherwise returns TRUE.
 }
 \description{
 Check for missing variables in a data frame
