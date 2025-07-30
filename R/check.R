@@ -1,195 +1,273 @@
-#' @title Custom function that is either warn or stop depending on logical parameter warn
+#' Check if values in a vector are all in a given set of allowed values
 #'
-#' @param warn A logical: If TRUE, the message will be a warning. Default is FALSE.
+#' @param x A vector of values to check.
+#' @param allowed A vector of allowed values.
+#' @param property Name of the property being checked (default: 'hesper_opts').
 #'
-notify <- function(warn = FALSE, ...) {
-  if (warn) {
-    rlang::warn(...)
-  } else {
-    rlang::abort(...)
+#' @return TRUE if all values are in the allowed set, otherwise throws an error.
+#' @keywords internal
+check_values_in_set <- function(x, allowed, property = 'hesper_opts') {
+  if (!all(x %in% allowed)) {
+    invalid <- setdiff(x, allowed)
+    rlang::abort(
+      msg_invalid_values(invalid, allowed, property = property)
+    )
   }
+  return(TRUE)
 }
 
-#' @title Check if variables are in data frame
+#' Check for missing variables in a data frame
 #'
 #' @param df A data frame
-#' @param vars A vector of variable names
-#'
-#' @return A stop statement
-check_vars_in_df <- function(df, vars, warn = F) {
+#' @param vars A vector of variable names to check
+#' @param property Name of the property being checked (default: 'hesper_vars').
+#' @return A stop statement if any variables are missing
+#' @keywords internal
+check_missing_vars <- function(df, vars, property = 'hesper_vars') {
   vars_nin <- setdiff(vars, colnames(df))
   if (length(vars_nin) > 0) {
-    rlang::abort(glue::glue(
-      "Variables ",
-      glue::glue_collapse(vars_nin, sep = ", ", last = ", and "),
-      " not found in data frame."
-    ))
-  }
-}
-
-
-#' @title Check for duplicate values
-#'
-#' @param vec A vector
-#' @param msg A message
-#'
-#' @return A stop statement
-check_dupes <- function(vec, msg) {
-  dupes_vec <- unique(vec[duplicated(vec)])
-  if (length(dupes_vec) > 0) {
     rlang::abort(
-      glue::glue(
-        msg,
-        glue::glue_collapse(dupes_vec, sep = ", ", last = ", and "),
-      )
+      msg_missing_vars('df', vars_nin, property = property)
     )
   }
+
+  return(TRUE)
 }
 
-#' @title Check if variables are of any given class(es)
+#' Check
 #'
 #' @param df A data frame
-#' @param vars A vector of variable names
-#' @param class A vector of classes
+#' @param vars A vector of column names (quoted)
+#' @param set A vector of values
+#' @param main_message A main message
 #'
 #' @return A stop statement
-check_vars_class_in_df <- function(df, vars, class) {
-  vars_not_class <- vars[
-    !sapply(df[, vars], function(x) checkmate::testClass(x, class))
-  ]
-  if (length(vars_not_class) > 0) {
-    rlang::abort(glue::glue(
-      "Variables ",
-      glue::glue_collapse(vars_not_class, sep = ", ", last = ", and "),
-      " are not of class ",
-      glue::glue_collapse(class, sep = ", ", last = ", or "),
-      "."
+check_vars_in_set <- function(
+  df,
+  vars,
+  set,
+  main_message = "All vars must be in the following set: "
+) {
+  #------ Check for missing columns
+  check_vars_in_df(df, vars)
+
+  #------ Values not in set
+  values_lgl <- purrr::map_lgl(
+    df[vars],
+    \(x) {
+      !all(stats::na.omit(unique(x)) %in% set)
+    }
+  )
+
+  if (any(values_lgl)) {
+    vars <- vars[values_lgl]
+    values_chr <- names(values_lgl)
+
+    # Get values not in set for each column in df[vars]
+    values_chr <- purrr::map(df[vars], function(x) {
+      x <- unique(x)
+      x[!is.na(x) & !(x %in% set)]
+    })
+
+    values_chr <- purrr::imap_chr(values_chr, \(x, idx) {
+      glue::glue("{idx}: {glue::glue_collapse(x, sep = ', ', last = ' and ')}")
+    })
+
+    rlang::abort(c(
+      glue::glue(main_message, glue::glue_collapse(set, sep = ", ")),
+      "i" = glue::glue(
+        "The following vars have values out of the set Please check.\n",
+        glue::glue_collapse(vars, sep = "\n")
+      ),
+      "x" = glue::glue(
+        "The values out of the set are:\n",
+        glue::glue_collapse(values_chr, sep = "\n")
+      )
     ))
   }
+
+  return(TRUE)
 }
 
-#' @title Check if lists of subset are in the right format
-#'
-#' @param sv_l A list of subset dictionaries
-#'
-#' @return A stop statement
-check_sv_l <- function(sv_l, df, hesper_vars, warn_subset_val_no_match = F) {
-  sv_l_assess <- list()
 
-  for (sv_el in names(sv_l)) {
-    # Get sublist
-    sublist <- sv_l[[sv_el]]
+# #' @title Check if variables are in data frame
+# #'
+# #' @param df A data frame
+# #' @param vars A vector of variable names
+# #'
+# #' @return A stop statement
+# check_vars_in_df <- function(df, vars, warn = F) {
+#   vars_nin <- setdiff(vars, colnames(df))
+#   if (length(vars_nin) > 0) {
+#     rlang::abort(glue::glue(
+#       "Variables ",
+#       glue::glue_collapse(vars_nin, sep = ", ", last = ", and "),
+#       " not found in data frame."
+#     ))
+#   }
+# }
 
-    # sublist are lists
-    if (!is.list(sublist)) {
-      return(paste(sv_el, "is not a list"))
-    }
-    # sublist is of length 3
-    if (length(sublist) != 3) {
-      rlang::abort(c(
-        paste("Subset dictionary", sv_el, "does not have exactly 3 items."),
-        "*" = paste(
-          "Subset dictionary",
-          sv_el,
-          "has",
-          length(sublist),
-          "item(s)."
-        ),
-        "i" = "It should consist of hesper_vars (vector of hesper variables), subset_var (variable to use for subset) and subset_vals (vector of subset values corresponding to subset_var)."
-      ))
-    }
+# #' @title Check for duplicate values
+# #'
+# #' @param vec A vector
+# #' @param msg A message
+# #'
+# #' @return A stop statement
+# check_dupes <- function(vec, msg) {
+#   dupes_vec <- unique(vec[duplicated(vec)])
+#   if (length(dupes_vec) > 0) {
+#     rlang::abort(
+#       glue::glue(
+#         msg,
+#         glue::glue_collapse(dupes_vec, sep = ", ", last = ", and "),
+#       )
+#     )
+#   }
+# }
 
-    # sublist items are named correctly
-    sublist_names <- names(sublist)[
-      !(names(sublist) %in% c("hesper_vars", "subset_var", "subset_vals"))
-    ]
-    if (length(sublist_names) > 0) {
-      rlang::abort(c(
-        paste(
-          "Subset dictionary",
-          sv_el,
-          "does not have correctly named items"
-        ),
-        "*" = paste(
-          "Subset dictionary",
-          sv_el,
-          "has the following wrongly named item(s):",
-          paste0(sublist_names, collapse = ", "),
-          "."
-        ),
-        "i" = "It should consist of hesper_vars (vector of hesper variables), subset_var (variable to use for subset) and subset_vals (vector of subset values corresponding to subset_var)."
-      ))
-    }
+# #' @title Check if variables are of any given class(es)
+# #'
+# #' @param df A data frame
+# #' @param vars A vector of variable names
+# #' @param class A vector of classes
+# #'
+# #' @return A stop statement
+# check_vars_class_in_df <- function(df, vars, class) {
+#   vars_not_class <- vars[
+#     !sapply(df[, vars], function(x) checkmate::testClass(x, class))
+#   ]
+#   if (length(vars_not_class) > 0) {
+#     rlang::abort(glue::glue(
+#       "Variables ",
+#       glue::glue_collapse(vars_not_class, sep = ", ", last = ", and "),
+#       " are not of class ",
+#       glue::glue_collapse(class, sep = ", ", last = ", or "),
+#       "."
+#     ))
+#   }
+# }
 
-    # sublist element "hesper_vars is a character vector and one of hesper_vars
-    checkmate::assertCharacter(sublist[["hesper_vars"]], min.chars = 1)
-    hesper_vars_names <- sublist[["hesper_vars"]][
-      !(sublist[["hesper_vars"]] %in% hesper_vars)
-    ]
-    if (length(hesper_vars_names) > 0) {
-      rlang::abort(c(
-        paste(
-          "Subset dictionary",
-          sv_el,
-          "has variables in item 'hesper_vars' that are not in param 'hesper_vars'"
-        ),
-        "*" = "Subset dictionary",
-        sv_el,
-        "has the following variables in item 'hesper_vars' that are not in param 'hesper_vars':",
-        paste0(hesper_vars_names, collapse = ", "),
-        "i" = "Item 'hesper_vars' should only contain variables that you inputed in param 'hesper_vars'."
-      ))
-    }
+# #' @title Check if lists of subset are in the right format
+# #'
+# #' @param sv_l A list of subset dictionaries
+# #'
+# #' @return A stop statement
+# check_sv_l <- function(sv_l, df, hesper_vars, warn_subset_val_no_match = F) {
+#   sv_l_assess <- list()
 
-    # sublist element "subset_var" is a character scalar and belong in df
-    checkmate::assertCharacter(sublist[["subset_var"]], len = 1, min.chars = 1)
-    if (!(sublist[["subset_var"]] %in% colnames(df))) {
-      rlang::abort(c(
-        paste(
-          "Subset dictionary",
-          sv_el,
-          "has variable in item 'subset_var' that is not in df"
-        ),
-        "*" = paste(
-          "Subset dictionary",
-          sv_el,
-          "has the following variable in item 'subset_var' that is not in df:",
-          sublist[["subset_var"]],
-          "."
-        ),
-        "i" = "Item 'subset_var' should only contain variables that are in df."
-      ))
-    }
+#   for (sv_el in names(sv_l)) {
+#     # Get sublist
+#     sublist <- sv_l[[sv_el]]
 
-    # sublist element "subset_vals" is a character vector without NA or NULL values
-    checkmate::assertCharacter(
-      sublist[["subset_vals"]],
-      min.chars = 1,
-      null.ok = FALSE,
-      any.missing = FALSE
-    )
+#     # sublist are lists
+#     if (!is.list(sublist)) {
+#       return(paste(sv_el, "is not a list"))
+#     }
+#     # sublist is of length 3
+#     if (length(sublist) != 3) {
+#       rlang::abort(c(
+#         paste("Subset dictionary", sv_el, "does not have exactly 3 items."),
+#         "*" = paste(
+#           "Subset dictionary",
+#           sv_el,
+#           "has",
+#           length(sublist),
+#           "item(s)."
+#         ),
+#         "i" = "It should consist of hesper_vars (vector of hesper variables), subset_var (variable to use for subset) and subset_vals (vector of subset values corresponding to subset_var)."
+#       ))
+#     }
 
-    # warn if there is no occurence of "subset_vals" in "subset_var" in df
-    if (!any(sublist[["subset_vals"]] %in% df[[sublist[["subset_var"]]]])) {
-      notify(
-        paste0(
-          "For subset dictionary ",
-          sv_el,
-          " none of the following 'subset_vals' {",
-          paste0(
-            setdiff(sublist[["subset_vals"]], df[[sublist[["subset_var"]]]]),
-            collapse = "; "
-          ),
-          "} exist in the column 'subset_var' {",
-          sublist[["subset_var"]],
-          "} in df."
-        ),
-        warn = warn_subset_val_no_match
-      )
-    }
-  }
-}
+#     # sublist items are named correctly
+#     sublist_names <- names(sublist)[
+#       !(names(sublist) %in% c("hesper_vars", "subset_var", "subset_vals"))
+#     ]
+#     if (length(sublist_names) > 0) {
+#       rlang::abort(c(
+#         paste(
+#           "Subset dictionary",
+#           sv_el,
+#           "does not have correctly named items"
+#         ),
+#         "*" = paste(
+#           "Subset dictionary",
+#           sv_el,
+#           "has the following wrongly named item(s):",
+#           paste0(sublist_names, collapse = ", "),
+#           "."
+#         ),
+#         "i" = "It should consist of hesper_vars (vector of hesper variables), subset_var (variable to use for subset) and subset_vals (vector of subset values corresponding to subset_var)."
+#       ))
+#     }
 
+#     # sublist element "hesper_vars is a character vector and one of hesper_vars
+#     checkmate::assertCharacter(sublist[["hesper_vars"]], min.chars = 1)
+#     hesper_vars_names <- sublist[["hesper_vars"]][
+#       !(sublist[["hesper_vars"]] %in% hesper_vars)
+#     ]
+#     if (length(hesper_vars_names) > 0) {
+#       rlang::abort(c(
+#         paste(
+#           "Subset dictionary",
+#           sv_el,
+#           "has variables in item 'hesper_vars' that are not in param 'hesper_vars'"
+#         ),
+#         "*" = "Subset dictionary",
+#         sv_el,
+#         "has the following variables in item 'hesper_vars' that are not in param 'hesper_vars':",
+#         paste0(hesper_vars_names, collapse = ", "),
+#         "i" = "Item 'hesper_vars' should only contain variables that you inputed in param 'hesper_vars'."
+#       ))
+#     }
+
+#     # sublist element "subset_var" is a character scalar and belong in df
+#     checkmate::assertCharacter(sublist[["subset_var"]], len = 1, min.chars = 1)
+#     if (!(sublist[["subset_var"]] %in% colnames(df))) {
+#       rlang::abort(c(
+#         paste(
+#           "Subset dictionary",
+#           sv_el,
+#           "has variable in item 'subset_var' that is not in df"
+#         ),
+#         "*" = paste(
+#           "Subset dictionary",
+#           sv_el,
+#           "has the following variable in item 'subset_var' that is not in df:",
+#           sublist[["subset_var"]],
+#           "."
+#         ),
+#         "i" = "Item 'subset_var' should only contain variables that are in df."
+#       ))
+#     }
+
+#     # sublist element "subset_vals" is a character vector without NA or NULL values
+#     checkmate::assertCharacter(
+#       sublist[["subset_vals"]],
+#       min.chars = 1,
+#       null.ok = FALSE,
+#       any.missing = FALSE
+#     )
+
+#     # warn if there is no occurence of "subset_vals" in "subset_var" in df
+#     if (!any(sublist[["subset_vals"]] %in% df[[sublist[["subset_var"]]]])) {
+#       notify(
+#         paste0(
+#           "For subset dictionary ",
+#           sv_el,
+#           " none of the following 'subset_vals' {",
+#           paste0(
+#             setdiff(sublist[["subset_vals"]], df[[sublist[["subset_var"]]]]),
+#             collapse = "; "
+#           ),
+#           "} exist in the column 'subset_var' {",
+#           sublist[["subset_var"]],
+#           "} in df."
+#         ),
+#         warn = warn_subset_val_no_match
+#       )
+#     }
+#   }
+# }
 
 #' @title Stop statement values are not in set
 #'
@@ -203,17 +281,14 @@ check_vars_in_set <- function(
   df,
   vars,
   set,
-  main_message = "All columns must be in the following set: "
+  main_message = "All vars must be in the following set: "
 ) {
   #------ Check for missing columns
   check_vars_in_df(df, vars)
 
   #------ Values not in set
   values_lgl <- purrr::map_lgl(
-    dplyr::select(
-      df,
-      dplyr::all_of(vars)
-    ),
+    df[vars],
     \(x) {
       !all(stats::na.omit(unique(x)) %in% set)
     }
@@ -223,9 +298,8 @@ check_vars_in_set <- function(
     vars <- vars[values_lgl]
     values_chr <- names(values_lgl)
 
-    # Get values not in set
-    df_vars <- dplyr::select(df, dplyr::all_of(vars))
-    values_chr <- purrr::map(df_vars, \(x) {
+    # Get values not in set for each column in df[vars]
+    values_chr <- purrr::map(df[vars], function(x) {
       x <- unique(x)
       x[!is.na(x) & !(x %in% set)]
     })
@@ -237,7 +311,7 @@ check_vars_in_set <- function(
     rlang::abort(c(
       glue::glue(main_message, glue::glue_collapse(set, sep = ", ")),
       "i" = glue::glue(
-        "The following columns have values out of the set Please check.\n",
+        "The following vars have values out of the set Please check.\n",
         glue::glue_collapse(vars, sep = "\n")
       ),
       "x" = glue::glue(
