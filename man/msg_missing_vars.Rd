@@ -4,14 +4,14 @@
 \alias{msg_missing_vars}
 \title{Standardized error message for missing vars in a data frame}
 \usage{
-msg_missing_vars(df, vars, property = "hesper_opts")
+msg_missing_vars(df, vars, property = NULL)
 }
 \arguments{
 \item{df}{A string name of data frame.}
 
 \item{vars}{A character vector of missing variable names.}
 
-\item{property}{Name of the property being checked (default: 'hesper_vars').}
+\item{property}{Name of the property being checked (default: NULL).}
 }
 \value{
 A named character vector suitable for use with \code{rlang::abort()}.

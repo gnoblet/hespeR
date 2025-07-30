@@ -25,6 +25,15 @@ HesperDefault(
 \description{
 S7 class for hespeR data.frames (default)
 }
+\details{
+The \code{HesperDefault} class is designed to encapsulate the core properties of HESPER data. It includes a data frame containing HESPER items and a character vector of allowed options for those items.
+The class validates that:
+\itemize{
+\item The \code{hesper_opts} property contains exactly 5 allowed options.
+\item The \code{data} property is a data frame with columns that match the allowed HESPER variables.
+\item All values in the data frame columns are within the allowed options specified in \link{hesper_opts}.
+}
+}
 \section{Fields}{
 
 \describe{

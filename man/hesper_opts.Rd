@@ -3,7 +3,7 @@
 \docType{data}
 \name{hesper_opts}
 \alias{hesper_opts}
-\title{Allowed HESPER response levels}
+\title{Allowed HESPER response options}
 \format{
 character vector
 }
@@ -11,6 +11,6 @@ character vector
 hesper_opts
 }
 \description{
-A character vector of all allowed response values for HESPER items.
+A character vector of all allowed response options for HESPER items: 'serious_problem', 'no_serious_problem', 'dnk', 'pnta', and 'not_applicable'.
 }
 \keyword{internal}
