@@ -47,14 +47,14 @@ msg_invalid_values <- function(invalid, allowed, property = 'hesper_opts') {
 #'   Names of missing variables.
 #' @typed property: character[1] | NULL
 #'   Name of the property being checked (default: NULL).
+#' @typed i: logical[1]
+#'  Whether to include an informational message about checking available variables (default: TRUE).
 #' @typedreturn character[3]
 #'   Suitable for use with \code{rlang::abort()}.
 #' @keywords internal
 #'
 #' @family msg
-msg_missing_vars <- function(df, vars, property = NULL) {
-  #------ Checks
-
+msg_missing_vars <- function(df, vars, property = NULL, i = TRUE) {
   checkmate::assert_character(df, min.len = 1)
   checkmate::assert_character(vars, min.len = 1)
   checkmate::assert_character(property, len = 1, null.ok = TRUE)
