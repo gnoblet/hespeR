@@ -7,14 +7,14 @@
 msg_invalid_values(invalid, allowed, property = "hesper_opts")
 }
 \arguments{
-\item{invalid}{Character vector of invalid values found.}
+\item{invalid}{(\verb{character[1+]}) Invalid values found.}
 
-\item{allowed}{Character vector of allowed values.}
+\item{allowed}{(\verb{character[1+]}) Allowed values.}
 
-\item{property}{Name of the property being checked (default: 'hesper_opts').}
+\item{property}{(\code{character[1]}) Name of the property being checked (default: 'hesper_opts').}
 }
 \value{
-A named character vector suitable for use with \code{rlang::abort()}.
+(\code{character[3]}) Suitable for use with \code{rlang::abort()}.
 }
 \description{
 Generates a detailed error message for invalid values in a property, listing the offending values and the allowed set.

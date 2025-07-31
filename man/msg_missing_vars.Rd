@@ -7,14 +7,14 @@
 msg_missing_vars(df, vars, property = NULL)
 }
 \arguments{
-\item{df}{A string name of data frame.}
+\item{df}{(\code{character[1]}) Name of a data frame.}
 
-\item{vars}{A character vector of missing variable names.}
+\item{vars}{(\code{character}) Names of missing variables.}
 
-\item{property}{Name of the property being checked (default: NULL).}
+\item{property}{(\code{character[1] | NULL}) Name of the property being checked (default: NULL).}
 }
 \value{
-A named character vector suitable for use with \code{rlang::abort()}.
+(\code{character[3]}) Suitable for use with \code{rlang::abort()}.
 }
 \description{
 Generates a detailed error message for when required variables are missing from a data frame.
