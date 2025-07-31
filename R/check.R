@@ -1,12 +1,23 @@
 #' Check if values in a vector are all in a given set of allowed values
 #'
-#' @param x A vector of values to check.
-#' @param allowed A vector of allowed values.
-#' @param property Name of the property being checked (default: 'hesper_opts').
+#' @typed x: vector[1+]
+#'   Values to check.
+#' @typed allowed: vector[1+]
+#'   Allowed values.
+#' @typed property: character[1]
+#'   Name of the property being checked (default: 'hesper_opts').
 #'
-#' @return TRUE if all values are in the allowed set, otherwise throws an error.
+#' @typedreturn TRUE | error
+#'   TRUE if all values are in the allowed set, otherwise throws an error.
+#'
 #' @keywords internal
 check_values_in_set <- function(x, allowed, property = 'hesper_opts') {
+  #------ Checks
+
+  checkmate::assert_vector(x, min.len = 1)
+  checkmate::assert_vector(allowed, min.len = 1)
+
+  #------ Abort or not
   if (!all(x %in% allowed)) {
     invalid <- setdiff(x, allowed)
     rlang::abort(
@@ -18,16 +29,22 @@ check_values_in_set <- function(x, allowed, property = 'hesper_opts') {
 
 #' Check for missing variables in a data frame
 #'
-#' @param df A data frame
-#' @param vars A vector of variable names to check
-#' @param property Name of the property being checked (default: 'hesper_vars').
-#' @return A stop statement if any variables are missing, otherwise returns TRUE.
+#' @typed df: data.frame[,1+]
+#'   A data frame
+#' @typed vars: character[1+]
+#'   Names of variables to check for in the data frame.
+#' @typed property: character[1] | NULL
+#'  Property being checked (default: 'hesper_vars').
+#'
+#' @typedreturn TRUE | error
+#'   TRUE if all variables are present, otherwise throws an error.
+#'
 #' @keywords internal
 check_missing_vars <- function(df, vars, property = 'hesper_vars') {
   #------ Checks
 
   # df is a data frame
-  checkmate::assert_data_frame(df)
+  checkmate::assert_data_frame(df, min.cols = 1)
 
   # vars is a character vector
   checkmate::assert_character(vars, min.len = 1)
@@ -51,11 +68,16 @@ check_missing_vars <- function(df, vars, property = 'hesper_vars') {
 #'
 #' This function checks if the values in specified variables of a data frame are all within a given set of allowed values. If any values are not in the set, it generates an error message detailing the invalid values in which vars and the expected set.
 #'
-#' @param df A data frame
-#' @param vars A vector of column names (quoted)
-#' @param set A vector of values
+#' @typed df: data.frame[,1+]
+#'   A data frame
+#' @typed vars: character[1+]
+#'  Names of variables to check in the data frame.
+#' @typed set: vector[1+]
+#'   Allowed values that the variables should contain.
 #'
-#' @return A stop statement if any values are not in the set
+#' @typedreturn TRUE | error
+#'   TRUE if all values in the specified variables are in the set, otherwise throws an error.
+#'
 #' @keywords internal
 check_vars_in_set <- function(
   df,

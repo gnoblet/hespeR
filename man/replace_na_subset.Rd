@@ -14,20 +14,20 @@ replace_na_subset(
 )
 }
 \arguments{
-\item{df}{A data.table or data.frame: The data to be processed.}
+\item{df}{(``) A data.table or data.frame: The data to be processed.}
 
-\item{subset_col}{A character vector: The name of the column that defines the subset.}
+\item{subset_col}{(``) A character vector: The name of the column that defines the subset.}
 
-\item{subset_value}{A character vector: The value in \code{subset_col} for which binary columns will be replaced with \code{NA}.}
+\item{subset_value}{(``) A character vector: The value in \code{subset_col} for which binary columns will be replaced with `NA`.}
 
-\item{sep}{A character vector: The separator used in the child binary column names (default is ".").}
+\item{sep}{(``) A character vector: The separator used in the child binary column names (default is ".").}
 
-\item{col_parent}{A character vector: The name of the parent column (usually the question) that defines child binary columns.}
+\item{col_parent}{(``) A character vector: The name of the parent column (usually the question) that defines child binary columns.}
 
-\item{choice_vals}{A character vector: The values corresponding to the child binary columns that should be replaced with \code{NA}.}
+\item{choice_vals}{(``) A character vector: The values corresponding to the child binary columns that should be replaced with \code{NA}.}
 }
 \value{
-A data.table or data.frame with the binary columns replaced by \code{NA} for the relevant subset.
+(``) A data.table or data.frame with the binary columns replaced by \code{NA} for the relevant subset.
 }
 \description{
 This function replaces binary columns (which correspond to choices) with \code{NA} for a specified subset of the data.

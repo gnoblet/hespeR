@@ -2,12 +2,17 @@
 #'
 #' This function drops undefined values in a data frame by replacing them with NA.
 #'
-#' @param df A data frame to modify.
-#' @param vars A character vector of variable names to check for undefined values.
-#' @param vals_undefined A character vector of values to consider as undefined. Defaults to c("pnta", "dnk").
-#' @param suffix A character scalar or an empty string to append to the variable names. Defaults to NULL.
+#' @typed df:
+#'   A data frame to modify.
+#' @typed vars:
+#'   A character vector of variable names to check for undefined values.
+#' @typed vals_undefined:
+#'   A character vector of values to consider as undefined. Defaults to c("pnta", "dnk").
+#' @typed suffix:
+#'   A character scalar or an empty string to append to the variable names. Defaults to NULL.
 #'
-#' @return The modified data frame with undefined values replaced by NA. If suffix is NULL or an empty string, variables vars are modified; otherwise, new variables are added with suffix.
+#' @typedreturn
+#'   The modified data frame with undefined values replaced by NA. If suffix is NULL or an empty string, variables vars are modified; otherwise, new variables are added with suffix.
 #'
 #' @examples
 #' # Create a sample data frame

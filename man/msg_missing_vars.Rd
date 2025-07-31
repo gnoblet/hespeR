@@ -4,17 +4,19 @@
 \alias{msg_missing_vars}
 \title{Standardized error message for missing vars in a data frame}
 \usage{
-msg_missing_vars(df, vars, property = NULL)
+msg_missing_vars(df, vars, property = NULL, i = TRUE)
 }
 \arguments{
-\item{df}{A string name of data frame.}
+\item{df}{(\code{character[1]}) Name of a data frame.}
 
-\item{vars}{A character vector of missing variable names.}
+\item{vars}{(\code{character}) Names of missing variables.}
 
-\item{property}{Name of the property being checked (default: NULL).}
+\item{property}{(\code{character[1] | NULL}) Name of the property being checked (default: NULL).}
+
+\item{i}{(\code{logical[1]}) Whether to include an informational message about checking available variables (default: TRUE).}
 }
 \value{
-A named character vector suitable for use with \code{rlang::abort()}.
+(\code{character[3]}) Suitable for use with \code{rlang::abort()}.
 }
 \description{
 Generates a detailed error message for when required variables are missing from a data frame.

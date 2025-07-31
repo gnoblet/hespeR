@@ -5,11 +5,11 @@
 \title{S7 class for hespeR data.frames (enhanced)}
 \usage{
 HesperEnhanced(
-  data = (function (.data = list(), row.names = NULL) 
+  df = (function (.data = list(), row.names = NULL) 
  {
      if (is.null(row.names)) {
-
-            list2DF(.data)
+  
+          list2DF(.data)
      }
      else {
          out <- list2DF(.data,
@@ -18,8 +18,7 @@ HesperEnhanced(
          out
      }
 
-    })(),
-  hesper_opts = character(0)
+    })()
 )
 }
 \description{

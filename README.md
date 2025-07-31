@@ -1,3 +1,6 @@
+---
+toc-title: Table of contents
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -8,7 +11,7 @@
 [![R-CMD-check](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svghttps://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svghttps://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/gnoblet/hespeR/graph/badge.svg)](https://app.codecov.io/gh/gnoblet/hespeR)
-<!-- badges: end -->
+`<!-- badges: end -->`{=html}
 
 R Handle of The Humanitarian Emergency Settings Perceived Needs Scale
 (HESPER)
@@ -25,20 +28,20 @@ Ultimately, the goal is to publish on CRAN.
 
 \## Roadmap
 
-- [ ] Composition of needed columns
-- [ ] Cleaning data (if needed)
-- [ ] Analyses
-- [ ] Viz
-- [ ] Publication (reports, pres)
+-   [ ] Composition of needed columns
+-   [ ] Cleaning data (if needed)
+-   [ ] Analyses
+-   [ ] Viz
+-   [ ] Publication (reports, pres)
 
 All steps must contain documnetation and tests.
 
 \## Construction
 
-- [ ] Use `checkmate` or `asserthat` for parameters checks
-- [ ] Use a consistent way to check for datasets details, e.g. do
-  columns exist in df, is colA of type X, Y, Z
-- [ ] Document return outputs, document the process
+-   [ ] Use `checkmate` or `asserthat` for parameters checks
+-   [ ] Use a consistent way to check for datasets details, e.g. do
+    columns exist in df, is colA of type X, Y, Z
+-   [ ] Document return outputs, document the process
 
 ## Data workflow
 
@@ -83,5 +86,29 @@ binaries for each metric
 
 For metrics 3: - add new binaries (`hesper_var_overall`) for all hesper
 items regardless of subsets that take 1 if `hesper_var` is
-“serious_problem” and 0 otherwise - if all hesper items are NA, then
+"serious_problem" and 0 otherwise - if all hesper items are NA, then
 `hesper_var` is set to `NA_character_`
+
+### Use of roxytypes
+
+The package uses `roxytypes` to generate documentation on types.
+`@typed` tags are used instead of `@param` tags. Generally, the below
+format is equivalent to
+`@param hesper_var A character string with the name of the Hesper variable.`
+
+``` r
+#' @typed hesper_var character[1]
+#'   Name of the Hesper variable.
+```
+
+One detail on a convention that is used across the package is that:
+
+-   `character` is used for a character vector of length unkown
+-   `character[1+]` is used for a character vector of length at least 1
+    (i.e. not empty)
+
+Thanks to [openstatsware: From the mmrm R package to a lively
+community](https://posit.co/blog/openstatsware-interview/) which led us
+to [Minimum Viable Good Practices for High Quality Statistical Software
+Packages](https://www.openstatsware.org/guide.html) where we discovered
+`roxytypes`.

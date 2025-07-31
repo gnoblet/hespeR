@@ -2,11 +2,14 @@
 #'
 #' Generates a detailed error message for invalid values in a property, listing the offending values and the allowed set.
 #'
-#' @param invalid Character vector of invalid values found.
-#' @param allowed Character vector of allowed values.
-#' @param property Name of the property being checked (default: 'hesper_opts').
-#'
-#' @return A named character vector suitable for use with \code{rlang::abort()}.
+#' @typed invalid: character[1+]
+#'   Invalid values found.
+#' @typed allowed: character[1+]
+#'   Allowed values.
+#' @typed property: character[1]
+#'   Name of the property being checked (default: 'hesper_opts').
+#' @typedreturn character[3]
+#'   Suitable for use with \code{rlang::abort()}.
 #' @keywords internal
 #'
 #' @family msg
@@ -15,7 +18,7 @@ msg_invalid_values <- function(invalid, allowed, property = 'hesper_opts') {
 
   checkmate::assert_character(invalid, min.len = 1)
   checkmate::assert_character(allowed, min.len = 1)
-  checkmate::assert_character(property, min.len = 1)
+  checkmate::assert_character(property, len = 1)
 
   #------ Prepare error message
   c(
@@ -38,16 +41,20 @@ msg_invalid_values <- function(invalid, allowed, property = 'hesper_opts') {
 #'
 #' Generates a detailed error message for when required variables are missing from a data frame.
 #'
-#' @param df A string name of data frame.
-#' @param vars A character vector of missing variable names.
-#' @param property Name of the property being checked (default: NULL).
-#' @return A named character vector suitable for use with \code{rlang::abort()}.
+#' @typed df: character[1]
+#'  Name of a data frame.
+#' @typed vars: character
+#'   Names of missing variables.
+#' @typed property: character[1] | NULL
+#'   Name of the property being checked (default: NULL).
+#' @typed i: logical[1]
+#'  Whether to include an informational message about checking available variables (default: TRUE).
+#' @typedreturn character[3]
+#'   Suitable for use with \code{rlang::abort()}.
 #' @keywords internal
 #'
 #' @family msg
-msg_missing_vars <- function(df, vars, property = NULL) {
-  #------ Checks
-
+msg_missing_vars <- function(df, vars, property = NULL, i = TRUE) {
   checkmate::assert_character(df, min.len = 1)
   checkmate::assert_character(vars, min.len = 1)
   checkmate::assert_character(property, len = 1, null.ok = TRUE)

@@ -7,14 +7,14 @@
 check_missing_vars(df, vars, property = "hesper_vars")
 }
 \arguments{
-\item{df}{A data frame}
+\item{df}{(\verb{data.frame[,1+]}) A data frame}
 
-\item{vars}{A vector of variable names to check}
+\item{vars}{(\verb{character[1+]}) Names of variables to check for in the data frame.}
 
-\item{property}{Name of the property being checked (default: 'hesper_vars').}
+\item{property}{(\code{character[1] | NULL}) Property being checked (default: 'hesper_vars').}
 }
 \value{
-A stop statement if any variables are missing, otherwise returns TRUE.
+(\code{TRUE | error}) TRUE if all variables are present, otherwise throws an error.
 }
 \description{
 Check for missing variables in a data frame

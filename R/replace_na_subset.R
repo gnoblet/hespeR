@@ -4,14 +4,21 @@
 #' It is typically used when expanding top priority columns into child binary columns, ensuring that child columns for
 #' choices that do not apply to a subset are set to `NA`.
 #'
-#' @param df A data.table or data.frame: The data to be processed.
-#' @param subset_col A character vector: The name of the column that defines the subset.
-#' @param subset_value A character vector: The value in `subset_col` for which binary columns will be replaced with `NA`.
-#' @param sep A character vector: The separator used in the child binary column names (default is ".").
-#' @param col_parent A character vector: The name of the parent column (usually the question) that defines child binary columns.
-#' @param choice_vals A character vector: The values corresponding to the child binary columns that should be replaced with `NA`.
+#' @typed df:
+#'   A data.table or data.frame: The data to be processed.
+#' @typed subset_col:
+#'   A character vector: The name of the column that defines the subset.
+#' @typed subset_value:
+#'   A character vector: The value in `subset_col` for which binary columns will be replaced with `NA`.
+#' @typed sep:
+#'   A character vector: The separator used in the child binary column names (default is ".").
+#' @typed col_parent:
+#'   A character vector: The name of the parent column (usually the question) that defines child binary columns.
+#' @typed choice_vals:
+#'   A character vector: The values corresponding to the child binary columns that should be replaced with `NA`.
 #'
-#' @return A data.table or data.frame with the binary columns replaced by `NA` for the relevant subset.
+#' @typedreturn
+#'   A data.table or data.frame with the binary columns replaced by `NA` for the relevant subset.
 #'
 # #' @examples
 # #' # Create a fake dataset

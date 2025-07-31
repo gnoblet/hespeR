@@ -16,28 +16,28 @@ add_hesper_top3(
 )
 }
 \arguments{
-\item{df}{dataframe containing the cleaned data}
+\item{df}{(``) dataframe containing the cleaned data}
 
-\item{vars_priority}{vector of three column names containing the first, second and third priority hesper items}
+\item{vars_priority}{(``) vector of three column names containing the first, second and third priority hesper items}
 
-\item{var_hesper_top_three}{character string representing the new column name containing the three ordered priorities collapsed into one select multiple column}
+\item{var_hesper_top_three}{(``) character string representing the new column name containing the three ordered priorities collapsed into one select multiple column}
 
-\item{sv_l}{list of named lists for each element should be named and containing in hesper_vars the list of hesper item(s) asked only to the subset, in subset_var the name of the column which defines the subset (for example population_group or respondent_gender) and in subset_vals the set of values contained in subset_var defining the relevant subset}
+\item{sv_l}{(``) list of named lists for each element should be named and containing in hesper_vars the list of hesper item(s) asked only to the subset, in subset_var the name of the column which defines the subset (for example population_group or respondent_gender) and in subset_vals the set of values contained in subset_var defining the relevant subset}
 
-\item{col_items}{vector of column names containing the hesper items.}
+\item{col_items}{(``) vector of column names containing the hesper items.}
 
-\item{choice_serious}{character string representing the choice for serious problem}
+\item{choice_serious}{(``) character string representing the choice for serious problem}
 
-\item{choice_no_serious}{character string representing the choice for no serious problem}
+\item{choice_no_serious}{(``) character string representing the choice for no serious problem}
 
-\item{choice_dnk}{character string representing the choice for do not know}
+\item{choice_dnk}{(``) character string representing the choice for do not know}
 
-\item{choice_pnta}{character string representing the choice for decline to answer}
+\item{choice_pnta}{(``) character string representing the choice for decline to answer}
 
-\item{choice_na}{character string representing the choice for not applicable to household}
+\item{choice_na}{(``) character string representing the choice for not applicable to household}
 }
 \value{
-dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
+(``) dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
 }
 \description{
 The function computes the number of selected items for each respondent, the number of applicable items and collapse the three ordered priorities into one select multiple column

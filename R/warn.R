@@ -1,7 +1,9 @@
 #' Warn and replace existing variables in a data frame
 #'
-#' @param df The data frame to check for existing variables
-#' @param vars A character vector of variable names to check for
+#' @typed df:
+#'   The data frame to check for existing variables
+#' @typed vars:
+#'   A character vector of variable names to check for
 #'
 #' @details This function checks if any of the variables in `vars` are already present in `df`.
 #' If any are found, a warning is issued and the variables are replaced from `df`.
@@ -16,8 +18,10 @@ warn_replace <- function(df, vars) {
 
 #' Warn and remove existing variables from a data frame
 #'
-#' @param df The data frame to check for existing variables
-#' @param vars A character vector of variable names to check for
+#' @typed df:
+#'   The data frame to check for existing variables
+#' @typed vars:
+#'   A character vector of variable names to check for
 #'
 #' @details This function checks if any of the variables in `vars` are already present in `df`.
 #' If any are found, a warning is issued and the variables will be removed from `df`.
@@ -32,9 +36,12 @@ warn_removal <- function(df, vars) {
 
 #' Warn message
 #'
-#' @param df The data frame to check for existing variables
-#' @param vars A character vector of variable names to check for
-#' @param msg The message to print
+#' @typed df:
+#'   The data frame to check for existing variables
+#' @typed vars:
+#'   A character vector of variable names to check for
+#' @typed msg:
+#'   The message to print
 #'
 #' @details This function checks if any of the variables in `vars` are already present in `df`.
 #' If any are found, a warning is issued and the variables will be removed from `df`.
@@ -60,9 +67,12 @@ warn_var_msg <- function(df, vars, msg) {
 
 #' Warn if a variable contains no values in a set
 #'
-#' @param df The data frame to check for existing variables
-#' @param var A variable name
-#' @param vals A character vector of values to check for
+#' @typed df:
+#'   The data frame to check for existing variables
+#' @typed var:
+#'   A variable name
+#' @typed vals:
+#'   A character vector of values to check for
 #'
 #' @details This function checks if any of the variables in `vars` contain no values in `vals`.
 #'

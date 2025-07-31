@@ -17,26 +17,26 @@ expand_bin(
 )
 }
 \arguments{
-\item{df}{The input dataframe.}
+\item{df}{(``) The input dataframe.}
 
-\item{vars}{The name of the variables to expand.}
+\item{vars}{(``) The name of the variables to expand.}
 
-\item{split_by}{The separator used to split the variable into choices (default: " ").}
+\item{split_by}{(``) The separator used to split the variable into choices (default: " ").}
 
-\item{bin_sep}{The separator used to separate the original variable name and the choice name in the binary columns (default: ".").}
+\item{bin_sep}{(``) The separator used to separate the original variable name and the choice name in the binary columns (default: ".").}
 
-\item{drop_undefined}{A character vector of values to consider as undefined. Defaults to NULL if none.}
+\item{drop_undefined}{(``) A character vector of values to consider as undefined. Defaults to NULL if none.}
 
-\item{value_in}{A character vector of values to consider as value_in. Defaults to NULL if none.}
+\item{value_in}{(``) A character vector of values to consider as value_in. Defaults to NULL if none.}
 
-\item{value_in_suffix}{A character scalar or an empty string to append to the variable names. Defaults to NULL.}
+\item{value_in_suffix}{(``) A character scalar or an empty string to append to the variable names. Defaults to NULL.}
 
-\item{remove_new_bin}{A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.}
+\item{remove_new_bin}{(``) A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.}
 
-\item{remove_other_bin}{A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.}
+\item{remove_other_bin}{(``) A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.}
 }
 \value{
-The modified dataframe with as many binary columns as there are choices in the original variable.
+(``) The modified dataframe with as many binary columns as there are choices in the original variable.
 }
 \description{
 This function takes a dataframe and a variable, and expands it into binary indicators.

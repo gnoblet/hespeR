@@ -1,11 +1,15 @@
 ## unite the thre priority columns to have one select multiple hesper priorities
 
 #' Add a new column with the top three priorities
-#' @param df input dataframe
-#' @param new_var name of the new column
-#' @param vars_unite vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities
+#' @typed df:
+#'   input dataframe
+#' @typed new_var:
+#'   name of the new column
+#' @typed vars_unite:
+#'   vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities
 #'
-#' @return dataframe with new column
+#' @typedreturn
+#'   dataframe with new column
 #' @export
 #'
 add_top3 <- function(df, new_var, vars_unite) {
