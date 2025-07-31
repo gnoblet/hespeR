@@ -7,14 +7,14 @@
 check_vars_in_set(df, vars, set)
 }
 \arguments{
-\item{df}{A data frame}
+\item{df}{(\verb{data.frame[,1+]}) A data frame}
 
-\item{vars}{A vector of column names (quoted)}
+\item{vars}{(\verb{character[1+]}) Names of variables to check in the data frame.}
 
-\item{set}{A vector of values}
+\item{set}{(\verb{vector[1+]}) Allowed values that the variables should contain.}
 }
 \value{
-A stop statement if any values are not in the set
+(\code{TRUE | error}) TRUE if all values in the specified variables are in the set, otherwise throws an error.
 }
 \description{
 This function checks if the values in specified variables of a data frame are all within a given set of allowed values. If any values are not in the set, it generates an error message detailing the invalid values in which vars and the expected set.
