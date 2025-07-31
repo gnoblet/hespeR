@@ -1,8 +1,8 @@
 #' Check if a vector is not empty, i.e. not null, positive length and not filled with NA
 
-#' @typed x:
+#' @typed x: vector
 #'   A vector
-#' @typedreturn
+#' @typedreturn logical
 #'   TRUE if the vector is not empty, FALSE otherwise
 #'
 is_not_empty <- function(x) {
