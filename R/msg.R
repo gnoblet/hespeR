@@ -2,11 +2,15 @@
 #'
 #' Generates a detailed error message for invalid values in a property, listing the offending values and the allowed set.
 #'
-#' @param invalid Character vector of invalid values found.
-#' @param allowed Character vector of allowed values.
-#' @param property Name of the property being checked (default: 'hesper_opts').
+#' @typed invalid:
+#'   Character vector of invalid values found.
+#' @typed allowed:
+#'   Character vector of allowed values.
+#' @typed property:
+#'   Name of the property being checked (default: 'hesper_opts').
 #'
-#' @return A named character vector suitable for use with \code{rlang::abort()}.
+#' @typedreturn
+#'   A named character vector suitable for use with \code{rlang::abort()}.
 #' @keywords internal
 #'
 #' @family msg
@@ -38,10 +42,14 @@ msg_invalid_values <- function(invalid, allowed, property = 'hesper_opts') {
 #'
 #' Generates a detailed error message for when required variables are missing from a data frame.
 #'
-#' @param df A string name of data frame.
-#' @param vars A character vector of missing variable names.
-#' @param property Name of the property being checked (default: NULL).
-#' @return A named character vector suitable for use with \code{rlang::abort()}.
+#' @typed df:
+#'   A string name of data frame.
+#' @typed vars:
+#'   A character vector of missing variable names.
+#' @typed property:
+#'   Name of the property being checked (default: NULL).
+#' @typedreturn
+#'   A named character vector suitable for use with \code{rlang::abort()}.
 #' @keywords internal
 #'
 #' @family msg

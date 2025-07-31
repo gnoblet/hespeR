@@ -1,10 +1,14 @@
 #' Check if values in a vector are all in a given set of allowed values
 #'
-#' @param x A vector of values to check.
-#' @param allowed A vector of allowed values.
-#' @param property Name of the property being checked (default: 'hesper_opts').
+#' @typed x:
+#'   A vector of values to check.
+#' @typed allowed:
+#'   A vector of allowed values.
+#' @typed property:
+#'   Name of the property being checked (default: 'hesper_opts').
 #'
-#' @return TRUE if all values are in the allowed set, otherwise throws an error.
+#' @typedreturn
+#'   TRUE if all values are in the allowed set, otherwise throws an error.
 #' @keywords internal
 check_values_in_set <- function(x, allowed, property = 'hesper_opts') {
   if (!all(x %in% allowed)) {
@@ -18,10 +22,14 @@ check_values_in_set <- function(x, allowed, property = 'hesper_opts') {
 
 #' Check for missing variables in a data frame
 #'
-#' @param df A data frame
-#' @param vars A vector of variable names to check
-#' @param property Name of the property being checked (default: 'hesper_vars').
-#' @return A stop statement if any variables are missing, otherwise returns TRUE.
+#' @typed df:
+#'   A data frame
+#' @typed vars:
+#'   A vector of variable names to check
+#' @typed property:
+#'   Name of the property being checked (default: 'hesper_vars').
+#' @typedreturn
+#'   A stop statement if any variables are missing, otherwise returns TRUE.
 #' @keywords internal
 check_missing_vars <- function(df, vars, property = 'hesper_vars') {
   #------ Checks
@@ -51,11 +59,15 @@ check_missing_vars <- function(df, vars, property = 'hesper_vars') {
 #'
 #' This function checks if the values in specified variables of a data frame are all within a given set of allowed values. If any values are not in the set, it generates an error message detailing the invalid values in which vars and the expected set.
 #'
-#' @param df A data frame
-#' @param vars A vector of column names (quoted)
-#' @param set A vector of values
+#' @typed df:
+#'   A data frame
+#' @typed vars:
+#'   A vector of column names (quoted)
+#' @typed set:
+#'   A vector of values
 #'
-#' @return A stop statement if any values are not in the set
+#' @typedreturn
+#'   A stop statement if any values are not in the set
 #' @keywords internal
 check_vars_in_set <- function(
   df,

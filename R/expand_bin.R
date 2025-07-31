@@ -4,16 +4,26 @@
 #' The variable is split by the `split_by` separator, and each choice is represented by a binary column.
 #' The binary columns are separated by the `bin_sep` separator.
 #'
-#' @param df The input dataframe.
-#' @param vars The name of the variables to expand.
-#' @param split_by The separator used to split the variable into choices (default: " ").
-#' @param bin_sep The separator used to separate the original variable name and the choice name in the binary columns (default: ".").
-#' @param drop_undefined A character vector of values to consider as undefined. Defaults to NULL if none.
-#' @param value_in A character vector of values to consider as value_in. Defaults to NULL if none.
-#' @param value_in_suffix A character scalar or an empty string to append to the variable names. Defaults to NULL.
-#' @param remove_new_bin A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.
-#' @param remove_other_bin A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.
-#' @return The modified dataframe with as many binary columns as there are choices in the original variable.
+#' @typed df:
+#'   The input dataframe.
+#' @typed vars:
+#'   The name of the variables to expand.
+#' @typed split_by:
+#'   The separator used to split the variable into choices (default: " ").
+#' @typed bin_sep:
+#'   The separator used to separate the original variable name and the choice name in the binary columns (default: ".").
+#' @typed drop_undefined:
+#'   A character vector of values to consider as undefined. Defaults to NULL if none.
+#' @typed value_in:
+#'   A character vector of values to consider as value_in. Defaults to NULL if none.
+#' @typed value_in_suffix:
+#'   A character scalar or an empty string to append to the variable names. Defaults to NULL.
+#' @typed remove_new_bin:
+#'   A logical scalar indicating whether to remove the new binary columns if they already exist in the dataframe. Defaults to TRUE.
+#' @typed remove_other_bin:
+#'   A logical scalar indicating whether to remove other binary columns starting with the variable name and the bin_sep. Defaults to TRUE.
+#' @typedreturn
+#'   The modified dataframe with as many binary columns as there are choices in the original variable.
 #'
 #' @importFrom data.table `.SD`
 #' @importFrom data.table `:=`

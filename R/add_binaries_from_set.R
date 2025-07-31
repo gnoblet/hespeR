@@ -4,15 +4,24 @@
 #' For HESPER package, can be used to create binaries for all HESPER items select one columns, to either record if it's a serious problem, undefined, serious problem with subset
 #' Additionnal argument can be used to add a suffix to the column names of the binary created
 
-#' @param df A df.table or df.frame: The df to be processed.
-#' @param vars A character vector: The name of the columns that will be used to create binary columns.
-#' @param vals_1 A character vector: Set of values for which binary columns will be populated with 1 if `cols_character` is inside this set.
-#' @param vals_0 A character vector: Set of values for which binary columns will be populated with 0 if `cols_character` is inside this set.
-#' @param vals_na A character vector: Set of values for which binary columns will be populated with NA if `cols_character` is inside this set.
-#' @param default_val A character vector: Set of values for which binary columns will be populated with otherwise. Will be overriden with 0 if value_0 = NULL and with NA if value_na = NULL
-#' @param suffix A character vector: The suffix to be added to the added binary vars. If NULL, vars are replaced by binary vars.
-#' @param sep A character vector: separator used to add name suffix to original column names
-#' @return A df.table or df.frame with the binary columns added.
+#' @typed df:
+#'   A df.table or df.frame: The df to be processed.
+#' @typed vars:
+#'   A character vector: The name of the columns that will be used to create binary columns.
+#' @typed vals_1:
+#'   A character vector: Set of values for which binary columns will be populated with 1 if `cols_character` is inside this set.
+#' @typed vals_0:
+#'   A character vector: Set of values for which binary columns will be populated with 0 if `cols_character` is inside this set.
+#' @typed vals_na:
+#'   A character vector: Set of values for which binary columns will be populated with NA if `cols_character` is inside this set.
+#' @typed default_val:
+#'   A character vector: Set of values for which binary columns will be populated with otherwise. Will be overriden with 0 if value_0 = NULL and with NA if value_na = NULL
+#' @typed suffix:
+#'   A character vector: The suffix to be added to the added binary vars. If NULL, vars are replaced by binary vars.
+#' @typed sep:
+#'   A character vector: separator used to add name suffix to original column names
+#' @typedreturn
+#'   A df.table or df.frame with the binary columns added.
 #'
 #' @importFrom data.table `:=`
 #' @importFrom data.table `.SD`

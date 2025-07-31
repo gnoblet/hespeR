@@ -1,17 +1,28 @@
 #' @title function that compute for each respondent the number of selected items, number of applicable items and collapse the three ordered priorities into one select multiple column
 #'
 #' @description The function computes the number of selected items for each respondent, the number of applicable items and collapse the three ordered priorities into one select multiple column
-#' @param df dataframe containing the cleaned data
-#' @param col_items vector of column names containing the hesper items.
-#' @param choice_serious character string representing the choice for serious problem
-#' @param choice_no_serious character string representing the choice for no serious problem
-#' @param choice_dnk character string representing the choice for do not know
-#' @param choice_pnta character string representing the choice for decline to answer
-#' @param choice_na character string representing the choice for not applicable to household
-#' @param vars_priority vector of three column names containing the first, second and third priority hesper items
-#' @param var_hesper_top_three character string representing the new column name containing the three ordered priorities collapsed into one select multiple column
-#' @param sv_l list of named lists for each element should be named and containing in hesper_vars the list of hesper item(s) asked only to the subset, in subset_var the name of the column which defines the subset (for example population_group or respondent_gender) and in subset_vals the set of values contained in subset_var defining the relevant subset
-#' @return dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
+#' @typed df:
+#'   dataframe containing the cleaned data
+#' @typed col_items:
+#'   vector of column names containing the hesper items.
+#' @typed choice_serious:
+#'   character string representing the choice for serious problem
+#' @typed choice_no_serious:
+#'   character string representing the choice for no serious problem
+#' @typed choice_dnk:
+#'   character string representing the choice for do not know
+#' @typed choice_pnta:
+#'   character string representing the choice for decline to answer
+#' @typed choice_na:
+#'   character string representing the choice for not applicable to household
+#' @typed vars_priority:
+#'   vector of three column names containing the first, second and third priority hesper items
+#' @typed var_hesper_top_three:
+#'   character string representing the new column name containing the three ordered priorities collapsed into one select multiple column
+#' @typed sv_l:
+#'   list of named lists for each element should be named and containing in hesper_vars the list of hesper item(s) asked only to the subset, in subset_var the name of the column which defines the subset (for example population_group or respondent_gender) and in subset_vals the set of values contained in subset_var defining the relevant subset
+#' @typedreturn
+#'   dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
 #'
 #' @export
 #'

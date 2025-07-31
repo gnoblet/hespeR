@@ -2,11 +2,15 @@
 #'
 #' This function recodes response options in HESPER items to a standardized set of allowed values.
 #'
-#' @param df A data frame containing HESPER items.
-#' @param hesper_vars A character vector of HESPER item column names to recode.
-#' @param old_hesper_opts A named character vector of response options mapped to allowed response options for HESPER items. Names are allowed options and values are the old options to recode from.
+#' @typed df:
+#'   A data frame containing HESPER items.
+#' @typed hesper_vars:
+#'   A character vector of HESPER item column names to recode.
+#' @typed old_hesper_opts:
+#'   A named character vector of response options mapped to allowed response options for HESPER items. Names are allowed options and values are the old options to recode from.
 #'
-#' @return A data frame with HESPER items recoded to the allowed response options.
+#' @typedreturn
+#'   A data frame with HESPER items recoded to the allowed response options.
 #'
 #' @export
 rec_hesper_opts <- function(df, hesper_vars, old_hesper_opts) {
