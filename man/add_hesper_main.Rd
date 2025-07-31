@@ -39,54 +39,54 @@ add_hesper_main(
 )
 }
 \arguments{
-\item{df}{dataframe containing the cleaned data}
+\item{df}{(``) dataframe containing the cleaned data}
 
-\item{col_items}{vector of column names containing the hesper items.}
+\item{col_items}{(``) vector of column names containing the hesper items.}
 
-\item{choice_serious}{character string representing the choice for serious problem}
+\item{choice_serious}{(``) character string representing the choice for serious problem}
 
-\item{choice_no_serious}{character string representing the choice for no serious problem}
+\item{choice_no_serious}{(``) character string representing the choice for no serious problem}
 
-\item{choice_dnk}{character string representing the choice for do not know}
+\item{choice_dnk}{(``) character string representing the choice for do not know}
 
-\item{choice_pnta}{character string representing the choice for decline to answer}
+\item{choice_pnta}{(``) character string representing the choice for decline to answer}
 
-\item{choice_na}{character string representing the choice for not applicable to household}
+\item{choice_na}{(``) character string representing the choice for not applicable to household}
 
-\item{cols_priority}{vector of three column names containing the first, second and third priority hesper items}
+\item{cols_priority}{(``) vector of three column names containing the first, second and third priority hesper items}
 
-\item{col_hesper_top_three}{character string representing the column name containing the three ordered priorities}
+\item{col_hesper_top_three}{(``) character string representing the column name containing the three ordered priorities}
 
-\item{col_gender}{character string representing the column name containing the respondent's gender}
+\item{col_gender}{(``) character string representing the column name containing the respondent's gender}
 
-\item{choices_male}{character string representing the choice corresponding to male respondent gender}
+\item{choices_male}{(``) character string representing the choice corresponding to male respondent gender}
 
-\item{choices_female}{character string representing the choice corresponding to female respondent gender}
+\item{choices_female}{(``) character string representing the choice corresponding to female respondent gender}
 
-\item{hesper_item_male}{vector of two choice names corresponding to the hesper items specific for male respondent}
+\item{hesper_item_male}{(``) vector of two choice names corresponding to the hesper items specific for male respondent}
 
-\item{hesper_item_female}{vector of two choice names corresponding to the hesper items specific for female respodent}
+\item{hesper_item_female}{(``) vector of two choice names corresponding to the hesper items specific for female respodent}
 
-\item{col_displacement}{character string representing the column name containing the respondent's displacement status}
+\item{col_displacement}{(``) character string representing the column name containing the respondent's displacement status}
 
-\item{choices_displaced}{character string representing the choice corresponding to displaced respondent}
+\item{choices_displaced}{(``) character string representing the choice corresponding to displaced respondent}
 
-\item{choices_non_displaced}{character string representing the choice corresponding to not displaced respondent}
+\item{choices_non_displaced}{(``) character string representing the choice corresponding to not displaced respondent}
 
-\item{hesper_item_displaced}{vector of two choices name coresponding to the hesper items specific for displaced respondent}
+\item{hesper_item_displaced}{(``) vector of two choices name coresponding to the hesper items specific for displaced respondent}
 
-\item{hesper_item_non_displaced}{vector of two choices name coresponding to the hesper items specific for not displaced respondent}
+\item{hesper_item_non_displaced}{(``) vector of two choices name coresponding to the hesper items specific for not displaced respondent}
 
-\item{add_binaries}{logical value indicating whether to add binary variables for each hesper item}
+\item{add_binaries}{(``) logical value indicating whether to add binary variables for each hesper item}
 
-\item{add_binaries_subset}{logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population}
+\item{add_binaries_subset}{(``) logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population}
 
-\item{add_binaries_undefined}{logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population}
+\item{add_binaries_undefined}{(``) logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population}
 
-\item{subset}{logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population}
+\item{subset}{(``) logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population}
 }
 \value{
-dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
+(``) dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
 }
 \description{
 The function computes the number of selected items for each respondent, the number of applicable items and collapse the three ordered priorities into one select multiple column

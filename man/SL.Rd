@@ -13,6 +13,15 @@ SL(
 \description{
 S7 class for skip logic (SL)
 }
+\details{
+The \code{SL} class is designed to encapsulate the properties of a skip logic rule in HESPER. It includes the name of the HESPER variable, the name of the subset variable, and the values in the subset variable.
+The class validates that:
+\itemize{
+\item The \code{hesper_var} property is a valid HESPER variable.
+\item The \code{subset_var} property is a valid variable name.
+\item The \code{subset_vals} property contains valid values for the subset variable.
+}
+}
 \section{Fields}{
 
 \describe{

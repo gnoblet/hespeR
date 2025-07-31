@@ -7,16 +7,16 @@
 drop_undefined(df, vars, vals_undefined = c("pnta", "dnk"), suffix = NULL)
 }
 \arguments{
-\item{df}{A data frame to modify.}
+\item{df}{(``) A data frame to modify.}
 
-\item{vars}{A character vector of variable names to check for undefined values.}
+\item{vars}{(``) A character vector of variable names to check for undefined values.}
 
-\item{vals_undefined}{A character vector of values to consider as undefined. Defaults to c("pnta", "dnk").}
+\item{vals_undefined}{(``) A character vector of values to consider as undefined. Defaults to c("pnta", "dnk").}
 
-\item{suffix}{A character scalar or an empty string to append to the variable names. Defaults to NULL.}
+\item{suffix}{(``) A character scalar or an empty string to append to the variable names. Defaults to NULL.}
 }
 \value{
-The modified data frame with undefined values replaced by NA. If suffix is NULL or an empty string, variables vars are modified; otherwise, new variables are added with suffix.
+(``) The modified data frame with undefined values replaced by NA. If suffix is NULL or an empty string, variables vars are modified; otherwise, new variables are added with suffix.
 }
 \description{
 This function drops undefined values in a data frame by replacing them with NA.

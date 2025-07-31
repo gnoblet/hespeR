@@ -7,9 +7,9 @@
 warn_replace(df, vars)
 }
 \arguments{
-\item{df}{The data frame to check for existing variables}
+\item{df}{(``) The data frame to check for existing variables}
 
-\item{vars}{A character vector of variable names to check for}
+\item{vars}{(``) A character vector of variable names to check for}
 }
 \description{
 Warn and replace existing variables in a data frame

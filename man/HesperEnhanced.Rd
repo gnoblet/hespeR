@@ -18,8 +18,7 @@ HesperEnhanced(
          out
      }
 
-    })(),
-  hesper_opts = character(0)
+    })()
 )
 }
 \description{
