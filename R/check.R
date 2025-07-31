@@ -24,6 +24,19 @@ check_values_in_set <- function(x, allowed, property = 'hesper_opts') {
 #' @return A stop statement if any variables are missing, otherwise returns TRUE.
 #' @keywords internal
 check_missing_vars <- function(df, vars, property = 'hesper_vars') {
+  #------ Checks
+
+  # df is a data frame
+  checkmate::assert_data_frame(df)
+
+  # vars is a character vector
+  checkmate::assert_character(vars, min.len = 1)
+
+  # property is a character scalar or NULL
+  checkmate::assert_character(property, len = 1, null.ok = TRUE)
+
+  #------ Check for missing vars
+
   vars_nin <- setdiff(vars, colnames(df))
   if (length(vars_nin) > 0) {
     rlang::abort(
