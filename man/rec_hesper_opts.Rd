@@ -7,15 +7,15 @@
 rec_hesper_opts(df, hesper_vars, old_hesper_opts)
 }
 \arguments{
-\item{df}{A data frame containing HESPER items.}
+\item{df}{(\verb{data.frame[,1+]}) A data frame containing HESPER items.}
 
-\item{hesper_vars}{A character vector of HESPER item column names to recode.}
+\item{hesper_vars}{(\verb{character[1+]}) Names of HESPER item column names to recode.}
 
-\item{old_hesper_opts}{A named character vector of response options mapped to allowed response options for HESPER items. Names are allowed options and values are the old options to recode from.}
+\item{old_hesper_opts}{(\code{character_named[5]}) Response options mapped to allowed response options for HESPER items. Names are allowed options and values are the old options to recode from.}
 }
 \value{
-A data frame with HESPER items recoded to the allowed response options.
+(\verb{data.frame[,1+]}) A data frame with HESPER items recoded to the allowed response options.
 }
 \description{
-This function recodes response options in HESPER items to a standardized set of allowed values.
+This function recodes response options in HESPER items to a standardized set of allowed values (see \link{hesper_opts} for the allowed response options).
 }
