@@ -10,70 +10,36 @@
 #' @export
 HesperDefault <- S7::new_class(
   "HesperDefault",
-  properties = list(data = S7::new_property(S7::class_data.frame)),
+  properties = list(df = S7::new_property(S7::class_data.frame)),
   validator = function(self) {
-    # hesper_opts are the allowed options for HESPER items
-    allowed_opts <- hesper_opts
+    # Validate data as follows:
+    # 1. Check that the data is a data frame with at least one column.
+    # 2. Check that all columns are in the allowed HESPER variables. Throws a warning if allowed columns are missing.
+    # 3. Check that all values in the data frame are within the allowed HESPER options.
+
+    # 1.
+    checkmate::assert_data_frame(self@df, min.cols = 1)
+
+    # 2.
+    allowed_vars <- hesper_vars
     check_values_in_set(
-      self@hesper_opts,
-      allowed_opts,
-      property = "hesper_opts"
+      colnames(self@df),
+      allowed_vars,
+      property = 'df columns'
     )
 
-    if (!all(self@hesper_opts %in% allowed_opts)) {
-      rlang::abort(
-        c(
-          'Invalid values in hesper_opts.',
-          '*' = glue::glue(
-            'Following values are not allowed: ',
-            glue::glue_collapse(
-              setdiff(self@hesper_opts, allowed_opts),
-              sep = ', ',
-              last = ', and '
-            )
-          ),
-          'i' = glue::glue(
-            'Values must be one of: ',
-            glue::glue_collapse(allowed_opts, sep = ', ', last = ', and ')
-          )
-        )
+    # 3.
+    allowed_opts <- hesper_opts
+    check_vars_in_set(self@df, colnames(self@df), allowed_opts)
+
+    # WARN if validator passes
+    vars_nin <- setdiff(allowed_vars, colnames(self@df))
+    if (length(vars_nin) > 0) {
+      rlang::warn(
+        msg_missing_vars('df', vars_nin, property = 'df columns', i = FALSE)
       )
     }
 
-    # Validate data
-    allowed_vars <- hesper_vars
-    checkmate::assert_data_frame(self@data)
-    checkmate::assert_subset(colnames(self@data), allowed_vars)
-    vars_bad_levels <- c()
-    for (var in names(self@data)) {
-      bad <- setdiff(unique(na.omit(self@data[[var]])), self@hesper_opts)
-      if (length(bad) > 0) {
-        vars_bad_levels <- c(vars_bad_levels, var)
-      }
-    }
-    if (length(vars_bad_levels) > 0) {
-      rlang::abort(
-        c(
-          'Invalid values in vars.',
-          '*' = glue::glue(
-            'Following vars contain wrong values:',
-            glue::glue_collapse(
-              vars_bad_levels,
-              sep = ',',
-              last = ', and'
-            )
-          ),
-          'i' = glue::glue(
-            'Values must be one of: ',
-            glue::glue_collapse(
-              self@hesper_opts,
-              sep = ',',
-              last = ', and '
-            )
-          )
-        )
-      )
-    }
     NULL
   }
 )
