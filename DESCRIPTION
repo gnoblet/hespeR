@@ -23,9 +23,10 @@ Imports:
     data.table,
     rlang (>= 1.1.0),
     glue,
-    srvyr,
     S7,
     forcats
+Suggests:
+    roxytypes
 Depends: 
     R (>= 4.3)
 LazyData: true
