@@ -76,7 +76,7 @@
       "Package": "S7",
       "Version": "0.2.0",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "R",
         "utils"
@@ -173,7 +173,7 @@
       "Package": "checkmate",
       "Version": "2.3.2",
       "Source": "Repository",
-      "Repository": "https://packagemanager.posit.co/cran/2025-06-19",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "backports",
@@ -553,7 +553,7 @@
       "Package": "knitr",
       "Version": "1.50",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "R",
         "evaluate",
@@ -628,7 +628,7 @@
       "Package": "minqa",
       "Version": "1.2.8",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "Rcpp"
       ],
@@ -638,7 +638,7 @@
       "Package": "mitools",
       "Version": "2.4",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "DBI",
         "methods",
@@ -650,7 +650,7 @@
       "Package": "numDeriv",
       "Version": "2016.8-1.1",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "R"
       ],
@@ -828,13 +828,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.11",
+      "Version": "1.1.4",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "utils"
       ],
-      "Hash": "47623f66b4e80b3b0587bc5d7b309888"
+      "Hash": "dbe7cc815b478931d08fb48359811dec"
     },
     "rlang": {
       "Package": "rlang",
@@ -851,7 +851,7 @@
       "Package": "rmarkdown",
       "Version": "2.29",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "R",
         "bslib",
@@ -905,7 +905,7 @@
       "Package": "srvyr",
       "Version": "1.3.0",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "dplyr",
         "magrittr",
@@ -953,7 +953,7 @@
       "Package": "survey",
       "Version": "4.4-2",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "Matrix",
         "R",
@@ -1218,7 +1218,7 @@
       "Package": "xfun",
       "Version": "0.52",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "https://p3m.dev/cran/latest",
       "Requirements": [
         "R",
         "grDevices",
