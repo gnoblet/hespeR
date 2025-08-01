@@ -7,16 +7,16 @@
 sum_vals_across(df, vars, vals, new_var)
 }
 \arguments{
-\item{df}{A data frame to modify.}
+\item{df}{(``) A data frame to modify.}
 
-\item{vars}{A character vector of variables.}
+\item{vars}{(``) A character vector of variables.}
 
-\item{vals}{A character vector of values.}
+\item{vals}{(``) A character vector of values.}
 
-\item{suffix}{A character scalar or an empty string to append to the variable names. Defaults to NULL.}
+\item{suffix}{(``) A character scalar or an empty string to append to the variable names. Defaults to NULL.}
 }
 \value{
-The modified data frame with undefined values replaced by NA. If suffix is NULL or an empty string, variables vars are modified; otherwise, new variables are added with suffix.
+(``) The modified data frame with undefined values replaced by NA. If suffix is NULL or an empty string, variables vars are modified; otherwise, new variables are added with suffix.
 }
 \description{
 This function sums the number of times a set of values (vals) appears across a set of variables (vars) in a data frame into a new variable (new_var).

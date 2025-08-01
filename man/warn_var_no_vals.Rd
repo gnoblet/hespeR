@@ -7,15 +7,15 @@
 warn_var_no_vals(df, var, vals)
 }
 \arguments{
-\item{df}{The data frame to check for existing variables}
+\item{df}{(``) The data frame to check for existing variables}
 
-\item{var}{A variable name}
+\item{var}{(``) A variable name}
 
-\item{set}{A character vector of values to check for}
+\item{vals}{(``) A character vector of values to check for}
 }
 \description{
 Warn if a variable contains no values in a set
 }
 \details{
-This function checks if any of the variables in \code{vars} contain no values in \code{set}.
+This function checks if any of the variables in \code{vars} contain no values in \code{vals}.
 }

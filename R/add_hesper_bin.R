@@ -63,9 +63,6 @@ add_hesper_bin <- function(
     data.table::setDT(df)
   }
 
-  # create a shallow copy of df
-  df <- copy(df)
-
   # hesper_vars is a character vector
   checkmate::assertCharacter(hesper_vars, min.chars = 1, any.missing = FALSE)
 
@@ -225,7 +222,7 @@ add_hesper_bin <- function(
   ## Then use the cleaned data to calculate all prevalences using add_val_set_in_binaries()
 
   # 1. save original columns before skip logic cleaning with name suffix "_raw"
-  hesper_vars_subset <- unlist(map(sv_l, ~ .x$hesper_vars))
+  hesper_vars_subset <- unlist(purrr::map(sv_l, ~ .x$hesper_vars))
   df[,
     paste0(hesper_vars_subset, "_raw") := .SD,
     .SDcols = c(hesper_vars_subset)
@@ -250,48 +247,43 @@ add_hesper_bin <- function(
 
   ## Add HESPER binaries - global => prevalence of serious problem on all sample (not considering NA apart from NA_skip corresponding to skip logic from the tool)
   df <- df |>
-    add_val_in_set_binaries(
-      cols_character = hesper_vars,
-      value_1 = c(hesper_serious_problem),
-      value_0 = c(
+    add_binaries_from_set(
+      vars = hesper_vars,
+      vals_1 = c(hesper_serious_problem),
+      vals_0 = c(
         hesper_no_serious_problem,
         hesper_dnk,
         hesper_pnta,
         hesper_na,
         "NA_skip"
       ),
-      replace = F,
-      warn_if_no_match = !stop_if_subset_no_match,
-      name_suffix = "binary",
+      suffix = "binary",
       sep = "."
     )
 
   # Add HESPER binaries - subset => prevalence of serious problem on subset only, excluding skipped respondents and NA
   df <- df |>
-    add_val_in_set_binaries(
-      cols_character = hesper_vars,
-      value_1 = c(hesper_serious_problem),
-      value_0 = c(
+    add_binaries_from_set(
+      vars = hesper_vars,
+      vals_1 = c(hesper_serious_problem),
+      vals_0 = c(
         hesper_no_serious_problem,
         hesper_dnk,
         hesper_pnta,
         hesper_na
       ),
-      replace = F,
-      warn_if_no_match = !stop_if_subset_no_match,
-      name_suffix = "binary_subset",
+      suffix = "binary_subset",
       sep = "."
     )
 
   # Add HESPER binaries - undefined => prevalence of undefined responses on subset only, excluding skipped respondents and NA
   df <- df |>
-    add_val_in_set_binaries(
-      cols_character = hesper_vars,
-      value_1 = c(hesper_dnk, hesper_pnta, hesper_na),
-      value_0 = c(hesper_serious_problem, hesper_no_serious_problem),
-      replace = F,
-      warn_if_no_match = !stop_if_subset_no_match,
-      name_suffix = "binary_undefined",
+    add_binaries_from_set(
+      vars = hesper_vars,
+      vals_1 = c(hesper_dnk, hesper_pnta, hesper_na),
+      vals_0 = c(hesper_serious_problem, hesper_no_serious_problem),
+
+      suffix = "binary_undefined",
       sep = "."
     )
 

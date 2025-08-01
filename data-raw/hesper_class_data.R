@@ -42,6 +42,9 @@ hesper_opts <- c(
   "not_applicable"
 )
 
+usethis::use_data(hesper_vars, hesper_opts, overwrite = TRUE)
+
+
 # hoh gender and respondent gender
 gender_vars <- c("hoh_gender", "resp_gender")
 gender_opts <- c("female", "male", "other", "dnk", "pnta")

@@ -1,31 +1,55 @@
 #' @title function that compute for each respondent the number of selected items, number of applicable items and collapse the three ordered priorities into one select multiple column
 #'
 #' @description The function computes the number of selected items for each respondent, the number of applicable items and collapse the three ordered priorities into one select multiple column
-#' @param df dataframe containing the cleaned data
-#' @param col_items vector of column names containing the hesper items.
-#' @param choice_serious character string representing the choice for serious problem
-#' @param choice_no_serious character string representing the choice for no serious problem
-#' @param choice_dnk character string representing the choice for do not know
-#' @param choice_pnta character string representing the choice for decline to answer
-#' @param choice_na character string representing the choice for not applicable to household
-#' @param cols_priority vector of three column names containing the first, second and third priority hesper items
-#' @param col_hesper_top_three character string representing the column name containing the three ordered priorities
-#' @param col_gender character string representing the column name containing the respondent's gender
-#' @param choices_male character string representing the choice corresponding to male respondent gender
-#' @param choices_female character string representing the choice corresponding to female respondent gender
-#' @param hesper_item_male vector of two choice names corresponding to the hesper items specific for male respondent
-#' @param hesper_item_female vector of two choice names corresponding to the hesper items specific for female respodent
-#' @param col_displacement character string representing the column name containing the respondent's displacement status
-#' @param choices_displaced character string representing the choice corresponding to displaced respondent
-#' @param choices_non_displaced character string representing the choice corresponding to not displaced respondent
-#' @param hesper_item_displaced vector of two choices name coresponding to the hesper items specific for displaced respondent
-#' @param hesper_item_non_displaced vector of two choices name coresponding to the hesper items specific for not displaced respondent
-#' @param add_binaries logical value indicating whether to add binary variables for each hesper item
-#' @param add_binaries_subset logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population
-#' @param subset logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population
-#' @param add_binaries_undefined logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population
+#' @typed df:
+#'   dataframe containing the cleaned data
+#' @typed col_items:
+#'   vector of column names containing the hesper items.
+#' @typed choice_serious:
+#'   character string representing the choice for serious problem
+#' @typed choice_no_serious:
+#'   character string representing the choice for no serious problem
+#' @typed choice_dnk:
+#'   character string representing the choice for do not know
+#' @typed choice_pnta:
+#'   character string representing the choice for decline to answer
+#' @typed choice_na:
+#'   character string representing the choice for not applicable to household
+#' @typed cols_priority:
+#'   vector of three column names containing the first, second and third priority hesper items
+#' @typed col_hesper_top_three:
+#'   character string representing the column name containing the three ordered priorities
+#' @typed col_gender:
+#'   character string representing the column name containing the respondent's gender
+#' @typed choices_male:
+#'   character string representing the choice corresponding to male respondent gender
+#' @typed choices_female:
+#'   character string representing the choice corresponding to female respondent gender
+#' @typed hesper_item_male:
+#'   vector of two choice names corresponding to the hesper items specific for male respondent
+#' @typed hesper_item_female:
+#'   vector of two choice names corresponding to the hesper items specific for female respodent
+#' @typed col_displacement:
+#'   character string representing the column name containing the respondent's displacement status
+#' @typed choices_displaced:
+#'   character string representing the choice corresponding to displaced respondent
+#' @typed choices_non_displaced:
+#'   character string representing the choice corresponding to not displaced respondent
+#' @typed hesper_item_displaced:
+#'   vector of two choices name coresponding to the hesper items specific for displaced respondent
+#' @typed hesper_item_non_displaced:
+#'   vector of two choices name coresponding to the hesper items specific for not displaced respondent
+#' @typed add_binaries:
+#'   logical value indicating whether to add binary variables for each hesper item
+#' @typed add_binaries_subset:
+#'   logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population
+#' @typed subset:
+#'   logical value indicating whether to add binary subset variables for all top three priority child columns that are applicable to only a subset of the population
+#' @typed add_binaries_undefined:
+#'   logical value indicating whether to add binary variables for each hesper item that are applicable to only a subset of the population
 #'
-#' @return dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
+#' @typedreturn
+#'   dataframe with the number of selected items, the number of applicable items and the three ordered priorities collapsed into one select multiple column
 #'
 #' @export
 #'
@@ -198,15 +222,13 @@ add_hesper_main <- function(
   if (add_binaries) {
     df <- df %>%
       ## Add HESPER binaries - global => prevalence of serious problem on all sample (regardless of subset or cleaning or undefined)
-      add_val_in_set_binaries(
-        data = .,
-        cols_character = col_items,
-        value_1 = c(choice_serious),
-        value_0 = NULL,
-        value_na = NULL,
-        value_default = 0,
-        replace = F,
-        name_suffix = "binary",
+      add_binaries_from_set(
+        vars = col_items,
+        vals_1 = c(choice_serious),
+        vals_0 = NULL,
+        vals_na = NULL,
+        default_val = 0,
+        suffix = "binary",
         sep = "."
       )
   }
@@ -218,32 +240,30 @@ add_hesper_main <- function(
       hesper_item_displaced,
       hesper_item_non_displaced
     )
-    df <- df %>%
+    df <- df |>
       ## Add HESPER binaries taking subset into account [only respondents that reported either serious or not serious problem]
-      add_val_in_set_binaries(
-        cols_character = hesper_item_subset,
-        value_1 = c(choice_serious),
-        value_0 = c(choice_no_serious, choice_na, choice_dnk, choice_pnta),
-        value_na = NULL,
-        value_default = NA_integer_,
-        replace = F,
-        name_suffix = "binary_subset",
+      add_binaries_from_set(
+        vars = hesper_item_subset,
+        vals_1 = c(choice_serious),
+        vals_0 = c(choice_no_serious, choice_na, choice_dnk, choice_pnta),
+        vals_na = NULL,
+        default_val = NA_integer_,
+        suffix = "binary_subset",
         sep = "."
       )
   }
 
   ## Add binary columns across all HESPER items recording if response is undefined
   if (add_binaries_undefined) {
-    df <- df %>%
+    df <- df |>
       ## Add HESPER binaries for undefined values [any respondent in subset that chose not reply / dnk, pnta or reported not applicable choices] calculated on subset
-      add_val_in_set_binaries(
-        cols_character = col_items,
-        value_1 = c(choice_na, choice_dnk, choice_pnta),
-        value_0 = c(choice_serious, choice_no_serious),
-        value_na = NA_integer_,
-        value_default = NULL,
-        replace = F,
-        name_suffix = "binary_undefined",
+      add_binaries_from_set(
+        vars = col_items,
+        vals_1 = c(choice_na, choice_dnk, choice_pnta),
+        vals_0 = c(choice_serious, choice_no_serious),
+        vals_na = NA_integer_,
+        default_val = NULL,
+        suffix = "binary_undefined",
         sep = "."
       )
   }

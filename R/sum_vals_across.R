@@ -2,12 +2,17 @@
 #'
 #' This function sums the number of times a set of values (vals) appears across a set of variables (vars) in a data frame into a new variable (new_var).
 #'
-#' @param df A data frame to modify.
-#' @param vars A character vector of variables.
-#' @param vals A character vector of values.
-#' @param suffix A character scalar or an empty string to append to the variable names. Defaults to NULL.
+#' @typed df:
+#'   A data frame to modify.
+#' @typed vars:
+#'   A character vector of variables.
+#' @typed vals:
+#'   A character vector of values.
+#' @typed suffix:
+#'   A character scalar or an empty string to append to the variable names. Defaults to NULL.
 #'
-#' @return The modified data frame with undefined values replaced by NA. If suffix is NULL or an empty string, variables vars are modified; otherwise, new variables are added with suffix.
+#' @typedreturn
+#'   The modified data frame with undefined values replaced by NA. If suffix is NULL or an empty string, variables vars are modified; otherwise, new variables are added with suffix.
 #'
 #' @export
 sum_vals_across <- function(df, vars, vals, new_var) {

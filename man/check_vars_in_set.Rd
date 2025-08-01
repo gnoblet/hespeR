@@ -2,27 +2,21 @@
 % Please edit documentation in R/check.R
 \name{check_vars_in_set}
 \alias{check_vars_in_set}
-\title{Stop statement values are not in set}
+\title{Check if variables in a data frame are in a set of allowed values}
 \usage{
-check_vars_in_set(
-  df,
-  vars,
-  set,
-  main_message = "All columns must be in the following set: "
-)
+check_vars_in_set(df, vars, set)
 }
 \arguments{
-\item{df}{A data frame}
+\item{df}{(\verb{data.frame[,1+]}) A data frame}
 
-\item{vars}{A vector of column names (quoted)}
+\item{vars}{(\verb{character[1+]}) Names of variables to check in the data frame.}
 
-\item{set}{A vector of values}
-
-\item{main_message}{A main message}
+\item{set}{(\verb{vector[1+]}) Allowed values that the variables should contain.}
 }
 \value{
-A stop statement
+(\code{TRUE | error}) TRUE if all values in the specified variables are in the set, otherwise throws an error.
 }
 \description{
-Stop statement values are not in set
+This function checks if the values in specified variables of a data frame are all within a given set of allowed values. If any values are not in the set, it generates an error message detailing the invalid values in which vars and the expected set.
 }
+\keyword{internal}

@@ -7,11 +7,11 @@
 warn_var_msg(df, vars, msg)
 }
 \arguments{
-\item{df}{The data frame to check for existing variables}
+\item{df}{(``) The data frame to check for existing variables}
 
-\item{vars}{A character vector of variable names to check for}
+\item{vars}{(``) A character vector of variable names to check for}
 
-\item{msg}{The message to print}
+\item{msg}{(``) The message to print}
 }
 \description{
 Warn message

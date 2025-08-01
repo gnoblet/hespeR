@@ -7,14 +7,14 @@
 add_top3(df, new_var, vars_unite)
 }
 \arguments{
-\item{df}{input dataframe}
+\item{df}{(``) input dataframe}
 
-\item{new_var}{name of the new column}
+\item{new_var}{(``) name of the new column}
 
-\item{vars_unite}{vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities}
+\item{vars_unite}{(``) vector with column names corresponding to top 1/2/3 priority to combine in unordered top three priorities}
 }
 \value{
-dataframe with new column
+(``) dataframe with new column
 }
 \description{
 Add a new column with the top three priorities
