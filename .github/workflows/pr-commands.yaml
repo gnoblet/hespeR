@@ -68,8 +68,6 @@ jobs:
         uses: r-lib/actions/setup-renv@v2
         with:
           cache-version: 1
-          renv-lockfile: renv.lock
-          renv-project: .
           # repos: 'c(CRAN = "https://p3m.dev/cran/__linux__/manylinux_2_28/latest")'
 
       - name: Document
