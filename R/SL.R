@@ -20,7 +20,7 @@ SL <- S7::new_class(
   properties = list(
     hesper_var = S7::class_character,
     subset_var = S7::class_character,
-    subset_vals = S7::class_character
+    subset_vals = S7::class_vector
   ),
   validator = function(self) {
     # Validate that hesper_var is a valid HESPER variable
