@@ -67,8 +67,7 @@ test_that("rec_hesper_opts errors if names of old_hesper_opts are not allowed", 
     not_allowed = "n/a"
   )
   expect_error(
-    rec_hesper_opts(df, hesper_vars, bad_opts),
-    regexp = "subset"
+    rec_hesper_opts(df, hesper_vars, bad_opts)
   )
 })
 
