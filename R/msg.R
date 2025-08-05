@@ -8,7 +8,7 @@
 #'   Allowed values.
 #' @typed property: character[1]
 #'   Name of the property being checked (default: 'hesper_opts').
-#' @typed full_message character[1] | NULL
+#' @typed full_message: character[1] | NULL
 #'  Full message that replace the main message 'Invalid values in {property}' if not NULL (default: NULL).
 #' @typedreturn character[3]
 #'   Suitable for use with \code{rlang::abort()}.

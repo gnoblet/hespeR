@@ -13,7 +13,7 @@
 #'
 #' @export
 HesperVector <- S7::new_class(
-  "HesperDefault",
+  "HesperVector",
   properties = list(
     hesper_var = S7::class_character,
     hesper_vals = S7::class_character

@@ -193,7 +193,7 @@ check_dupes <- function(vec, property = 'vector') {
   dupes_vec <- unique(vec[duplicated(vec)])
   if (length(dupes_vec) > 0) {
     rlang::abort(c(
-      "Duplicate values found in {property}.",
+      glue::glue("Duplicate values found in {property}."),
       "*" = paste0(
         "Duplicate values: ",
         glue::glue_collapse(dupes_vec, sep = ", ", last = ", and ")
@@ -204,40 +204,43 @@ check_dupes <- function(vec, property = 'vector') {
   return(TRUE)
 }
 
-#' Check class of a list of items
+
+#' Check class of items of a vector
 #'
-#' This function checks if all elements in a list are of a specified class. If any element is not of the specified class, it returns an error message.
+#' This function checks if all items in a vector are of a specified class. If any item is not of the specified class, it returns an error message.
 #'
-#' @typed self: list[1+]
-#'  A list of items to check.
+#' @typed vec: vector[1+]
+#'  A vector of items to check.
 #' @typed class_name: character[1]
-#'  The name of the class to check against.
+#' The name of the class to check against.
 #' @typedreturn TRUE | error
-#'  TRUE if all elements are of the specified class, otherwise throws an error.
-#' @keywords internal
-#'
-check_list_class <- function(self, class_name) {
+#' TRUE if all items are of the specified class, otherwise throws an error.
+#' #' @keywords internal
+check_vector_class <- function(vec, class_name, property = 'vec') {
   #------ Checks
-  # self is a list of at least one element
-  checkmate::assert_list(self, min.len = 1)
+  # vec is a vector of at least one element
+  checkmate::assert_vector(vec, min.len = 1)
   # class_name is a character scalar
   checkmate::assert_character(class_name, len = 1)
-  #------ Check class of each element in the list
-  lgl_class <- purrr:map_lgl(self, ~ S7::class(.) == class_name)
-  if (!all(lgl_class)) {
-    non_class_items <- self[!lgl_class]
 
+  #------ Check class of each item in the vec
+  lgl_class <- purrr::map_lgl(vec, function(x) {
+    checkmate::testClass(x, class_name)
+  })
+  if (!all(lgl_class)) {
+    non_class_items <- vec[!lgl_class]
     rlang::abort(c(
-      "Not all elements in the list are of the specified class.",
-      "*" = paste0(
-        "Non-",
-        class_name,
-        " items: ",
-        paste(non_class_items, collapse = ", ")
+      glue::glue("Not all items in '{property}' are of the specified class."),
+      "*" = glue::glue(
+        "Non-{class_name} items::",
+        glue::glue_collapse(
+          non_class_items,
+          sep = ", ",
+          last = ", and "
+        )
       )
     ))
   }
-
   return(TRUE)
 }
 
