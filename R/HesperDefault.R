@@ -14,26 +14,35 @@ HesperDefault <- S7::new_class(
   validator = function(self) {
     # Validate data as follows:
     # 1. Check that the data is a data frame with at least one column.
-    # 2. Check that all columns are in the allowed HESPER variables. Throws a warning if allowed columns are missing.
-    # 3. Check that all values in the data frame are within the allowed HESPER options.
+    # 2. Check that there is at least one HESPER column in the data frame.
+    # 3. Check that all values in the HESPER columns are within the allowed HESPER options.
+    # Extra columns are allowed and ignored by validation.
 
     # 1.
     checkmate::assert_data_frame(self@df, min.cols = 1)
 
-    # 2.
+    # Identify HESPER columns present in df
     allowed_vars <- hesper_vars
-    check_values_in_set(
-      colnames(self@df),
-      allowed_vars,
-      property = 'df columns'
-    )
+    df_cols <- colnames(self@df)
+    hesper_cols <- intersect(df_cols, allowed_vars)
+
+    # 2.
+    if (length(hesper_cols) == 0) {
+      rlang::abort(
+        'No HESPER columns found in df. The data frame must contain at least one HESPER column.'
+      )
+    }
 
     # 3.
     allowed_opts <- hesper_opts
-    check_vars_in_set(self@df, colnames(self@df), allowed_opts)
+    check_vars_in_set(
+      self@df[, hesper_cols, drop = FALSE],
+      hesper_cols,
+      allowed_opts
+    )
 
     # WARN if validator passes
-    vars_nin <- setdiff(allowed_vars, colnames(self@df))
+    vars_nin <- setdiff(allowed_vars, hesper_cols)
     if (length(vars_nin) > 0) {
       rlang::warn(
         msg_missing_vars('df', vars_nin, property = 'df columns', i = FALSE)
