@@ -175,20 +175,25 @@ check_vars_in_set <- function(
 #'
 #' @typed vec: vector
 #'  The vector to check for duplicates.
+#' @typed property: character[1]
+#'  The name of the property being checked (default: 'vector').
 #' @typedreturn TRUE | error
 #'  TRUE if no duplicates are found, otherwise throws an error with a message listing the duplicate values.
 #' @keywords internal
-check_dupes <- function(vec) {
+check_dupes <- function(vec, property = 'vector') {
   #------ Checks
 
   # vec is a vector
   checkmate::assert_vector(vec)
 
+  # property is a character scalar
+  checkmate::assert_character(property, len = 1)
+
   #------ Check for duplicates
   dupes_vec <- unique(vec[duplicated(vec)])
   if (length(dupes_vec) > 0) {
     rlang::abort(c(
-      "Duplicate values found in vector.",
+      "Duplicate values found in {property}.",
       "*" = paste0(
         "Duplicate values: ",
         glue::glue_collapse(dupes_vec, sep = ", ", last = ", and ")
