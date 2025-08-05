@@ -64,6 +64,57 @@ check_missing_vars <- function(df, vars, property = 'hesper_vars') {
   return(TRUE)
 }
 
+#' Check if items of vectors in a list are a set of allowed values
+#'
+#' This function checks if the values in specified variables of a data frame are all within a given set of allowed values. If any values are not in the set, it generates an error message detailing the invalid values in which vars and the expected set.
+#'
+#' @typed l_x: list_named_vector[1+]
+#'   A list of named vectors to check.
+#' @typed vars: character[1+]
+#'  Names of variables to check in the data frame.
+#' @typed set: vector[1+]
+#'   Allowed values that the variables should contain.
+#'
+#' @typedreturn TRUE | error
+#'   TRUE if all values in the specified variables are in the set, otherwise throws an error.
+#'
+#' @keywords internal
+check_vecs_in_set <- function(
+  l_x,
+  set
+) {
+  #------ Checks
+
+  # l_x is a named list of vectors
+  checkmate::assert_list(l_x, min.len = 1, names = "named")
+
+  #------ Values not in set
+  values_lgl <- purrr::map_lgl(
+    l_x,
+    \(x) {
+      !all(stats::na.omit(unique(x)) %in% set)
+    }
+  )
+
+  if (any(values_lgl)) {
+    l_x <- l_x[values_lgl]
+    # Get values not in set for each item in l_x
+    values_chr <- purrr::map_chr(l_x, function(x) {
+      x <- unique(x)
+      x[!is.na(x) & !(x %in% set)]
+    })
+
+    # Error message
+    rlang::abort(msg_invalid_values(
+      values_chr,
+      set,
+      property = names(l_x)
+    ))
+  }
+
+  return(TRUE)
+}
+
 #' Check if variables in a data frame are in a set of allowed values
 #'
 #' This function checks if the values in specified variables of a data frame are all within a given set of allowed values. If any values are not in the set, it generates an error message detailing the invalid values in which vars and the expected set.
@@ -113,6 +164,73 @@ check_vars_in_set <- function(
 
     # Error message
     rlang::abort(msg_invalid_values(values_chr, set, property = vars))
+  }
+
+  return(TRUE)
+}
+
+#' Check duplicate values in a vector
+#'
+#' This function checks for duplicate values in a vector and throws an error if any duplicates are found.
+#'
+#' @typed vec: vector
+#'  The vector to check for duplicates.
+#' @typedreturn TRUE | error
+#'  TRUE if no duplicates are found, otherwise throws an error with a message listing the duplicate values.
+#' @keywords internal
+check_dupes <- function(vec) {
+  #------ Checks
+
+  # vec is a vector
+  checkmate::assert_vector(vec)
+
+  #------ Check for duplicates
+  dupes_vec <- unique(vec[duplicated(vec)])
+  if (length(dupes_vec) > 0) {
+    rlang::abort(c(
+      "Duplicate values found in vector.",
+      "*" = paste0(
+        "Duplicate values: ",
+        glue::glue_collapse(dupes_vec, sep = ", ", last = ", and ")
+      )
+    ))
+  }
+
+  return(TRUE)
+}
+
+#' Check class of a list of items
+#'
+#' This function checks if all elements in a list are of a specified class. If any element is not of the specified class, it returns an error message.
+#'
+#' @typed self: list[1+]
+#'  A list of items to check.
+#' @typed class_name: character[1]
+#'  The name of the class to check against.
+#' @typedreturn TRUE | error
+#'  TRUE if all elements are of the specified class, otherwise throws an error.
+#' @keywords internal
+#'
+check_list_class <- function(self, class_name) {
+  #------ Checks
+  # self is a list of at least one element
+  checkmate::assert_list(self, min.len = 1)
+  # class_name is a character scalar
+  checkmate::assert_character(class_name, len = 1)
+  #------ Check class of each element in the list
+  lgl_class <- purrr:map_lgl(self, ~ S7::class(.) == class_name)
+  if (!all(lgl_class)) {
+    non_class_items <- self[!lgl_class]
+
+    rlang::abort(c(
+      "Not all elements in the list are of the specified class.",
+      "*" = paste0(
+        "Non-",
+        class_name,
+        " items: ",
+        paste(non_class_items, collapse = ", ")
+      )
+    ))
   }
 
   return(TRUE)
