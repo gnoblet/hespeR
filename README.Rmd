@@ -16,8 +16,8 @@ knitr::opts_chunk$set(
 # hespeR
 
 <!-- badges: start -->
-  [![R-CMD-check](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svghttps://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svghttps://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml)
-  [![Codecov test coverage](https://codecov.io/gh/gnoblet/hespeR/graph/badge.svg)](https://app.codecov.io/gh/gnoblet/hespeR)
+[![R-CMD-check](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/gnoblet/hespeR/graph/badge.svg)](https://app.codecov.io/gh/gnoblet/hespeR)
 <!-- badges: end -->
 
  R Handle of The Humanitarian Emergency Settings Perceived Needs Scale (HESPER)
