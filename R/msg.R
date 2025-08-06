@@ -9,7 +9,7 @@
 #' @typed property: character[1]
 #'   Name of the property being checked (default: 'hesper_opts').
 #' @typed full_message: character[1] | NULL
-#'  Full message that replace the main message 'Invalid values in {property}' if not NULL (default: NULL).
+#'  Full message that replace the main message 'Invalid values in \{property\}' if not NULL (default: NULL).
 #' @typedreturn character[3]
 #'   Suitable for use with \code{rlang::abort()}.
 #'
@@ -26,7 +26,7 @@ msg_invalid_values <- function(
 
   checkmate::assert_character(invalid, min.len = 1)
   checkmate::assert_character(allowed, min.len = 1)
-  checkmate::assert_character(property, len = 1)
+  checkmate::assert_character(property, min.len = 1)
   checkmate::assert_character(full_message, len = 1, null.ok = TRUE)
 
   #------ Prepare error message

@@ -18,7 +18,7 @@ msg_invalid_values(
 
 \item{property}{(\code{character[1]}) Name of the property being checked (default: 'hesper_opts').}
 
-\item{full_message}{(\code{character[1] | NULL}) Full message that replace the main message 'Invalid values in {property}' if not NULL (default: NULL).}
+\item{full_message}{(\code{character[1] | NULL}) Full message that replace the main message 'Invalid values in \{property\}' if not NULL (default: NULL).}
 }
 \value{
 (\code{character[3]}) Suitable for use with \code{rlang::abort()}.
