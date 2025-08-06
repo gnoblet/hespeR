@@ -53,3 +53,17 @@ test_that("check_vars_in_set throws error when a variable is missing from df", {
     regexp = "Missing variables|b"
   )
 })
+
+test_that("check_vars_in_set allows missing values when allow_missing = TRUE", {
+  df <- data.frame(a = c("x", NA), b = c(NA, "y"))
+  vars <- c("a", "b")
+  set <- c("x", "y")
+  expect_true(check_vars_in_set(df, vars, set, allow_missing = TRUE))
+})
+
+test_that("check_vars_in_set errors on missing values when allow_missing = FALSE", {
+  df <- data.frame(a = c("x", NA), b = c(NA_character_, "y"))
+  vars <- c("a", "b")
+  set <- c("x", "y")
+  expect_error(check_vars_in_set(df, vars, set, allow_missing = FALSE))
+})
