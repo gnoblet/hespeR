@@ -3,7 +3,10 @@
 test_that("HesperVector accepts valid hesper_var and hesper_vals", {
   valid_var <- hesper_vars[1]
   valid_vals <- hesper_opts[1:2]
-  obj <- HesperVector(hesper_var = valid_var, hesper_vals = valid_vals)
+  obj <- HesperVector(
+    hesper_var = valid_var,
+    hesper_vals = valid_vals
+  )
   expect_s7_class(obj, HesperVector)
   expect_equal(obj@hesper_var, valid_var)
   expect_equal(obj@hesper_vals, valid_vals)
@@ -27,15 +30,15 @@ test_that("HesperVector errors if hesper_vals contains values not in hesper_opts
   )
 })
 
-test_that("HesperVector errors if hesper_var is not a character scalar", {
+test_that("HesperVector errors if hesper_var is not a character scalar and non missing", {
   valid_vals <- hesper_opts[1:2]
   expect_error(
     HesperVector(hesper_var = c("a", "b"), hesper_vals = valid_vals),
-    regexp = "len = 1"
+    regexp = "Assertion on 'self@hesper_var' failed: Must have length 1, but has length 2."
   )
   expect_error(
     HesperVector(hesper_var = NA_character_, hesper_vals = valid_vals),
-    regexp = "missing"
+    regexp = "Following values are not allowed: NA"
   )
 })
 
