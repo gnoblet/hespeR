@@ -4,7 +4,12 @@
 \alias{check_values_in_set}
 \title{Check if values in a vector are all in a given set of allowed values}
 \usage{
-check_values_in_set(x, allowed, property = "hesper_opts")
+check_values_in_set(
+  x,
+  allowed,
+  property = "hesper_opts",
+  allow_missing = FALSE
+)
 }
 \arguments{
 \item{x}{(\verb{vector[1+]}) Values to check.}
@@ -12,6 +17,8 @@ check_values_in_set(x, allowed, property = "hesper_opts")
 \item{allowed}{(\verb{vector[1+]}) Allowed values.}
 
 \item{property}{(\code{character[1]}) Name of the property being checked (default: 'hesper_opts').}
+
+\item{allow_missing}{(\code{logical[1]}) Whether to allow missing values (default: FALSE).}
 }
 \value{
 (\code{TRUE | error}) TRUE if all values are in the allowed set, otherwise throws an error.

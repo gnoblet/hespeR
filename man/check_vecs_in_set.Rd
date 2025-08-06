@@ -4,14 +4,14 @@
 \alias{check_vecs_in_set}
 \title{Check if items of vectors in a list are a set of allowed values}
 \usage{
-check_vecs_in_set(l_x, set)
+check_vecs_in_set(l_x, set, allow_missing = FALSE)
 }
 \arguments{
 \item{l_x}{(\verb{list_named_vector[1+]}) A list of named vectors to check.}
 
 \item{set}{(\verb{vector[1+]}) Allowed values that the variables should contain.}
 
-\item{vars}{(\verb{character[1+]}) Names of variables to check in the data frame.}
+\item{allow_missing}{(\code{logical[1]}) Whether to allow missing values (default: FALSE).}
 }
 \value{
 (\code{TRUE | error}) TRUE if all values in the specified variables are in the set, otherwise throws an error.

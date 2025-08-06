@@ -4,7 +4,7 @@
 \alias{check_vars_in_set}
 \title{Check if variables in a data frame are in a set of allowed values}
 \usage{
-check_vars_in_set(df, vars, set)
+check_vars_in_set(df, vars, set, allow_missing = FALSE)
 }
 \arguments{
 \item{df}{(\verb{data.frame[,1+]}) A data frame}
@@ -12,6 +12,8 @@ check_vars_in_set(df, vars, set)
 \item{vars}{(\verb{character[1+]}) Names of variables to check in the data frame.}
 
 \item{set}{(\verb{vector[1+]}) Allowed values that the variables should contain.}
+
+\item{allow_missing}{(\code{logical[1]}) Whether to allow missing values (default: FALSE).}
 }
 \value{
 (\code{TRUE | error}) TRUE if all values in the specified variables are in the set, otherwise throws an error.

@@ -13,8 +13,8 @@ check_vector_class(vec, class_name, property = "vec")
 }
 \value{
 (\code{TRUE | error}) TRUE if all items are of the specified class, otherwise throws an error.
-#' @keywords internal
 }
 \description{
 This function checks if all items in a vector are of a specified class. If any item is not of the specified class, it returns an error message.
 }
+\keyword{internal}

@@ -6,24 +6,39 @@
 #'   Allowed values.
 #' @typed property: character[1]
 #'   Name of the property being checked (default: 'hesper_opts').
+#' @typed allow_missing: logical[1]
+#'  Whether to allow missing values (default: FALSE).
 #'
 #' @typedreturn TRUE | error
 #'   TRUE if all values are in the allowed set, otherwise throws an error.
 #'
 #' @keywords internal
-check_values_in_set <- function(x, allowed, property = 'hesper_opts') {
+check_values_in_set <- function(
+  x,
+  allowed,
+  property = 'hesper_opts',
+  allow_missing = FALSE
+) {
   #------ Checks
 
   checkmate::assert_vector(x, min.len = 1)
   checkmate::assert_vector(allowed, min.len = 1)
+  checkmate::assert_character(property, len = 1)
+  checkmate::assert_logical(allow_missing, len = 1)
 
   #------ Abort or not
-  if (!all(x %in% allowed)) {
+  if (!all(x %in% allowed | (allow_missing & is.na(x)))) {
     invalid <- setdiff(x, allowed)
+
+    # Make sure that allowed set and invalid are character
+    allowed <- as.character(allowed)
+    invalid <- as.character(invalid)
+
     rlang::abort(
       msg_invalid_values(invalid, allowed, property = property)
     )
   }
+
   return(TRUE)
 }
 
@@ -70,10 +85,10 @@ check_missing_vars <- function(df, vars, property = 'hesper_vars') {
 #'
 #' @typed l_x: list_named_vector[1+]
 #'   A list of named vectors to check.
-#' @typed vars: character[1+]
-#'  Names of variables to check in the data frame.
 #' @typed set: vector[1+]
-#'   Allowed values that the variables should contain.
+#'  Allowed values that the variables should contain.
+#' @typed allow_missing: logical[1]
+#'  Whether to allow missing values (default: FALSE).
 #'
 #' @typedreturn TRUE | error
 #'   TRUE if all values in the specified variables are in the set, otherwise throws an error.
@@ -81,28 +96,39 @@ check_missing_vars <- function(df, vars, property = 'hesper_vars') {
 #' @keywords internal
 check_vecs_in_set <- function(
   l_x,
-  set
+  set,
+  allow_missing = FALSE
 ) {
   #------ Checks
 
   # l_x is a named list of vectors
   checkmate::assert_list(l_x, min.len = 1, names = "named")
+  checkmate::assert_vector(set, min.len = 1)
+  checkmate::assert_logical(allow_missing, len = 1)
 
   #------ Values not in set
+  if (allow_missing) {
+    set <- c(set, NA)
+  }
   values_lgl <- purrr::map_lgl(
     l_x,
     \(x) {
-      !all(stats::na.omit(unique(x)) %in% set)
+      !all(unique(x) %in% set)
     }
   )
-
   if (any(values_lgl)) {
     l_x <- l_x[values_lgl]
     # Get values not in set for each item in l_x
-    values_chr <- purrr::map_chr(l_x, function(x) {
+    values_chr <- purrr::map(l_x, function(x) {
       x <- unique(x)
-      x[!is.na(x) & !(x %in% set)]
-    })
+      x <- x[!(x %in% set)]
+      ifelse(is.na(x), "NA", x)
+    }) |>
+      purrr::flatten_chr() |>
+      unique()
+
+    # Make sure that allowed set is character
+    set <- as.character(set)
 
     # Error message
     rlang::abort(msg_invalid_values(
@@ -125,6 +151,8 @@ check_vecs_in_set <- function(
 #'  Names of variables to check in the data frame.
 #' @typed set: vector[1+]
 #'   Allowed values that the variables should contain.
+#' @typed allow_missing: logical[1]
+#'  Whether to allow missing values (default: FALSE).
 #'
 #' @typedreturn TRUE | error
 #'   TRUE if all values in the specified variables are in the set, otherwise throws an error.
@@ -133,7 +161,8 @@ check_vecs_in_set <- function(
 check_vars_in_set <- function(
   df,
   vars,
-  set
+  set,
+  allow_missing = FALSE
 ) {
   #------ Checks
 
@@ -142,25 +171,41 @@ check_vars_in_set <- function(
 
   # vars is a character vector
   checkmate::assert_character(vars, min.len = 1)
+  # set is a vector of allowed values
+  checkmate::assert_vector(set, min.len = 1)
+  # allow_missing is a logical scalar
+  checkmate::assert_logical(allow_missing, len = 1)
 
   # missing vars
   check_missing_vars(df, vars)
 
   #------ Values not in set
+
+  # Check if all values in df[vars] are in the set
+  # If allow_missing is TRUE, we also allow NA values
+  if (allow_missing) {
+    set <- c(set, NA)
+  }
   values_lgl <- purrr::map_lgl(
     df[vars],
     \(x) {
-      !all(stats::na.omit(unique(x)) %in% set)
+      !all(unique(x) %in% set)
     }
   )
 
   if (any(values_lgl)) {
     vars <- vars[values_lgl]
     # Get values not in set for each column in df[vars]
-    values_chr <- purrr::map_chr(df[vars], function(x) {
+    values_chr <- purrr::map(df[vars], function(x) {
       x <- unique(x)
-      x[!is.na(x) & !(x %in% set)]
-    })
+      x <- x[!(x %in% set)]
+      ifelse(is.na(x), "NA", x)
+    }) |>
+      purrr::flatten_chr() |>
+      unique()
+
+    # Make sure that allowed set is character
+    set <- as.character(set)
 
     # Error message
     rlang::abort(msg_invalid_values(values_chr, set, property = vars))
@@ -177,8 +222,10 @@ check_vars_in_set <- function(
 #'  The vector to check for duplicates.
 #' @typed property: character[1]
 #'  The name of the property being checked (default: 'vector').
+#'
 #' @typedreturn TRUE | error
 #'  TRUE if no duplicates are found, otherwise throws an error with a message listing the duplicate values.
+#'
 #' @keywords internal
 check_dupes <- function(vec, property = 'vector') {
   #------ Checks
@@ -213,9 +260,11 @@ check_dupes <- function(vec, property = 'vector') {
 #'  A vector of items to check.
 #' @typed class_name: character[1]
 #' The name of the class to check against.
+#'
 #' @typedreturn TRUE | error
 #' TRUE if all items are of the specified class, otherwise throws an error.
-#' #' @keywords internal
+#'
+#' @keywords internal
 check_vector_class <- function(vec, class_name, property = 'vec') {
   #------ Checks
   # vec is a vector of at least one element
