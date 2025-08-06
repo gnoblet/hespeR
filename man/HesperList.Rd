@@ -18,5 +18,5 @@ S7 class for hespeR list of vectors
 \details{
 The \code{HesperList} class is designed to encapsulate a collection of HESPER vectors. Each vector in the list is an instance of the \code{HesperVector} class, representing a specific HESPER item and its allowed options.
 
-The class validates that each item in the list is a valid \code{HesperVector} and that the list is not empty nor has duplicated HESPER items.
+The class validates that each item in the list is a valid \code{HesperVector} and that the list is not empty, has duplicated HESPER items, has different lengths of \code{hesper_vals}, and has consistent \code{allow_missing} values across all items.
 }

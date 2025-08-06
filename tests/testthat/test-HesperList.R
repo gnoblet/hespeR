@@ -11,7 +11,7 @@ hesper_opts <- c(
 )
 
 test_that("HesperList accepts a valid vector of HesperVector objects", {
-  hv1 <- HesperVector(hesper_vars[1], hesper_opts[1:2])
+  hv1 <- HesperVector(hesper_vars[1], hesper_opts[1:3])
   hv2 <- HesperVector(hesper_vars[2], hesper_opts[3:5])
   hl <- HesperList(hesper_list = c(hv1, hv2))
   expect_s7_class(hl, HesperList)
@@ -51,20 +51,43 @@ test_that("HesperList works with a single HesperVector", {
   expect_length(hl@hesper_list, 1)
 })
 
-# Edge case: NA in hesper_vals if allowed
-# Need to allow for NA values
-# test_that("HesperList accepts HesperVector with NA in hesper_vals if NA is allowed", {
-#   hv1 <- HesperVector(hesper_vars[1], c(hesper_opts[1], NA))
-#   hv2 <- HesperVector(hesper_vars[2], hesper_opts[2:3])
-#   # If NA is allowed in hesper_opts, this should be accepted
-#   if (any(is.na(hesper_opts))) {
-#     expect_silent(HesperList(hesper_list = c(hv1, hv2)))
-#   } else {
-#     expect_error(
-#       HesperList(hesper_list = c(hv1, hv2)),
-#       regexp = "invalid|hesper_vals"
-#     )
-#   }
-# })
+# Edge case: NA in hesper_vals if allowed (handled by HesperVector anyway)
+test_that("HesperList accepts HesperVector with NA in hesper_vals if NA is allowed", {
+  hv1 <- HesperVector(
+    hesper_vars[1],
+    c(hesper_opts[1], NA),
+    allow_missing = TRUE
+  )
+  hv2 <- HesperVector(hesper_vars[2], hesper_opts[2:3], allow_missing = TRUE)
+  expect_silent(HesperList(hesper_list = c(hv1, hv2)))
+})
 
-# Need to apply validator to potential fake HesperVector inputs,class is not enough
+# If fake HesperVector is used, it should throw an error
+test_that("HesperList errors if a fake HesperVector is used", {
+  fake_hv <- list(hesper_var = "fake_var", hesper_vals = c("val1", "val2"))
+  expect_error(
+    HesperList(hesper_list = list(fake_hv)),
+    regexp = "Not all items in 'hesper_list' are of the specified class."
+  )
+})
+# even if given the right classm fake_hv with wrong values shouldn't pass the validator
+test_that("HesperList errors if a fake HesperVector with class is used", {
+  fake_HesperVector <- S7::new_class(
+    "hespeR::HesperVector",
+    properties = list(
+      hesper_var = S7::class_character,
+      hesper_vals = S7::class_character,
+      allow_missing = S7::class_logical
+    )
+  )
+  fake_hv <- fake_HesperVector(
+    hesper_var = "fake_var",
+    hesper_vals = c("val1", "val2"),
+    allow_missing = FALSE
+  )
+
+  expect_error(
+    HesperList(hesper_list = list(fake_hv)),
+    regexp = "Not all items in 'hesper_list' are of the specified class."
+  )
+})
