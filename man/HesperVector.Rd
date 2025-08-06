@@ -4,12 +4,18 @@
 \alias{HesperVector}
 \title{S7 class for hespeR vectors}
 \usage{
-HesperVector(hesper_var = character(0), hesper_vals = character(0))
+HesperVector(
+  hesper_var = character(0),
+  hesper_vals = character(0),
+  allow_missing = FALSE
+)
 }
 \arguments{
 \item{hesper_var}{(\code{character[1]}) A single HESPER item name.}
 
 \item{hesper_vals}{(\verb{character[1+]}) A vector of allowed options for the HESPER item.}
+
+\item{allow_missing}{(\code{logical[1]}) Whether missing options are allowed for this HESPER item.}
 }
 \value{
 (\code{S7_object}) A S7 \code{HesperVector} object representing a HESPER item and its allowed options.

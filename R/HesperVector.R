@@ -4,6 +4,9 @@
 #'  A single HESPER item name.
 #' @typed hesper_vals: character[1+]
 #'  A vector of allowed options for the HESPER item.
+#' @typed allow_missing: logical[1]
+#'  Whether missing options are allowed for this HESPER item.
+#'
 #' @typedreturn S7_object
 #'  A S7 `HesperVector` object representing a HESPER item and its allowed options.
 #'
@@ -16,7 +19,11 @@ HesperVector <- S7::new_class(
   "HesperVector",
   properties = list(
     hesper_var = S7::class_character,
-    hesper_vals = S7::class_character
+    hesper_vals = S7::class_character,
+    allow_missing = S7::new_property(
+      S7::class_logical,
+      default = FALSE
+    )
   ),
   validator = function(self) {
     #  hesper_var is a character scalar matching a HESPER item
@@ -30,7 +37,12 @@ HesperVector <- S7::new_class(
 
     # hesper_vals is a character vector with at least one value of HESPER options
     checkmate::assert_character(self@hesper_vals, min.len = 1)
-    allowed_opts <- hesper_opts
+    checkmate::assert_logical(self@allow_missing, len = 1)
+    allowed_opts <- if (self@allow_missing) {
+      c(hesper_opts, NA_character_)
+    } else {
+      hesper_opts
+    }
     check_values_in_set(
       self@hesper_vals,
       allowed_opts,
