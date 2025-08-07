@@ -23,9 +23,10 @@ rec_hesper_opts <- function(df, hesper_vars, old_hesper_opts) {
     len = 5,
     names = "named"
   )
+  allowed_opts <- hesper_opts()
   check_values_in_set(
     names(old_hesper_opts),
-    hesper_opts,
+    allowed_opts,
     property = "old_hesper_opts"
   )
 

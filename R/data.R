@@ -1,28 +1,64 @@
-#' All possible HESPER item column names
+#' All allowed HESPER item column names
 #'
-#' A character vector listing all possible HESPER item columns for use in hespeR data structures and validation.
-#' @format character vector
-#' @keywords internal
-'hesper_vars'
+#' A character vector listing all allowed HESPER item columns for use in hespeR data structures and validation or if needed to be accessed easily.
+#'
+#' @typed none: empty
+#'  No input parameters.
+#'
+#' @typedreturn character[29]
+#'  All allowed HESPER item names.
+#'
+#' @export
+hesper_vars <- function() {
+  c(
+    "hesper_drinking_water",
+    "hesper_food",
+    "hesper_shelter",
+    "hesper_toilet",
+    "hesper_clean",
+    "hesper_clean_female",
+    "hesper_clothes_etc",
+    "hesper_income_livelihood",
+    "hesper_health",
+    "hesper_health_care_male",
+    "hesper_health_care_female",
+    "hesper_distress",
+    "hesper_safety",
+    "hesper_education",
+    "hesper_care",
+    "hesper_support",
+    "hesper_separation",
+    "hesper_displaced",
+    "hesper_information",
+    "hesper_aid",
+    "hesper_respect",
+    "hesper_movement",
+    "hesper_time",
+    "hesper_law",
+    "hesper_gbv",
+    "hesper_drug",
+    "hesper_mental_health",
+    "hesper_care_community",
+    "hesper_other"
+  )
+}
 
-#' Allowed HESPER response options
+#' All allowed response options for HESPER items
 #'
-#' A character vector of all allowed response options for HESPER items: 'serious_problem', 'no_serious_problem', 'dnk', 'pnta', and 'not_applicable'.
-#' @format character vector
-#' @keywords internal
-"hesper_opts"
-
-#' Some Hesper dummy data
+#' This character vector contains all allowed response options for HESPER items, which can be used for validation or reference in the hespeR package These are: 'serious_problem', 'no_serious_problem', 'dnk', 'pnta', and 'not_applicable'.
+#' @typed none: empty
+#'  No input parameters.
 #'
-#' A dataset with hesper columns, for example and testing purposes.
+#' @typedreturn character[5]
+#'  All allowed HESPER response options.
 #'
-#' This data frame contains columns corresponding to all possible HESPER items, as well as possible grouping or metadata columns (e.g., pop_group). Values in HESPER columns are restricted to the allowed HESPER response levels.
-#'
-#' @format A data.frame with columns:
-#'   \describe{
-#'     \item{hesper_*}{Character columns for each HESPER item, e.g., hesper_drinking_water, hesper_food, ...}
-#'     \item{pop_group}{(optional) Character column for population group, e.g., refugees, host, idp}
-#'     \item{...}{Other possible metadata columns}
-#'   }
-#' @source Generated for hespeR package examples and tests.
-"hesper_dat"
+#' @export
+hesper_opts <- function() {
+  c(
+    "serious_problem",
+    "no_serious_problem",
+    "dnk",
+    "pnta",
+    "not_applicable"
+  )
+}
