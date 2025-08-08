@@ -7,10 +7,10 @@
 is_not_empty(x)
 }
 \arguments{
-\item{x}{A vector}
+\item{x}{(\code{vector}) A vector}
 }
 \value{
-TRUE if the vector is not empty, FALSE otherwise
+(\code{logical}) TRUE if the vector is not empty, FALSE otherwise
 }
 \description{
 Check if a vector is not empty, i.e. not null, positive length and not filled with NA

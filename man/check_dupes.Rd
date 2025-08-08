@@ -2,18 +2,19 @@
 % Please edit documentation in R/check.R
 \name{check_dupes}
 \alias{check_dupes}
-\title{Check for duplicate values}
+\title{Check duplicate values in a vector}
 \usage{
-check_dupes(vec, msg)
+check_dupes(vec, property = "vector")
 }
 \arguments{
-\item{vec}{A vector}
+\item{vec}{(\code{vector}) The vector to check for duplicates.}
 
-\item{msg}{A message}
+\item{property}{(\code{character[1]}) The name of the property being checked (default: 'vector').}
 }
 \value{
-A stop statement
+(\code{TRUE | error}) TRUE if no duplicates are found, otherwise throws an error with a message listing the duplicate values.
 }
 \description{
-Check for duplicate values
+This function checks for duplicate values in a vector and throws an error if any duplicates are found.
 }
+\keyword{internal}
