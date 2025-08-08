@@ -1,4 +1,3 @@
-hespeR / R / methodsHesperList.R
 #' Convert HesperList to data.frame
 #'
 #' Returns a data.frame representation of a HesperList object.
