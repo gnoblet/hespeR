@@ -7,10 +7,12 @@
 as_data_frame(x, ...)
 }
 \arguments{
-\item{x}{A HesperList object.}
+\item{x}{(\code{HesperList}) A HesperList object.}
+
+\item{bins}{(\code{logical[1]}) If \code{TRUE}, includes binary columns for each HESPER option in the data.frame.}
 }
 \value{
-A data.frame with columns named by \code{hesper_var} and values from \code{hesper_vals}. An attribute \code{allow_missing} is added to indicate if missing values are allowed for each variable.
+(\code{data.frame}) With columns named by \code{hesper_var} and values from \code{hesper_vals} (and optionally binaries). An attribute \code{allow_missing} is added to indicate if missing values are allowed for each variable.
 }
 \description{
 Returns a data.frame representation of a HesperList object.
