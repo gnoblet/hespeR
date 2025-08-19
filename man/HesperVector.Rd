@@ -26,4 +26,6 @@ S7 class for hespeR vectors
 \details{
 The \code{HesperVector} class is designed to encapsulate the core properties of HESPER data. It includes the name of a HESPER item (\code{hesper_var}) and a vector of allowed options for that item (\code{hesper_vals}).
 The class validates that the \code{hesper_var} property is a valid Hesper item (see \link{hesper_vars}) and that all values in \code{hesper_vals} are within the allowed options (see specified in \link{hesper_opts}).
+
+The \code{hesper_bins} property is a getter that add a list of binary vectors for the HESPER item. For each possible HESPER option (from \code{\link[=hesper_opts]{hesper_opts()}}), it returns a binary vector indicating which values in \code{hesper_vals} match that option.
 }

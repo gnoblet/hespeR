@@ -14,6 +14,8 @@
 #' The `HesperVector` class is designed to encapsulate the core properties of HESPER data. It includes the name of a HESPER item (`hesper_var`) and a vector of allowed options for that item (`hesper_vals`).
 #' The class validates that the `hesper_var` property is a valid Hesper item (see [hespeR::hesper_vars]) and that all values in `hesper_vals` are within the allowed options (see specified in [hespeR::hesper_opts]).
 #'
+#' The `hesper_bins` property is a getter that add a list of binary vectors for the HESPER item. For each possible HESPER option (from [hespeR::hesper_opts()]), it returns a binary vector indicating which values in `hesper_vals` match that option.
+#'
 #' @export
 HesperVector <- S7::new_class(
   "HesperVector",
@@ -23,6 +25,14 @@ HesperVector <- S7::new_class(
     allow_missing = S7::new_property(
       S7::class_logical,
       default = FALSE
+    ),
+    hesper_bins = S7::new_property(
+      S7::class_list,
+      getter = function(self) {
+        opts <- hesper_opts()
+        purrr::map(opts, function(o) as.integer(self@hesper_vals == o)) |>
+          purrr::set_names(opts)
+      },
     )
   ),
   validator = function(self) {
