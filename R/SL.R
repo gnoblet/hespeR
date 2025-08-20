@@ -23,7 +23,7 @@ SL <- S7::new_class(
     subset_vals = S7::class_vector
   ),
   validator = function(self) {
-    # Validate that hesper_var is a valid HESPER variable
+    # hesper_var is a valid HESPER variable
     checkmate::assert_character(self@hesper_var, len = 1)
     allowed_vars <- hesper_vars()
     check_values_in_set(
@@ -32,10 +32,10 @@ SL <- S7::new_class(
       property = 'hesper_var'
     )
 
-    # Validate that subset_var is a valid variable name
+    # subset_var is a valid variable name
     checkmate::assert_character(self@subset_var, len = 1)
 
-    # Validate that subset_vals contains valid values for the subset variable
+    # subset_vals contains valid values for the subset variable
     checkmate::assert_vector(self@subset_vals, min.len = 1)
 
     NULL
