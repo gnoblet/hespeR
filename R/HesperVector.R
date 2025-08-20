@@ -37,7 +37,7 @@ HesperVector <- S7::new_class(
   ),
   validator = function(self) {
     #  hesper_var is a character scalar matching a HESPER item
-    checkmate::assert_character(self@hesper_var, len = 1)
+    checkmate::assert_character(self@hesper_var, len = 1, any.missing = FALSE)
     allowed_vars <- hesper_vars()
     check_values_in_set(
       self@hesper_var,
