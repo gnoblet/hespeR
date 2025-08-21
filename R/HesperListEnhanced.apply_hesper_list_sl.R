@@ -10,7 +10,7 @@ apply_hesper_list_sl <- function(self) {
       "i" = "Skipping application of skip logic rules."
     ))
 
-    return(self@hesper_list)
+    return(self)
   }
 
   # Get idx of hesper_list where skip logic rules apply
@@ -53,7 +53,7 @@ apply_hesper_list_sl <- function(self) {
   hesper_list_cleaned <- c(hesper_list_cleaned, other_hesper_vecs)
 
   # Reorder the cleaned list to match the original order of hesper_list
-  hesper_list_cleaned <- hesper_list_cleaned[order(hesper_list_vars)]
+  hesper_list_cleaned <- hesper_list_cleaned[match(hesper_list_vars, names(hesper_list_cleaned))]
 
   # Add it back to the HesperListEnhanced object
   self@hesper_list <- hesper_list_cleaned

@@ -34,7 +34,7 @@ test_that("apply_hesper_list_sl returns cleaned hesper_list", {
   expect_s7_class(hlf, HesperListEnhanced)
   expect_equal(length(hlf@hesper_list), 3)
 
-  # Check that vectorsare cleaned
+  # Check that vectors are cleaned
   expect_equal(
     hlf@hesper_list[[1]]@hesper_vals,
     c("serious_problem", NA, "dnk")

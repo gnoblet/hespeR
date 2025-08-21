@@ -38,7 +38,7 @@ SL <- S7::new_class(
     # subset_vals contains valid values for the subset variable
     checkmate::assert_vector(
       self@subset_vals,
-      min.len = 1.,
+      min.len = 1,
       any.missing = FALSE
     )
 

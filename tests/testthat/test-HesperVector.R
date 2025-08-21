@@ -38,7 +38,7 @@ test_that("HesperVector errors if hesper_var is not a character scalar and non m
   )
   expect_error(
     HesperVector(hesper_var = NA_character_, hesper_vals = valid_vals),
-    regexp = "Following values are not allowed: NA"
+    regexp = "Assertion on 'self@hesper_var' failed"
   )
 })
 
@@ -165,8 +165,11 @@ test_that("hesper_bins works with all possible options", {
   for (i in seq_along(all_opts)) {
     expected_vector <- integer(length(all_opts))
     expected_vector[i] <- 1L
-    expect_equal(bins[[all_opts[i]]], expected_vector,
-                 info = paste("Failed for option:", all_opts[i]))
+    expect_equal(
+      bins[[all_opts[i]]],
+      expected_vector,
+      info = paste("Failed for option:", all_opts[i])
+    )
   }
 })
 
