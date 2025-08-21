@@ -14,14 +14,14 @@
 HesperList <- S7::new_class(
   "HesperList",
   properties = list(
-    hesper_list = S7::class_vector
+    hesper_list = S7::class_list
   ),
   validator = function(self) {
     # hesper_list is a non-empty list
     checkmate::assert_vector(self@hesper_list, min.len = 1)
 
     # all items are HesperVector instances and validate them using HesperVector@validator
-    check_vector_class(self@hesper_list, "hespeR::HesperVector", 'hesper_list')
+    check_vector_class(self@hesper_list, "hespeR::HesperVector", "hesper_list")
     purrr::map(self@hesper_list, function(x) {
       HesperVector@validator(x)
     })
@@ -42,17 +42,17 @@ HesperList <- S7::new_class(
       ))
     }
 
-    # all items have the same @allow_missing value
-    allow_missing_values <- purrr::map_lgl(self@hesper_list, \(x) {
-      x@allow_missing
-    })
-    if (length(unique(allow_missing_values)) > 1) {
-      rlang::abort(c(
-        glue::glue(
-          "Not all items in 'hesper_list' have the same value of @allow_missing."
-        )
-      ))
-    }
+    # # all items have the same @allow_missing value
+    # allow_missing_values <- purrr::map_lgl(self@hesper_list, \(x) {
+    #   x@allow_missing
+    # })
+    # if (length(unique(allow_missing_values)) > 1) {
+    #   rlang::abort(c(
+    #     glue::glue(
+    #       "Not all items in 'hesper_list' have the same value of @allow_missing."
+    #     )
+    #   ))
+    # }
 
     NULL
   }
