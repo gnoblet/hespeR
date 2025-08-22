@@ -12,7 +12,9 @@ Roxygen: list(markdown = TRUE, packages = "roxytypes")
 RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0),
-    roxytypes
+    roxytypes,
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
 URL: https://gnoblet.github.io/hespeR/
 Imports: 
@@ -27,3 +29,4 @@ Depends:
 LazyData: true
 Config/Needs/documentation: 
     roxytypes
+VignetteBuilder: knitr
