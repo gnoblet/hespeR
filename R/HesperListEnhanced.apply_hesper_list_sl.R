@@ -50,10 +50,16 @@ apply_hesper_list_sl <- function(self) {
   other_hesper_vecs <- self@hesper_list[which(
     hesper_list_vars %in% setdiff(hesper_list_vars, sl_hesper_vars)
   )]
+
+  # set names for other hesper
+  names(other_hesper_vecs) <- other_hesper_vars
   hesper_list_cleaned <- c(hesper_list_cleaned, other_hesper_vecs)
 
   # Reorder the cleaned list to match the original order of hesper_list
-  hesper_list_cleaned <- hesper_list_cleaned[match(hesper_list_vars, names(hesper_list_cleaned))]
+  hesper_list_cleaned <- hesper_list_cleaned[match(
+    hesper_list_vars,
+    names(hesper_list_cleaned)
+  )]
 
   # Add it back to the HesperListEnhanced object
   self@hesper_list <- hesper_list_cleaned
