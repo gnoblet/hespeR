@@ -9,3 +9,4 @@ docs
 .quarto
 
 /.quarto/
+inst/doc
