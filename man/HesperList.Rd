@@ -2,24 +2,15 @@
 % Please edit documentation in R/HesperList.R
 \name{HesperList}
 \alias{HesperList}
-\alias{HesperListEnhanced}
 \title{S7 class for hespeR list of vectors}
 \usage{
 HesperList(hesper_list = list())
-
-HesperListEnhanced(hesper_list = list(), SL = list(), other_list = list())
 }
 \arguments{
 \item{hesper_list}{(\code{list[HesperVector]}) A list of \code{HesperList} items, each representing a HESPER item and its allowed options.}
-
-\item{SL}{(\code{list[hespeR::SL]}) \code{SL} objects representing skip logic rules.}
-
-\item{other_list}{(\code{list[vec]}) Other vectors associated with the HESPER list, typically used for skip logic rules or disaggregation (for instance, age, population group).}
 }
 \value{
 (\code{S7_object}) A S7 object of class \code{HesperList}, representing a list of HESPER vectors.
-
-(\code{S7_object}) A S7 object of class \code{HesperListEnhanced}, representing a list of HESPER vectors with skip logic rules and additional data.
 }
 \description{
 S7 class for hespeR list of vectors
