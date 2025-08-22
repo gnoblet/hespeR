@@ -65,3 +65,32 @@ test_that("apply_hesper_list_sl returns cleaned hesper_list", {
     c(0, 0, 1)
   )
 })
+
+
+# self is returned if no SL objects are present
+test_that("apply_hesper_list_sl returns self if no SL objects", {
+  hesper_vars <- c("hesper_drinking_water", "hesper_food", "hesper_shelter")
+  hesper_opts <- c(
+    "serious_problem",
+    "no_serious_problem",
+    "dnk",
+    "pnta",
+    "not_applicable"
+  )
+  hv1 <- HesperVector("hesper_drinking_water", hesper_opts[1:3])
+  hv2 <- HesperVector("hesper_food", hesper_opts[2:4])
+  hv3 <- HesperVector("hesper_shelter", hesper_opts[1:3])
+  other_list <- list(
+    pop_group = c("refugees", "host", "refugees"),
+    household_id = c("hh001", "hh002", "hh003")
+  )
+  hle <- HesperListEnhanced(
+    hesper_list = list(hv1, hv2, hv3),
+    SL = list(),
+    other_list = other_list
+  )
+
+  hlf <- apply_hesper_list_sl(hle)
+
+  expect_identical(hlf, hle)
+})
