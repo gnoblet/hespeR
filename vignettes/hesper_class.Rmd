@@ -33,13 +33,26 @@ Represents a single HESPER item. Main features to note are:
 - `hesper_vals`: the values for this variable. It can contain `NA` values if `allow_missing = TRUE`.
 
 ```{r}
-hv <- HesperVector(hesper_var = "hesper_food", hesper_vals = c("no_serious_problem", "serious_problem", NA, "dnk", "pnta", "serious_problem"), allow_missing = TRUE)
+hv <- HesperVector(
+  hesper_var = "hesper_food",
+  hesper_vals = c(
+    "no_serious_problem",
+    "serious_problem",
+    NA,
+    "dnk",
+    "pnta",
+    "serious_problem"
+  ),
+  allow_missing = TRUE
+)
 hv
 ```
 
 You've just seen printed that there is a `@hesper_bins` property. A getter function adds `@hesper_bins` to the object, which are the binary indicators (1/0) for each possible response option. Binary variables will be useful for further analysis (faster, simpler).
 
-To note that `hesper_vals` and `hesper_var` can only be in a defined set of values, otherwise an error is thrown. This is to ensure that only valid data is processed. Values are stored as functions returning character vectors.
+To access values for instance, you can simply run `hv@hesper_vals` or `S7::props(hv, "hesper_vals")`.
+
+Note that `hesper_vals` and `hesper_var` can only take a certain set of values, otherwise an error is thrown. This is to ensure that only valid data is processed. Values are stored as functions returning character vectors.
 
 ```{r}
 # Variables/items
@@ -54,7 +67,18 @@ hesper_opts()
 A list of `HesperVector` objects, representing a set of variables for an individual or group. It inherits the validator for each `HesperVector` and adds a few more checks (for instance it checks that there are no duplicated HESPER item names nor different lengths of vectors of values).
 
 ```{r}
-hv2 <- HesperVector(hesper_var = "hesper_displaced", hesper_vals = c("no_serious_problem", "serious_problem", "no_serious_problem", "dnk", "pnta", "serious_problem"), allow_missing = TRUE)
+hv2 <- HesperVector(
+  hesper_var = "hesper_displaced",
+  hesper_vals = c(
+    "no_serious_problem",
+    "serious_problem",
+    "no_serious_problem",
+    "dnk",
+    "pnta",
+    "serious_problem"
+  ),
+  allow_missing = TRUE
+)
 hl <- HesperList(hesper_list = list(hv, hv2))
 hl
 ```
@@ -73,7 +97,11 @@ A few examples are:
 As such, there is a need for a class to define skip logic rules, specifying when values should be set to missing based on other variables.
 
 ```{r}
-sl_rule <- SL(hesper_var = "hesper_displaced", subset_var = "pop_group", subset_vals = c("host", "non_displaced"))
+sl_rule <- SL(
+  hesper_var = "hesper_displaced",
+  subset_var = "pop_group",
+  subset_vals = c("host", "non_displaced")
+)
 sl_rule
 ```
 
@@ -86,7 +114,9 @@ Eventually, the last class `HesperListEnhanced` extends `HesperList` by adding s
 ```{r}
 hle <- HesperListEnhanced(
   hesper_list = hl@hesper_list,
-  other_list = list(pop_group = c("host", "refugee", "non_displaced", "host", "refugee", "host")),
+  other_list = list(
+    pop_group = c("host", "refugee", "non_displaced", "host", "refugee", "host")
+  ),
   SL = list(sl_rule)
 )
 ```
