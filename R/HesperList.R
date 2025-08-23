@@ -23,7 +23,7 @@ HesperList <- S7::new_class(
     # all items are HesperVector instances and validate them using HesperVector@validator
     check_vector_class(
       self@hesper_list,
-      "HesperVector",
+      HesperVector,
       "hesper_list",
       use_S7_inherits = TRUE
     )
