@@ -58,68 +58,99 @@
 
 <p>R Handle of The Humanitarian Emergency Settings Perceived Needs Scale (HESPER)</p>
 <div class="section level2">
-<h2 id="to-install">To install<a class="anchor" aria-label="anchor" href="#to-install"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>The development version can be installed from GitHub with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gnoblet/hespeR"</span><span class="op">)</span> </span></code></pre></div>
-<p>Ultimately, the goal is to publish on CRAN.</p>
-<p>## Roadmap</p>
-<ul class="task-list">
-<li><label><input type="checkbox">Composition of needed columns</label></li>
-<li><label><input type="checkbox">Cleaning data (if needed)</label></li>
-<li><label><input type="checkbox">Analyses</label></li>
-<li><label><input type="checkbox">Viz</label></li>
-<li><label><input type="checkbox">Publication (reports, pres)</label></li>
-</ul>
-<p>All steps must contain documnetation and tests.</p>
-<p>## Construction</p>
-<ul class="task-list">
-<li><label><input type="checkbox">Use <code>checkmate</code> or <code>asserthat</code> for parameters checks</label></li>
-<li><label><input type="checkbox">Use a consistent way to check for datasets details, e.g. do columns exist in df, is colA of type X, Y, Z</label></li>
-<li><label><input type="checkbox">Document return outputs, document the process</label></li>
-</ul>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gnoblet/hespeR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="data-workflow">Data workflow<a class="anchor" aria-label="anchor" href="#data-workflow"></a>
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>Below is an initial wrap-up of the data workflow we have in place.</p>
-<ol style="list-style-type: decimal">
-<li><p><code>add_hesper_main()</code>: creates binaries for all hesper items, collapse top three priorities into one top three column. Needs helper functions <code>add_binaries_from_set()</code>, <code>add_top_three()</code>, <code>expand_bin()</code>, <code>replace_na_subset()</code>, <code>is_not_empty()</code></p></li>
-<li><p><code>add_hesper_cat()</code>: function that creates different composite indicators from hesper items for each type of hesper items [no helper function, just rowSums]</p></li>
-<li><p><code>clean_top_priorities_subset()</code>: clean top one/two/three priorities child binary columns with NA for subset of data. Needs helper functions: <code>replace_na_subset()</code>, <code>is_not_empty()</code></p></li>
-</ol>
+<p><code>hespeR</code> provides tools for handling, cleaning, and analyzing HESPER survey data in R. It includes classes for representing HESPER data, functions for checking and validating datasets, and utilities for common wrangling tasks.</p>
 </div>
 <div class="section level2">
-<h2 id="handling-subsets-and-missing-values">Handling subsets and missing values<a class="anchor" aria-label="anchor" href="#handling-subsets-and-missing-values"></a>
+<h2 id="main-features">Main Features<a class="anchor" aria-label="anchor" href="#main-features"></a>
 </h2>
-<p>There are 3 metrics we are interested in. The two first metrics are applied on the data as is. In case a specific item is only asked to a subset of respondents (skip logic), the metrics are as is, meaning calculated on the subset. 1) Prevalence of serious problems for each Hesper item, i.e. % of individuals/households that reported a serious problem 2) Prevalence of undefined, i.e. % of individuals/households that reported not applicable (not_applicable), prefer not to answer (pnta) or do not know (dnk)</p>
-<p>THe last metric is applied to all households</p>
-<ol start="3" style="list-style-type: decimal">
-<li>(complex) Prevalence of serious problems for each Hesper item over all respondents (regardless of subsets)</li>
-</ol>
-<div class="section level3">
-<h3 id="details-on-initial-wrangling">Details on initial wrangling<a class="anchor" aria-label="anchor" href="#details-on-initial-wrangling"></a>
-</h3>
-<p>For metrics (1) and (2): - ensure that items asked only to a subset of respondents are cleaned, i.e. if <code>subset_var</code> is in a set of values <code>subset_vals</code>, then <code>hesper_var</code> is set to <code>NA_character_</code> - if all hesper items are NA, then <code>hesper_var</code> is set to <code>NA_character_</code> - add binaries for each metric</p>
-<p>For metrics 3: - add new binaries (<code>hesper_var_overall</code>) for all hesper items regardless of subsets that take 1 if <code>hesper_var</code> is “serious_problem” and 0 otherwise - if all hesper items are NA, then <code>hesper_var</code> is set to <code>NA_character_</code></p>
-</div>
-<div class="section level3">
-<h3 id="use-of-roxytypes">Use of roxytypes<a class="anchor" aria-label="anchor" href="#use-of-roxytypes"></a>
-</h3>
-<p>The package uses <code>roxytypes</code> to generate documentation on types. <code>@typed</code> tags are used instead of <code>@param</code> tags. Generally, the below format is equivalent to <code>@param hesper_var A character string with the name of the Hesper variable.</code></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#' @typed hesper_var character[1]</span></span>
-<span><span class="co">#'   Name of the Hesper variable.</span></span></code></pre></div>
-<p>One detail on a convention that is used across the package is that:</p>
 <ul>
 <li>
-<code>character</code> is used for a character vector of length unkown</li>
+<strong>Core Classes</strong>:
+<ul>
 <li>
-<code>character[1+]</code> is used for a character vector of length at least 1 (i.e. not empty)</li>
+<code>HesperList</code>, <code>HesperListEnhanced</code>, <code>HesperVector</code> for structured data handling.</li>
 </ul>
-<p>Thanks to <a href="https://posit.co/blog/openstatsware-interview/" class="external-link">openstatsware: From the mmrm R package to a lively community</a> which led us to <a href="https://www.openstatsware.org/guide.html" class="external-link">Minimum Viable Good Practices for High Quality Statistical Software Packages</a> where we discovered <code>roxytypes</code>.</p>
+</li>
+<li>
+<strong>Validation Functions</strong>:
+<ul>
+<li>
+<code>check_missing_vars</code>, <code>check_values_in_set</code>, <code>check_vars_in_set</code>, <code>check_vecs_in_set</code>, <code>check_vector_class</code>, <code>check_dupes</code>
+</li>
+</ul>
+</li>
+<li>
+<strong>Options and Variables</strong>:
+<ul>
+<li>
+<code>hesper_opts</code>, <code>hesper_vars</code>, <code>rec_hesper_opts</code>
+</li>
+</ul>
+</li>
+<li>
+<strong>Messages</strong>:
+<ul>
+<li>
+<code>msg_invalid_values</code>, <code>msg_missing_vars</code>
+</li>
+</ul>
+</li>
+<li>
+<strong>Data Utilities</strong>:
+<ul>
+<li>Functions for wrangling and cleaning HESPER data.</li>
+</ul>
+</li>
+</ul>
 </div>
+<div class="section level2">
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gnoblet.github.io/hespeR/">hespeR</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Example: Check for missing variables in a data frame</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/check_missing_vars.html">check_missing_vars</a></span><span class="op">(</span><span class="va">df</span>, required_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hesper_item1"</span>, <span class="st">"hesper_item2"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></code></pre></div>
+<p>See the vignette for a full workflow example: <code><a href="articles/hesper_class.html">vignette("hesper_class", package = "hespeR")</a></code></p>
+</div>
+<div class="section level2">
+<h2 id="data-resources">Data Resources<a class="anchor" aria-label="anchor" href="#data-resources"></a>
+</h2>
+<p>Example data and templates are available in the <code>resources/</code> folder: - <code>hesper_key.xlsx</code> - <code>template_tool_hh.xlsx</code> - <code>template_tool_individual_level.xlsx</code></p>
+</div>
+<div class="section level2">
+<h2 id="testing-and-documentation">Testing and Documentation<a class="anchor" aria-label="anchor" href="#testing-and-documentation"></a>
+</h2>
+<ul>
+<li>The package includes comprehensive tests (<code>tests/testthat/</code>) and uses <a href="https://www.openstatsware.org/guide.html" class="external-link">roxytypes</a> for type-safe documentation.</li>
+<li>Documentation is available via <code>?function_name</code> in R.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="roadmap">Roadmap<a class="anchor" aria-label="anchor" href="#roadmap"></a>
+</h2>
+<ul class="task-list">
+<li><label><input type="checkbox">Composition of needed columns</label></li>
+<li><label><input type="checkbox">Data cleaning</label></li>
+<li><label><input type="checkbox">Analyses and visualization</label></li>
+<li><label><input type="checkbox">Publication (reports, presentations)</label></li>
+</ul>
+<p>All steps will include documentation and tests.</p>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>We welcome contributions! Please see the <a href="https://www.openstatsware.org/guide.html" class="external-link">Minimum Viable Good Practices for High Quality Statistical Software Packages</a> for guidance.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
