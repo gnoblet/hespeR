@@ -2,16 +2,16 @@
 % Please edit documentation in R/HesperListEnhanced.apply_hesper_list_sl.R
 \name{apply_hesper_list_sl}
 \alias{apply_hesper_list_sl}
-\title{Get cleaned hesper_list after applying skip logic}
+\title{Apply SL cleaning to HesperListEnhanced object}
 \usage{
-apply_hesper_list_sl(self)
+apply_hesper_list_sl(self, ...)
 }
 \arguments{
-\item{self}{A HesperListEnhanced object}
+\item{self}{(\code{HesperListEnhanced}) A HesperListEnhanced object}
 }
 \value{
-The cleaned hesper_list
+(\code{HesperListEnhanced}) The cleaned HesperListEnhanced object after applying skip logic
 }
 \description{
-Get cleaned hesper_list after applying skip logic
+Apply SL cleaning to HesperListEnhanced object
 }

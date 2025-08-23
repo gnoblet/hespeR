@@ -4,12 +4,12 @@
 \alias{check_vector_class}
 \title{Check class of items of a vector}
 \usage{
-check_vector_class(vec, class_name, property = "vec", use_S7_inherits = FALSE)
+check_vector_class(vec, class, property = "vec", use_S7_inherits = FALSE)
 }
 \arguments{
 \item{vec}{(\verb{vector[1+]}) A vector of items to check.}
 
-\item{class_name}{(\code{character[1]}) The name of the class to check against.}
+\item{class}{(\code{S7_class | character[1]}) The name of the class to check against. If `use_S7_inherits`` is TRUE, this should be an S7 class object; otherwise, it should be a character string representing the class name.}
 
 \item{property}{(\code{character[1]}) The name of the property being checked (default: 'vec').}
 
