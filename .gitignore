@@ -7,3 +7,6 @@ docs
 .httr-oauth
 .DS_Store
 .quarto
+
+/.quarto/
+inst/doc

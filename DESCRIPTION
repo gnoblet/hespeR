@@ -6,23 +6,27 @@ Authors@R: c(
     person("Raphael", "Bacot", , "raphael.bacot@impact-initiatives.org", role = c("aut"))
     )
 Description: What the package does (one paragraph).
-License: `GPL (>= 3)
+License: GPL (>= 3)
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, packages = "roxytypes")
 RoxygenNote: 7.3.2
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    roxytypes,
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
 URL: https://gnoblet.github.io/hespeR/
 Imports: 
-    dplyr,
     purrr,
-    stringr,
-    tidyr,
     checkmate,
-    data.table,
     rlang (>= 1.1.0),
-    glue
+    glue,
+    S7,
+    forcats
 Depends: 
-    R (>= 3.5)
+    R (>= 4.3)
 LazyData: true
+Config/Needs/documentation: 
+    roxytypes
+VignetteBuilder: knitr

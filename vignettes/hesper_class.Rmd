@@ -1,0 +1,130 @@
+---
+title: "hesper_class"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{hesper_class}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(hespeR)
+```
+
+# Overview of hespeR S7 Classes
+
+The `hespeR` package provides a set of `S7` classes to structure and validate incoming survey data. Why so restrictive? Restricting to these classes ensures that only valid operations are performed, prevents accidental misuse, and allows for the development of reusable and readable methods, towards semi-automated reports. This design makes it easier to extend functionality through methods if needed.
+
+This said, helper functions are provided to convert from and to base R objects (e.g., data frames, lists) that will be linked to a default template of an XML Kobo tool.
+
+## Main Classes
+
+### `HesperVector`
+
+Represents a single HESPER item. Main features to note are:
+- `hesper_var`: the variable name of the HESPER item to which this vector corresponds.
+- `hesper_vals`: the values for this variable. It can contain `NA` values if `allow_missing = TRUE`.
+
+```{r}
+hv <- HesperVector(
+  hesper_var = "hesper_food",
+  hesper_vals = c(
+    "no_serious_problem",
+    "serious_problem",
+    NA,
+    "dnk",
+    "pnta",
+    "serious_problem"
+  ),
+  allow_missing = TRUE
+)
+hv
+```
+
+You've just seen printed that there is a `@hesper_bins` property. A getter function adds `@hesper_bins` to the object, which are the binary indicators (1/0) for each possible response option. Binary variables will be useful for further analysis (faster, simpler).
+
+To access values for instance, you can simply run `hv@hesper_vals` or `S7::props(hv, "hesper_vals")`.
+
+Note that `hesper_vals` and `hesper_var` can only take a certain set of values, otherwise an error is thrown. This is to ensure that only valid data is processed. Values are stored as functions returning character vectors.
+
+```{r}
+# Variables/items
+hesper_vars()
+
+# Values/options
+hesper_opts()
+```
+
+### `HesperList`
+
+A list of `HesperVector` objects, representing a set of variables for an individual or group. It inherits the validator for each `HesperVector` and adds a few more checks (for instance it checks that there are no duplicated HESPER item names nor different lengths of vectors of values).
+
+```{r}
+hv2 <- HesperVector(
+  hesper_var = "hesper_displaced",
+  hesper_vals = c(
+    "no_serious_problem",
+    "serious_problem",
+    "no_serious_problem",
+    "dnk",
+    "pnta",
+    "serious_problem"
+  ),
+  allow_missing = TRUE
+)
+hl <- HesperList(hesper_list = list(hv, hv2))
+hl
+```
+
+
+### `SL` (Skip Logic)
+
+Often, there would be other variables collected as part of a survey, for instance demographic variables about the respondent or the household. These variables can be used to define skip logic rules, specifying when certain HESPER items should be set to missing based on the values of these other variables. 
+
+A few examples are:
+
+- If the person does not have children, then the 12th HESPER item about education for the children should be set to missing; or, 
+- for healthcare, there are different questions depending on the gender of the respondent (e.g. access to maternal healthcare); or,
+- the 16th HESPER item about displacement from home should only be asked to those who have suffered forced displacement.
+
+As such, there is a need for a class to define skip logic rules, specifying when values should be set to missing based on other variables.
+
+```{r}
+sl_rule <- SL(
+  hesper_var = "hesper_displaced",
+  subset_var = "pop_group",
+  subset_vals = c("host", "non_displaced")
+)
+sl_rule
+```
+
+
+
+### `HesperListEnhanced`
+
+Eventually, the last class `HesperListEnhanced` extends `HesperList` by adding skip logic (`SL`).
+
+```{r}
+hle <- HesperListEnhanced(
+  hesper_list = hl@hesper_list,
+  other_list = list(
+    pop_group = c("host", "refugee", "non_displaced", "host", "refugee", "host")
+  ),
+  SL = list(sl_rule)
+)
+```
+
+As such an very initial method to be used and added to the object is `apply_hesper_list_sl()`, which applies the skip logic rules to the `HesperListEnhanced` object, setting values to `NA` where appropriate and return the object it-`self`.
+
+```{r}
+
+hle <- apply_hesper_list_sl(hle)
+hle
+```

@@ -1,0 +1,86 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# hespeR
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/gnoblet/hespeR/graph/badge.svg)](https://app.codecov.io/gh/gnoblet/hespeR)
+<!-- badges: end -->
+
+R Handle of The Humanitarian Emergency Settings Perceived Needs Scale (HESPER)
+
+## Installation
+
+The development version can be installed from GitHub with:
+
+```r
+pak::pak("gnoblet/hespeR")
+```
+
+## Overview
+
+`hespeR` provides tools for handling, cleaning, and analyzing HESPER survey data in R. It includes classes for representing HESPER data, functions for checking and validating datasets, and utilities for common wrangling tasks.
+
+## Main Features
+
+- **Core Classes**:
+  - `HesperList`, `HesperListEnhanced`, `HesperVector` for structured data handling.
+- **Validation Functions**:
+  - `check_missing_vars`, `check_values_in_set`, `check_vars_in_set`, `check_vecs_in_set`, `check_vector_class`, `check_dupes`
+- **Options and Variables**:
+  - `hesper_opts`, `hesper_vars`, `rec_hesper_opts`
+- **Messages**:
+  - `msg_invalid_values`, `msg_missing_vars`
+- **Data Utilities**:
+  - Functions for wrangling and cleaning HESPER data.
+
+## Quick Start
+
+```r
+library(hespeR)
+
+# Example: Check for missing variables in a data frame
+result <- check_missing_vars(df, required_vars = c("hesper_item1", "hesper_item2"))
+print(result)
+```
+
+See the vignette for a full workflow example:
+`vignette("hesper_class", package = "hespeR")`
+
+## Data Resources
+
+Example data and templates are available in the `resources/` folder:
+- `hesper_key.xlsx`
+- `template_tool_hh.xlsx`
+- `template_tool_individual_level.xlsx`
+
+## Testing and Documentation
+
+- The package includes comprehensive tests (`tests/testthat/`) and uses [roxytypes](https://www.openstatsware.org/guide.html) for type-safe documentation.
+- Documentation is available via `?function_name` in R.
+
+## Roadmap
+
+- [ ] Composition of needed columns
+- [ ] Data cleaning
+- [ ] Analyses and visualization
+- [ ] Publication (reports, presentations)
+
+All steps will include documentation and tests.
+
+## Contributing
+
+We welcome contributions! Please see the [Minimum Viable Good Practices for High Quality Statistical Software Packages](https://www.openstatsware.org/guide.html) for guidance.
