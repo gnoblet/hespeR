@@ -4,10 +4,10 @@
 \alias{hesper_vars}
 \title{All allowed HESPER item column names}
 \usage{
-hesper_vars()
+hesper_vars(...)
 }
 \arguments{
-\item{none}{(\code{empty}) No input parameters.}
+\item{...}{(\code{character[0,29]}) Optional variable names to validate. If none provided, all allowed variables are returned.}
 }
 \value{
 (\code{character[29]}) All allowed HESPER item names.

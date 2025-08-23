@@ -4,10 +4,10 @@
 \alias{hesper_opts}
 \title{All allowed response options for HESPER items}
 \usage{
-hesper_opts()
+hesper_opts(...)
 }
 \arguments{
-\item{none}{(\code{empty}) No input parameters.}
+\item{...}{(\code{character[0,5]}) Optional options to validate. If none provided, all allowed options are returned.}
 }
 \value{
 (\code{character[5]}) All allowed HESPER response options.
