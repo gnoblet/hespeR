@@ -259,13 +259,22 @@ check_dupes <- function(vec, property = 'vector') {
 #' @typed vec: vector[1+]
 #'  A vector of items to check.
 #' @typed class_name: character[1]
-#' The name of the class to check against.
+#'  The name of the class to check against.
+#' @typed property: character[1]
+#'  The name of the property being checked (default: 'vec').
+#' @typed use_S7_inherits: logical[1]
+#'  Whether to use S7::S7_inherits for class checking (default: FALSE).
 #'
 #' @typedreturn TRUE | error
 #' TRUE if all items are of the specified class, otherwise throws an error.
 #'
 #' @keywords internal
-check_vector_class <- function(vec, class_name, property = 'vec') {
+check_vector_class <- function(
+  vec,
+  class_name,
+  property = 'vec',
+  use_S7_inherits = FALSE
+) {
   #------ Checks
   # vec is a vector of at least one element
   checkmate::assert_vector(vec, min.len = 1)
@@ -274,7 +283,11 @@ check_vector_class <- function(vec, class_name, property = 'vec') {
 
   #------ Check class of each item in the vec
   lgl_class <- purrr::map_lgl(vec, function(x) {
-    checkmate::testClass(x, class_name)
+    if (use_S7_inherits) {
+      S7::S7_inherits(x, class_name)
+    } else {
+      checkmate::testClass(x, class_name)
+    }
   })
   if (!all(lgl_class)) {
     non_class_items <- vec[!lgl_class]
