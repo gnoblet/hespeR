@@ -1,9 +1,25 @@
-#' Get cleaned hesper_list after applying skip logic
+#' Apply SL cleaning to HesperListEnhanced object
 #'
-#' @param self A HesperListEnhanced object
-#' @return The cleaned hesper_list
+#' @typed self: HesperListEnhanced
+#'  A HesperListEnhanced object
+#' @typedreturn HesperListEnhanced
+#'  The cleaned HesperListEnhanced object after applying skip logic
+#'
 #' @export
-apply_hesper_list_sl <- function(self) {
+apply_hesper_list_sl <- S7::new_generic(
+  "apply_hesper_list_sl",
+  dispatch_args = c("self")
+)
+
+#' @rdname apply_hesper_list_sl
+#' @name apply_hesper_list_sl
+#'
+S7::method(apply_hesper_list_sl, HesperListEnhanced) <- function(self) {
+  # HesperListEnhanced is a HesperListEnhanced
+  # S7::S7_inherits(self, HesperListEnhanced)
+  # HesperListEnhanced@validator(self)
+
+  # property is a single character string in the allowed set
   if (length(self@SL) == 0) {
     rlang::warn(c(
       "No skip logic rules (SL) defined in the HesperListEnhanced object.",
