@@ -16,6 +16,10 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/hesper_class.html">hesper_class</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -43,124 +47,58 @@
 
       <dl><dt>
 
-          <code><a href="add_binaries_from_set.html">add_binaries_from_set()</a></code>
+          <code><a href="HesperList.html">HesperList()</a></code>
 
         </dt>
-        <dd>Add as many binaries than input columns, taking the value 1 if value in each column is inside a set a values</dd>
+        <dd>S7 class for hespeR list of vectors</dd>
       </dl><dl><dt>
 
-          <code><a href="add_hesper_cat.html">add_hesper_cat()</a></code>
+          <code><a href="HesperListEnhanced.html">HesperListEnhanced()</a></code>
 
         </dt>
-        <dd>function that creates different composite indicators from hesper items for each type of hesper items (at least one item as serious problem from the category, number of items as serious problem from the category, proportion of items as serious problem from the category, overall proportion of items as serious problem from the category compared to all other items)</dd>
+        <dd>S7 class for hespeR list of vectors with skip logic</dd>
       </dl><dl><dt>
 
-          <code><a href="add_hesper_main.html">add_hesper_main()</a></code>
+          <code><a href="HesperVector.html">HesperVector()</a></code>
 
         </dt>
-        <dd>function that compute for each respondent the number of selected items, number of applicable items and collapse the three ordered priorities into one select multiple column</dd>
+        <dd>S7 class for hespeR vectors</dd>
       </dl><dl><dt>
 
-          <code><a href="add_top3.html">add_top3()</a></code>
+          <code><a href="SL.html">SL()</a></code>
 
         </dt>
-        <dd>Add a new column with the top three priorities</dd>
+        <dd>S7 class for HESPER skip logic (SL)</dd>
       </dl><dl><dt>
 
-          <code><a href="check_dupes.html">check_dupes()</a></code>
+          <code><a href="apply_hesper_list_sl.html">apply_hesper_list_sl()</a></code>
 
         </dt>
-        <dd>Check for duplicate values</dd>
+        <dd>Apply SL cleaning to HesperListEnhanced object</dd>
       </dl><dl><dt>
 
-          <code><a href="check_sv_l.html">check_sv_l()</a></code>
+          <code><a href="as_data_frame.html">as_data_frame()</a></code>
 
         </dt>
-        <dd>Check if lists of subset are in the right format</dd>
+        <dd>Convert HesperList to data.frame</dd>
       </dl><dl><dt>
 
-          <code><a href="check_vars_class_in_df.html">check_vars_class_in_df()</a></code>
+          <code><a href="hesper_opts.html">hesper_opts()</a></code>
 
         </dt>
-        <dd>Check if variables are of any given class(es)</dd>
+        <dd>All allowed response options for HESPER items</dd>
       </dl><dl><dt>
 
-          <code><a href="check_vars_in_df.html">check_vars_in_df()</a></code>
+          <code><a href="hesper_vars.html">hesper_vars()</a></code>
 
         </dt>
-        <dd>Check if variables are in data frame</dd>
+        <dd>All allowed HESPER item column names</dd>
       </dl><dl><dt>
 
-          <code><a href="check_vars_in_set.html">check_vars_in_set()</a></code>
+          <code><a href="rec_hesper_opts.html">rec_hesper_opts()</a></code>
 
         </dt>
-        <dd>Stop statement values are not in set</dd>
-      </dl><dl><dt>
-
-          <code><a href="clean_top_priorities_subset.html">clean_top_priorities_subset()</a></code>
-
-        </dt>
-        <dd>This function replaces the top 1/2/3 binary columns (which correspond to choices) with <code>NA</code> for a specified subset of the data.</dd>
-      </dl><dl><dt>
-
-          <code><a href="drop_undefined.html">drop_undefined()</a></code>
-
-        </dt>
-        <dd>Drop undefined values in a data frame</dd>
-      </dl><dl><dt>
-
-          <code><a href="expand_bin.html">expand_bin()</a></code>
-
-        </dt>
-        <dd>Expand a variable into binary indicators</dd>
-      </dl><dl><dt>
-
-          <code><a href="hesper_dat.html">hesper_dat</a></code>
-
-        </dt>
-        <dd>Some Hesper dummy data</dd>
-      </dl><dl><dt>
-
-          <code><a href="is_not_empty.html">is_not_empty()</a></code>
-
-        </dt>
-        <dd>Check if a vector is not empty, i.e. not null, positive length and not filled with NA</dd>
-      </dl><dl><dt>
-
-          <code><a href="replace_na_subset.html">replace_na_subset()</a></code>
-
-        </dt>
-        <dd>Replace binary columns with NA for a subset of the data</dd>
-      </dl><dl><dt>
-
-          <code><a href="sum_vals_across.html">sum_vals_across()</a></code>
-
-        </dt>
-        <dd>Sum variables in a set of values</dd>
-      </dl><dl><dt>
-
-          <code><a href="warn_removal.html">warn_removal()</a></code>
-
-        </dt>
-        <dd>Warn and remove existing variables from a data frame</dd>
-      </dl><dl><dt>
-
-          <code><a href="warn_replace.html">warn_replace()</a></code>
-
-        </dt>
-        <dd>Warn and replace existing variables in a data frame</dd>
-      </dl><dl><dt>
-
-          <code><a href="warn_var_msg.html">warn_var_msg()</a></code>
-
-        </dt>
-        <dd>Warn message</dd>
-      </dl><dl><dt>
-
-          <code><a href="warn_var_no_vals.html">warn_var_no_vals()</a></code>
-
-        </dt>
-        <dd>Warn if a variable contains no values in a set</dd>
+        <dd>Recode response options to allowed values for HESPER items</dd>
       </dl></div>
   </main></div>
 
@@ -170,7 +108,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>

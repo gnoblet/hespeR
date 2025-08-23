@@ -32,6 +32,12 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/hesper_class.html">hesper_class</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -48,13 +54,15 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="hesper">hespeR<a class="anchor" aria-label="anchor" href="#hesper"></a>
 </h1></div>
+<!-- badges: start -->
+
 <p>R Handle of The Humanitarian Emergency Settings Perceived Needs Scale (HESPER)</p>
 <div class="section level2">
 <h2 id="to-install">To install<a class="anchor" aria-label="anchor" href="#to-install"></a>
 </h2>
 <p>The development version can be installed from GitHub with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"gnoblet/hespeR"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"gnoblet/hespeR"</span><span class="op">)</span> </span></code></pre></div>
 <p>Ultimately, the goal is to publish on CRAN.</p>
 <p>## Roadmap</p>
 <ul class="task-list">
@@ -77,9 +85,9 @@
 </h2>
 <p>Below is an initial wrap-up of the data workflow we have in place.</p>
 <ol style="list-style-type: decimal">
-<li><p><code><a href="reference/add_hesper_main.html">add_hesper_main()</a></code>: creates binaries for all hesper items, collapse top three priorities into one top three column. Needs helper functions <code>add_val_in_set_binaries()</code>, <code>add_top_three()</code>, <code><a href="reference/expand_bin.html">expand_bin()</a></code>, <code><a href="reference/replace_na_subset.html">replace_na_subset()</a></code>, <code><a href="reference/is_not_empty.html">is_not_empty()</a></code></p></li>
-<li><p><code><a href="reference/add_hesper_cat.html">add_hesper_cat()</a></code>: function that creates different composite indicators from hesper items for each type of hesper items [no helper function, just rowSums]</p></li>
-<li><p><code><a href="reference/clean_top_priorities_subset.html">clean_top_priorities_subset()</a></code>: clean top one/two/three priorities child binary columns with NA for subset of data. Needs helper functions: <code><a href="reference/replace_na_subset.html">replace_na_subset()</a></code>, <code><a href="reference/is_not_empty.html">is_not_empty()</a></code></p></li>
+<li><p><code>add_hesper_main()</code>: creates binaries for all hesper items, collapse top three priorities into one top three column. Needs helper functions <code>add_binaries_from_set()</code>, <code>add_top_three()</code>, <code>expand_bin()</code>, <code>replace_na_subset()</code>, <code>is_not_empty()</code></p></li>
+<li><p><code>add_hesper_cat()</code>: function that creates different composite indicators from hesper items for each type of hesper items [no helper function, just rowSums]</p></li>
+<li><p><code>clean_top_priorities_subset()</code>: clean top one/two/three priorities child binary columns with NA for subset of data. Needs helper functions: <code>replace_na_subset()</code>, <code>is_not_empty()</code></p></li>
 </ol>
 </div>
 <div class="section level2">
@@ -96,13 +104,29 @@
 <p>For metrics (1) and (2): - ensure that items asked only to a subset of respondents are cleaned, i.e. if <code>subset_var</code> is in a set of values <code>subset_vals</code>, then <code>hesper_var</code> is set to <code>NA_character_</code> - if all hesper items are NA, then <code>hesper_var</code> is set to <code>NA_character_</code> - add binaries for each metric</p>
 <p>For metrics 3: - add new binaries (<code>hesper_var_overall</code>) for all hesper items regardless of subsets that take 1 if <code>hesper_var</code> is “serious_problem” and 0 otherwise - if all hesper items are NA, then <code>hesper_var</code> is set to <code>NA_character_</code></p>
 </div>
+<div class="section level3">
+<h3 id="use-of-roxytypes">Use of roxytypes<a class="anchor" aria-label="anchor" href="#use-of-roxytypes"></a>
+</h3>
+<p>The package uses <code>roxytypes</code> to generate documentation on types. <code>@typed</code> tags are used instead of <code>@param</code> tags. Generally, the below format is equivalent to <code>@param hesper_var A character string with the name of the Hesper variable.</code></p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#' @typed hesper_var character[1]</span></span>
+<span><span class="co">#'   Name of the Hesper variable.</span></span></code></pre></div>
+<p>One detail on a convention that is used across the package is that:</p>
+<ul>
+<li>
+<code>character</code> is used for a character vector of length unkown</li>
+<li>
+<code>character[1+]</code> is used for a character vector of length at least 1 (i.e. not empty)</li>
+</ul>
+<p>Thanks to <a href="https://posit.co/blog/openstatsware-interview/" class="external-link">openstatsware: From the mmrm R package to a lively community</a> which led us to <a href="https://www.openstatsware.org/guide.html" class="external-link">Minimum Viable Good Practices for High Quality Statistical Software Packages</a> where we discovered <code>roxytypes</code>.</p>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small>`GPL (&gt;= 3)</small></li>
+<li><small>GPL (&gt;= 3)</small></li>
 </ul>
 </div>
 
@@ -117,12 +141,18 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Guillaume Noblet <br><small class="roles"> Author, maintainer </small>  </li>
-<li>Raphael Bacot <br><small class="roles"> Author </small>  </li>
+<li>Guillaume Noblet <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Raphael Bacot <br><small class="roles"> Author </small>   </li>
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/gnoblet/hespeR/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/gnoblet/hespeR" class="external-link"><img src="https://codecov.io/gh/gnoblet/hespeR/graph/badge.svg" alt="Codecov test coverage"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
@@ -133,7 +163,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
