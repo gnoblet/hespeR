@@ -4,7 +4,7 @@
 \alias{apply_hesper_list_sl}
 \title{Apply SL cleaning to HesperListEnhanced object}
 \usage{
-apply_hesper_list_sl(self, ...)
+apply_hesper_list_sl(self)
 }
 \arguments{
 \item{self}{(\code{HesperListEnhanced}) A HesperListEnhanced object}

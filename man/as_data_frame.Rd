@@ -4,7 +4,7 @@
 \alias{as_data_frame}
 \title{Convert HesperList to data.frame}
 \usage{
-as_data_frame(x, ...)
+as_data_frame(x, bins = TRUE)
 }
 \arguments{
 \item{x}{(\code{HesperList}) A HesperList object.}

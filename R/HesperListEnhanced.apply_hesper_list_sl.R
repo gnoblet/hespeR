@@ -8,7 +8,10 @@
 #' @export
 apply_hesper_list_sl <- S7::new_generic(
   "apply_hesper_list_sl",
-  dispatch_args = c("self")
+  dispatch_args = c("self"),
+  function(self) {
+    S7::S7_dispatch()
+  }
 )
 
 #' @rdname apply_hesper_list_sl
