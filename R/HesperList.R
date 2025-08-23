@@ -21,14 +21,17 @@ HesperList <- S7::new_class(
     checkmate::assert_vector(self@hesper_list, min.len = 1)
 
     # all items are HesperVector instances and validate them using HesperVector@validator
-    check_vector_class(self@hesper_list, "hespeR::HesperVector", "hesper_list")
-    purrr::map(self@hesper_list, function(x) {
-      HesperVector@validator(x)
-    })
+    check_vector_class(
+      self@hesper_list,
+      "HesperVector",
+      "hesper_list",
+      use_S7_inherits = TRUE
+    )
+    purrr::map(self@hesper_list, \(x) HesperVector@validator(x))
 
     # duplicated hesper_vars
     hesper_vars <- purrr::map_chr(self@hesper_list, \(x) x@hesper_var)
-    check_dupes(hesper_vars, "@hesper_var properties of 'hesper_list'")
+    check_dupes(hesper_vars, "@hespr_var properties of 'hesper_list'")
 
     # all items @hesper_opts are of same length
     hesper_opts_lengths <- purrr::map_int(self@hesper_list, \(x) {
