@@ -1,4 +1,5 @@
 
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # hespeR
@@ -13,99 +14,74 @@ coverage](https://codecov.io/gh/gnoblet/hespeR/graph/badge.svg)](https://app.cod
 R Handle of The Humanitarian Emergency Settings Perceived Needs Scale
 (HESPER)
 
-## To install
+## Installation
 
 The development version can be installed from GitHub with:
 
 ``` r
-pak::pak("gnoblet/hespeR") 
+pak::pak("gnoblet/hespeR")
 ```
 
-Ultimately, the goal is to publish on CRAN.
+## Overview
 
-\## Roadmap
+`hespeR` provides tools for handling, cleaning, and analyzing HESPER
+survey data in R. It includes classes for representing HESPER data,
+functions for checking and validating datasets, and utilities for common
+wrangling tasks.
 
-- [ ] Composition of needed columns
-- [ ] Cleaning data (if needed)
-- [ ] Analyses
-- [ ] Viz
-- [ ] Publication (reports, pres)
+## Main Features
 
-All steps must contain documnetation and tests.
+-   **Core Classes**:
+    -   `HesperList`, `HesperListEnhanced`, `HesperVector` for
+        structured data handling.
+-   **Validation Functions**:
+    -   `check_missing_vars`, `check_values_in_set`,
+        `check_vars_in_set`, `check_vecs_in_set`, `check_vector_class`,
+        `check_dupes`
+-   **Options and Variables**:
+    -   `hesper_opts`, `hesper_vars`, `rec_hesper_opts`
+-   **Messages**:
+    -   `msg_invalid_values`, `msg_missing_vars`
+-   **Data Utilities**:
+    -   Functions for wrangling and cleaning HESPER data.
 
-\## Construction
-
-- [ ] Use `checkmate` or `asserthat` for parameters checks
-- [ ] Use a consistent way to check for datasets details, e.g. do
-  columns exist in df, is colA of type X, Y, Z
-- [ ] Document return outputs, document the process
-
-## Data workflow
-
-Below is an initial wrap-up of the data workflow we have in place.
-
-1.  `add_hesper_main()`: creates binaries for all hesper items, collapse
-    top three priorities into one top three column. Needs helper
-    functions `add_binaries_from_set()`, `add_top_three()`,
-    `expand_bin()`, `replace_na_subset()`, `is_not_empty()`
-
-2.  `add_hesper_cat()`: function that creates different composite
-    indicators from hesper items for each type of hesper items \[no
-    helper function, just rowSums\]
-
-3.  `clean_top_priorities_subset()`: clean top one/two/three priorities
-    child binary columns with NA for subset of data. Needs helper
-    functions: `replace_na_subset()`, `is_not_empty()`
-
-## Handling subsets and missing values
-
-There are 3 metrics we are interested in. The two first metrics are
-applied on the data as is. In case a specific item is only asked to a
-subset of respondents (skip logic), the metrics are as is, meaning
-calculated on the subset. 1) Prevalence of serious problems for each
-Hesper item, i.e. % of individuals/households that reported a serious
-problem 2) Prevalence of undefined, i.e. % of individuals/households
-that reported not applicable (not_applicable), prefer not to answer
-(pnta) or do not know (dnk)
-
-THe last metric is applied to all households
-
-3)  (complex) Prevalence of serious problems for each Hesper item over
-    all respondents (regardless of subsets)
-
-### Details on initial wrangling
-
-For metrics (1) and (2): - ensure that items asked only to a subset of
-respondents are cleaned, i.e. if `subset_var` is in a set of values
-`subset_vals`, then `hesper_var` is set to `NA_character_` - if all
-hesper items are NA, then `hesper_var` is set to `NA_character_` - add
-binaries for each metric
-
-For metrics 3: - add new binaries (`hesper_var_overall`) for all hesper
-items regardless of subsets that take 1 if `hesper_var` is
-“serious_problem” and 0 otherwise - if all hesper items are NA, then
-`hesper_var` is set to `NA_character_`
-
-### Use of roxytypes
-
-The package uses `roxytypes` to generate documentation on types.
-`@typed` tags are used instead of `@param` tags. Generally, the below
-format is equivalent to
-`@param hesper_var A character string with the name of the Hesper variable.`
+## Quick Start
 
 ``` r
-#' @typed hesper_var character[1]
-#'   Name of the Hesper variable.
+library(hespeR)
+
+# Example: Check for missing variables in a data frame
+result <- check_missing_vars(df, required_vars = c("hesper_item1", "hesper_item2"))
+print(result)
 ```
 
-One detail on a convention that is used across the package is that:
+See the vignette for a full workflow example:
+`vignette("hesper_class", package = "hespeR")`
 
-- `character` is used for a character vector of length unkown
-- `character[1+]` is used for a character vector of length at least 1
-  (i.e. not empty)
+## Data Resources
 
-Thanks to [openstatsware: From the mmrm R package to a lively
-community](https://posit.co/blog/openstatsware-interview/) which led us
-to [Minimum Viable Good Practices for High Quality Statistical Software
-Packages](https://www.openstatsware.org/guide.html) where we discovered
-`roxytypes`.
+Example data and templates are available in the `resources/` folder: -
+`hesper_key.xlsx` - `template_tool_hh.xlsx` -
+`template_tool_individual_level.xlsx`
+
+## Testing and Documentation
+
+-   The package includes comprehensive tests (`tests/testthat/`) and
+    uses [roxytypes](https://www.openstatsware.org/guide.html) for
+    type-safe documentation.
+-   Documentation is available via `?function_name` in R.
+
+## Roadmap
+
+-   ☐ Composition of needed columns
+-   ☐ Data cleaning
+-   ☐ Analyses and visualization
+-   ☐ Publication (reports, presentations)
+
+All steps will include documentation and tests.
+
+## Contributing
+
+We welcome contributions! Please see the [Minimum Viable Good Practices
+for High Quality Statistical Software
+Packages](https://www.openstatsware.org/guide.html) for guidance.
