@@ -11,3 +11,4 @@
 ^resources/
 ^test.R
 ^README\.Rmd$
+^codecov\.yml$
