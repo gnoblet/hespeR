@@ -2,6 +2,7 @@
 #'
 #' @typed self: HesperListEnhanced
 #'  A HesperListEnhanced object
+#'
 #' @typedreturn HesperListEnhanced
 #'  The cleaned HesperListEnhanced object after applying skip logic
 #'

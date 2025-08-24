@@ -6,9 +6,10 @@
 #'   `SL` objects representing skip logic rules.
 #' @typed other_list: list[vec]
 #'   Other vectors associated with the HESPER list, typically used for skip logic rules or disaggregation.
+#'
 #' @typedreturn S7_object
 #'   A S7 object of class `HesperListEnhanced`, representing a list of HESPER vectors associated with skip logic rules and additional data.
-#' 
+#'
 #' @export
 HesperListEnhanced <- S7::new_class(
   "HesperListEnhanced",

@@ -15,5 +15,5 @@ as_data_frame(x, bins = TRUE)
 (\code{data.frame}) With columns named by \code{hesper_var} and values from \code{hesper_vals} (and optionally binaries). An attribute \code{allow_missing} is added to indicate if missing values are allowed for each variable.
 }
 \description{
-Returns a data.frame representation of a HesperList object.
+Returns a data.frame representation of a HesperVector, a HesperList, or a HesperListEnhanced.
 }
