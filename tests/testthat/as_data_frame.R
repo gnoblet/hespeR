@@ -1,3 +1,17 @@
+test_that("as_data_frame works for HesperVector", {
+  hv <- HesperVector(
+    hesper_var = hesper_vars()[1],
+    hesper_vals = hesper_opts()[1:3],
+    allow_missing = FALSE
+  )
+  df <- as_data_frame(hv, bins = FALSE)
+  expect_s3_class(df, "data.frame")
+  expect_equal(nrow(df), 3)
+  expect_equal(colnames(df), c("hesper_drinking_water"))
+  expect_equal(df$hesper_drinking_water, hesper_opts()[1:3])
+  expect_equal(attributes(df)$allow_missing, FALSE)
+})
+
 test_that("as_data_frame works with bins = FALSE", {
   hv <- hesper_vars()[1:2]
   ho1 <- hesper_opts()[1:3]
@@ -171,3 +185,37 @@ test_that("as_data_frame works with bins = TRUE (default)", {
 #     purrr::map_lgl(hl_original@hesper_list, \(x) x@allow_missing)
 #   )
 # })
+
+test_that("as_data_frame works for HesperListEnhanced with other_list", {
+  hv <- hesper_vars()[1:2]
+  ho1 <- hesper_opts()[1:2]
+  ho2 <- hesper_opts()[2:3]
+
+  hv1 <- HesperVector(
+    hesper_var = hv[1],
+    hesper_vals = ho1,
+    allow_missing = FALSE
+  )
+  hv2 <- HesperVector(
+    hesper_var = hv[2],
+    hesper_vals = ho2,
+    allow_missing = FALSE
+  )
+  other_list <- list(
+    region = c("A", "B"),
+    age = c(30, 40)
+  )
+  hle <- HesperListEnhanced(
+    hesper_list = list(hv1, hv2),
+    SL = list(),
+    other_list = other_list
+  )
+
+  df <- as_data_frame(hle, bins = FALSE)
+
+  expect_s3_class(df, "data.frame")
+  expect_equal(nrow(df), 2)
+  expect_true(all(c("region", "age") %in% colnames(df)))
+  expect_equal(df$region, c("A", "B"))
+  expect_equal(df$age, c(30, 40))
+})
