@@ -42,7 +42,7 @@ HesperListEnhanced <- S7::new_class(
 
     # Validate SL if provided
     if (length(self@SL) > 0) {
-      check_vector_class(self@SL, "hespeR::SL", "SL")
+      check_vector_class(self@SL, SL, 'SL', use_S7_inherits = TRUE)
       purrr::map(self@SL, function(x) {
         SL@validator(x)
       })
@@ -101,6 +101,12 @@ HesperListEnhanced <- S7::new_class(
     checkmate::assert_list(self@priority_list, max.len = 1)
     if (length(self@priority_list) > 0) {
       # Validate the HesperPriorities object itself
+      check_vector_class(
+        self@priority_list,
+        HesperPriorities,
+        'priority_list',
+        use_S7_inherits = TRUE
+      )
       HesperPriorities@validator(self@priority_list[[1]])
 
       # Check length consistency with hesper_list
