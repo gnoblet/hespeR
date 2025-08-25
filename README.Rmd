@@ -49,13 +49,7 @@ pak::pak("gnoblet/hespeR")
 
 ## Quick Start
 
-```r
-library(hespeR)
-
-# Example: Check for missing variables in a data frame
-result <- check_missing_vars(df, required_vars = c("hesper_item1", "hesper_item2"))
-print(result)
-```
+TBC
 
 See the vignette for a full workflow example:
 `vignette("hesper_class", package = "hespeR")`

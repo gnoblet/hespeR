@@ -30,3 +30,4 @@ LazyData: true
 Config/Needs/documentation: 
     roxytypes
 VignetteBuilder: knitr
+

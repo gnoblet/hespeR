@@ -186,3 +186,30 @@ test_that("from_data_frame errors when enhanced is not a single logical value", 
     "Assertion on 'enhanced' failed"
   )
 })
+
+test_that("from_data_frame errors works with priorty_vars", {
+  df <- data.frame(
+    hesper_drinking_water = c("serious_problem", "no_serious_problem"),
+    hesper_food = c("serious_problem", "serious_problem"),
+    region = c("A", "B"),
+    age = c(30, 40),
+    priority_1 = c("hesper_drinking_water", "hesper_food"),
+    priority_2 = c("hesper_food", NA),
+    priority_3 = c(NA_character_, NA_character_),
+    stringsAsFactors = FALSE
+  )
+  attr(df, "allow_missing") <- TRUE
+  hle <- from_data_frame(
+    df,
+    hesper_vars = c("hesper_drinking_water", "hesper_food"),
+    enhanced = TRUE,
+    priority_vars = c("priority_1", "priority_2", "priority_3")
+  )
+  expect_s7_class(hle@priority_list[[1]], HesperPriorities)
+  expect_equal(
+    hle@priority_list[[1]]@top1,
+    c("hesper_drinking_water", "hesper_food")
+  )
+  expect_equal(hle@priority_list[[1]]@top2, c("hesper_food", NA))
+  expect_equal(hle@priority_list[[1]]@top3, c(NA_character_, NA_character_))
+})

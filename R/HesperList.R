@@ -40,7 +40,7 @@ HesperList <- S7::new_class(
     if (length(unique(hesper_opts_lengths)) > 1) {
       rlang::abort(c(
         glue::glue(
-          "Not all items in 'hesper_list' have the same length of @hesper_vals."
+          "Not all items in 'hesper_list' have the same length for @hesper_vals."
         )
       ))
     }

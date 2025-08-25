@@ -10,6 +10,8 @@
 #'  Whether to allow missing values in HESPER items. Default is TRUE.
 #' @typed other_vars: character[1+] | NULL
 #'  Names of other (non-HESPER) columns in df to include in HesperListEnhanced. If NULL (default), all non-HESPER columns are included.
+#' @typed priority_vars: character[1+] | NULL
+#' Names of priority columns in df. If provided, a HesperPriorities object will be created and included in the HesperListEnhanced. If NULL (default), no priorities are included. It must be in order [top1, top2, top3] if provided.
 #'
 #' @typedreturn HesperList | HesperListEnhanced
 #'  A HesperList or HesperListEnhanced object.
@@ -23,6 +25,7 @@ from_data_frame <- S7::new_generic(
     hesper_vars,
     allow_missing = TRUE,
     other_vars = NULL,
+    priority_vars = NULL,
     enhanced = TRUE
   ) {
     S7::S7_dispatch()
@@ -36,6 +39,7 @@ S7::method(from_data_frame, S7::class_data.frame) <- function(
   hesper_vars,
   allow_missing = TRUE,
   other_vars = NULL,
+  priority_vars = NULL,
   enhanced = TRUE
 ) {
   #------ Checks
@@ -57,6 +61,16 @@ S7::method(from_data_frame, S7::class_data.frame) <- function(
     checkmate::assert_character(other_vars, min.len = 1)
     checkmate::assert_disjunct(other_vars, hesper_vars)
     checkmate::assert_subset(other_vars, setdiff(colnames(df), hesper_vars))
+  }
+
+  # priority_vars is NULL or a character vector of exactly three column names in df not in hesper_vars
+  if (!is.null(priority_vars)) {
+    checkmate::assert_character(priority_vars, len = 3)
+    checkmate::assert_disjunct(priority_vars, hesper_vars)
+    checkmate::assert_subset(priority_vars, setdiff(colnames(df), hesper_vars))
+    if (!enhanced) {
+      rlang::abort("priority_vars can only be used if enhanced = TRUE")
+    }
   }
 
   # enhanced is a single logical value
@@ -83,11 +97,25 @@ S7::method(from_data_frame, S7::class_data.frame) <- function(
       allow_missing = allow_missing
     )
   })
+
+  # prepare hesper_priorities if priority_vars provided
+  if (enhanced && !is.null(priority_vars)) {
+    priority_list <- list(HesperPriorities(
+      top1 = df[[priority_vars[1]]],
+      top2 = df[[priority_vars[2]]],
+      top3 = df[[priority_vars[3]]],
+      allow_missing = allow_missing
+    ))
+  } else {
+    priority_list <- list()
+  }
+
   hl <- if (enhanced) {
     HesperListEnhanced(
       hesper_list = hesper_list,
       SL = list(),
-      other_list = other_list
+      other_list = other_list,
+      priority_list = priority_list
     )
   } else {
     HesperList(hesper_list = hesper_list)

@@ -106,10 +106,24 @@ sl_rule
 ```
 
 
+### `HesperPriorities`
+
+The `HesperPriorities` class is a simple class made of three properties which are character vectors of top1, top2, and top3 priority needs.
+
+```{r}
+hp <- HesperPriorities(
+  top1 = c("hesper_food", "hesper_drinking_water"),
+  top2 = c("hesper_shelter", "hesper_health"),
+  top3 = c("hesper_education", "hesper_food")
+)
+hp
+```
+
+This class alone is not very useful, but it can be used as part of a `HesperListEnhanced` object to represent the top priority problems identified by the respondent. By itself, it simply checks that the values provided are valid HESPER item names and cannot be identical for one respondent, e.g. if the first position were to be: `top1 = "hesper_food"` and `top2 = "hesper_food"`, it would throw an error.
 
 ### `HesperListEnhanced`
 
-Eventually, the last class `HesperListEnhanced` extends `HesperList` by adding skip logic (`SL`).
+Eventually, the last class `HesperListEnhanced` extends `HesperList` by adding skip logic (`SL`), top priorities (`HesperPriorities`), and other variables (e.g., demographic variables). This class is the most useful as it represents a full survey response, including HESPER items, skip logic rules, top priorities, and other variables.
 
 ```{r}
 hle <- HesperListEnhanced(
@@ -121,10 +135,97 @@ hle <- HesperListEnhanced(
 )
 ```
 
+It inherits all the validators from `HesperList`, and adds a few more checks, for instance that the `other_list` variables are of the same length as the HESPER items, or that the skip logic rules refer to valid variables.
+
 As such an very initial method to be used and added to the object is `apply_hesper_list_sl()`, which applies the skip logic rules to the `HesperListEnhanced` object, setting values to `NA` where appropriate and return the object it-`self`.
 
 ```{r}
 
 hle <- apply_hesper_list_sl(hle)
 hle
+```
+
+### Methods to convert a data.frame to a `HesperListEnhanced` object
+
+A few helper methods are provided to convert a data.frame from and to a `HesperList` or a `HesperListEnhanced` object. See [from_data.frame] and [as_data_frame] for more details.
+
+Here is an example of converting a data.frame to a `HesperListEnhanced` object:
+```{r}
+df <- data.frame(
+  # ----- HESPER items (must contain at least one "serious_problem" per row -----
+  hesper_food = c(
+    "serious_problem",
+    "no_serious_problem",
+    "serious_problem",
+    "serious_problem",
+    "no_serious_problem",
+    "serious_problem"
+  ),
+  hesper_displaced = c(
+    "no_serious_problem",
+    "serious_problem",
+    "serious_problem",
+    "no_serious_problem",
+    "serious_problem",
+    "serious_problem"
+  ),
+  hesper_shelter = c(
+    "no_serious_problem",
+    "serious_problem",
+    "no_serious_problem",
+    "serious_problem",
+    "serious_problem",
+    "no_serious_problem"
+  ),
+  hesper_health = c(
+    "serious_problem",
+    "no_serious_problem",
+    "no_serious_problem",
+    "serious_problem",
+    "serious_problem",
+    "no_serious_problem"
+  ),
+
+  # ----- auxiliary variable (just to show that other_list works) -----
+  pop_group = c("host", "refugee", "non_displaced", "host", "refugee", "host"),
+
+  # ----- PRIORITY columns – each points to a *serious_problem* in the same row -----
+  hesper_top1 = c(
+    "hesper_food", # row 1 → food is serious
+    "hesper_displaced", # row 2 → displaced is serious
+    "hesper_displaced", # row 3 → displaced is serious
+    "hesper_shelter", # row 4 → shelter is serious
+    "hesper_displaced", # row 5 → displaced is serious
+    "hesper_food"
+  ), # row 6 → food is serious
+
+  hesper_top2 = c(
+    "hesper_health", # row 1 → health is serious
+    NA, # row 2 → food is serious
+    "hesper_food", # row 3 → food is serious
+    "hesper_health", # row 4 → health is serious
+    "hesper_health", # row 5 → health is serious
+    "hesper_displaced"
+  ), # row 6 → displaced is serious
+
+  hesper_top3 = c(
+    NA, # row 1 → displaced is serious
+    "hesper_shelter", # row 2 → shelter is serious
+    NA, # row 3 → shelter is serious
+    "hesper_food", # row 4 → food is serious
+    "hesper_shelter", # row 5 → shelter is serious
+    NA
+  ) # row 6 → displaced is serious
+)
+hle2 <- from_data_frame(
+  df = df,
+  hesper_vars = c(
+    "hesper_food",
+    "hesper_displaced",
+    "hesper_shelter",
+    "hesper_health"
+  ),
+  other_vars = c("pop_group"),
+  priority_vars = c("hesper_top1", "hesper_top2", "hesper_top3")
+)
 ```

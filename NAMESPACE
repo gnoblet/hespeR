@@ -2,6 +2,7 @@
 
 export(HesperList)
 export(HesperListEnhanced)
+export(HesperPriorities)
 export(HesperVector)
 export(SL)
 export(apply_hesper_list_sl)
