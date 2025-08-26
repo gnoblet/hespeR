@@ -14,11 +14,11 @@ HesperPriorities(
 \arguments{
 \item{top1}{(\verb{character[1+]}) Top 1 priority}
 
-\item{top2}{(\verb{character[1+]}) top2 priority}
+\item{top2}{(\verb{character[1+]}) Top 2 priority}
+
+\item{top3}{(\verb{character[1+]}) Top3 priority}
 
 \item{allow_missing}{(\code{logical[1]}) Whether to allow missing values (NA) in the priority vectors. Default is FALSE.}
-
-\item{third}{(\verb{character[1+]}) Third priority}
 }
 \value{
 (\code{S7_object}) A S7 'HesperPriorities' object representing HESPER priorities.

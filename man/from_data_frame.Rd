@@ -22,7 +22,9 @@ from_data_frame(
 
 \item{other_vars}{(\verb{character[1+] | NULL}) Names of other (non-HESPER) columns in df to include in HesperListEnhanced. If NULL (default), all non-HESPER columns are included.}
 
-\item{priority_vars}{(\verb{character[1+] | NULL}) Names of priority columns in df. If provided, a HesperPriorities object will be created and included in the HesperListEnhanced. If NULL (default), no priorities are included. It must be in order \link{top1, top2, top3} if provided.}
+\item{priority_vars}{(\verb{character[1+] | NULL}) Names of priority columns in df. If provided, a HesperPriorities object will be created and included in the HesperListEnhanced. If NULL (default), no priorities are included. It must be in order (top1, top2, top3) if provided.}
+
+\item{enhanced}{(\code{logical[1]}) Whether to output a HesperListEnhanced. \code{priority_vars} can only be used when \code{TRUE}.}
 }
 \value{
 (\code{HesperList | HesperListEnhanced}) A HesperList or HesperListEnhanced object.
