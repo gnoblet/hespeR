@@ -3,9 +3,9 @@
 #' @typed top1: character[1+]
 #'  Top 1 priority
 #' @typed top2: character[1+]
-#'  top2 priority
-#' @typed third: character[1+]
-#'  Third priority
+#'  Top 2 priority
+#' @typed top3: character[1+]
+#'  Top3 priority
 #' @typed allow_missing: logical[1]
 #'  Whether to allow missing values (NA) in the priority vectors. Default is FALSE.
 #'
