@@ -11,7 +11,7 @@
 #' @typed other_vars: character[1+] | NULL
 #'  Names of other (non-HESPER) columns in df to include in HesperListEnhanced. If NULL (default), all non-HESPER columns are included.
 #' @typed priority_vars: character[1+] | NULL
-#' Names of priority columns in df. If provided, a HesperPriorities object will be created and included in the HesperListEnhanced. If NULL (default), no priorities are included. It must be in order [top1, top2, top3] if provided.
+#' Names of priority columns in df. If provided, a HesperPriorities object will be created and included in the HesperListEnhanced. If NULL (default), no priorities are included. It must be in order (top1, top2, top3) if provided.
 #' @typed enhanced: logical[1]
 #'  Whether to output a HesperListEnhanced. `priority_vars` can only be used when `TRUE`.
 #'
