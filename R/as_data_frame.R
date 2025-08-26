@@ -90,5 +90,14 @@ S7::method(as_data_frame, HesperListEnhanced) <- function(x, bins = TRUE) {
     other_df <- as.data.frame(x@other_list, stringsAsFactors = FALSE)
     df <- cbind(df, other_df)
   }
+
+  # Add priority_list columns if present
+  if (length(x@priority_list) > 0) {
+    priority_df <- as.data.frame(
+      x@priority_list[[1]] |> S7::props(c("top1", "top2", "top3")),
+      stringsAsFactors = FALSE
+    )
+    df <- cbind(df, priority_df)
+  }
   df
 }

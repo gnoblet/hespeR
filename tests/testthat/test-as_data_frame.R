@@ -219,3 +219,42 @@ test_that("as_data_frame works for HesperListEnhanced with other_list", {
   expect_equal(df$region, c("A", "B"))
   expect_equal(df$age, c(30, 40))
 })
+
+test_that("as_data_frame works for HesperListEnhanced with priority_list", {
+  hv <- hesper_vars()[1:2]
+  ho1 <- hesper_opts()[1:2]
+  ho2 <- hesper_opts()[2:3]
+
+  hv1 <- HesperVector(
+    hesper_var = hv[1],
+    hesper_vals = ho1,
+    allow_missing = FALSE
+  )
+  hv2 <- HesperVector(
+    hesper_var = hv[2],
+    hesper_vals = ho2,
+    allow_missing = FALSE
+  )
+  priority_list <- list(
+    HesperPriorities(
+      top1 = c("hesper_drinking_water", NA),
+      top2 = c(NA_character_, NA_character_),
+      top3 = c(NA_character_, NA_character_),
+      allow_missing = TRUE
+    )
+  )
+  hle <- HesperListEnhanced(
+    hesper_list = list(hv1, hv2),
+    SL = list(),
+    priority_list = priority_list
+  )
+
+  df <- as_data_frame(hle, bins = FALSE)
+
+  expect_s3_class(df, "data.frame")
+  expect_equal(nrow(df), 2)
+  expect_true(all(c("top1", "top2", "top3") %in% colnames(df)))
+  expect_equal(df$top1, c("hesper_drinking_water", NA))
+  expect_equal(df$top2, c(NA_character_, NA_character_))
+  expect_equal(df$top3, c(NA_character_, NA_character_))
+})
