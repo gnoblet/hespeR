@@ -6,7 +6,7 @@
 #'   `SL` objects representing skip logic rules.
 #' @typed other_list: list[vec]
 #'   Other vectors associated with the HESPER list, typically used for skip logic rules or disaggregation.
-#' @typed priorty_list: list[HesperPriorities]
+#' @typed priority_list: list[HesperPriorities]
 #'   `HesperPriorities` list of length 1 representing top 3 priorities for respondents.  When provided, the validator will ensure that the priorities correspond to items that were indicated as serious problems in the HESPER list.
 #'
 #' @typedreturn S7_object
