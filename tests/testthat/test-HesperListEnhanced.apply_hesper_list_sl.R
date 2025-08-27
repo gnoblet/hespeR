@@ -86,7 +86,6 @@ test_that("apply_hesper_list_sl returns self if no SL objects", {
   )
   hle <- HesperListEnhanced(
     hesper_list = list(hv1, hv2, hv3),
-    SL = list(),
     other_list = other_list
   )
 
