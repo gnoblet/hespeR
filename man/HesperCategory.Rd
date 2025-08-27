@@ -21,17 +21,3 @@ S7 class for a single HESPER category
 The \code{HesperCategory} class represents a single thematic category of HESPER items (e.g., health, protection, WASH).
 It validates that the category name is a non-empty string and that all HESPER variables are valid according to \code{hesper_vars()}.
 }
-\examples{
-# Create a health category
-health_cat <- HesperCategory(
-  cat = "health",
-  vars = c("hesper_health", "hesper_health_care_male", "hesper_health_care_female")
-)
-
-# Create an FSL category
-fsl_cat <- HesperCategory(
-  cat = "fsl",
-  vars = c("hesper_food")
-)
-
-}

@@ -27,30 +27,3 @@ The class validates that:
 \item The list is not empty
 }
 }
-\examples{
-# Create individual categories
-health_cat <- HesperCategory(
-  cat = "health",
-  vars = c("hesper_health", "hesper_health_care_male")
-)
-fsl_cat <- HesperCategory(
-  cat = "fsl",
-  vars = c("hesper_food")
-)
-wash_cat <- HesperCategory(
-  cat = "wash",
-  vars = c("hesper_drinking_water", "hesper_toilet")
-)
-
-# Create categories collection
-categories <- HesperCategories(
-  category_list = list(health_cat, fsl_cat, wash_cat)
-)
-
-# Get category names
-names(categories)
-
-# Get variables for a specific category
-get_category_vars(categories, "health")
-
-}

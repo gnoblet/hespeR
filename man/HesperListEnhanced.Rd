@@ -8,7 +8,8 @@ HesperListEnhanced(
   hesper_list = list(),
   SL = list(),
   other_list = list(),
-  priority_list = list()
+  priority_list = list(),
+  category_list = list()
 )
 }
 \arguments{
@@ -18,16 +19,18 @@ HesperListEnhanced(
 
 \item{other_list}{(\code{list[vec]}) Other vectors associated with the HESPER list, typically used for skip logic rules or disaggregation.}
 
-\item{priorty_list}{(\code{list[HesperPriorities]}) \code{HesperPriorities} list of length 1 representing top 3 priorities for respondents.  When provided, the validator will ensure that the priorities correspond to items that were indicated as serious problems in the HESPER list.}
+\item{priority_list}{(\code{list[HesperPriorities]}) \code{HesperPriorities} list of length 1 representing top 3 priorities for respondents.  When provided, the validator will ensure that the priorities correspond to items that were indicated as serious problems in the HESPER list.}
+
+\item{category_list}{(\code{list[HesperCategories]}) \code{HesperCategories} list of length 1 representing categorization of HESPER items into meaningful groups (e.g., sectors). When provided, allows for categorical analysis of HESPER data.}
 }
 \value{
-(\code{S7_object}) A S7 object of class \code{HesperListEnhanced}, representing a list of HESPER vectors associated with skip logic rules, priorities, and additional data.
+(\code{S7_object}) A S7 object of class \code{HesperListEnhanced}, representing a list of HESPER vectors associated with skip logic rules, priorities, categories, and additional data.
 }
 \description{
 S7 class for hespeR list of vectors with skip logic
 }
 \details{
-This class extends the \code{HesperList} class to include support for skip logic (SL) rules, respondent priorities and additional data. Note that the only non empty list that must be provided is \code{hesper_list}. The other lists can be empty (length 0).
+This class extends the \code{HesperList} class to include support for skip logic (SL) rules, respondent priorities, categorization capabilities, and additional data. Note that the only non empty list that must be provided is \code{hesper_list}. The other lists can be empty (length 0).
 
 It validates the following:
 \itemize{
@@ -37,5 +40,6 @@ It validates the following:
 \item All items in \code{other_list} must have the same length as items in \code{hesper_list}.
 \item If \code{priority_list} is provided, it must be a valid \code{HesperPriorities} object and its vectors must have the same length as items in \code{hesper_list}.
 \item Each priority in \code{priority_list} must correspond to a \code{hesper_var} in \code{hesper_list} that was marked as "serious_problem" at the same position.
+\item If \code{category_list} is provided, it must be a valid \code{HesperCategories} object and all HESPER variables in its categories must be present in \code{hesper_list}.
 }
 }
