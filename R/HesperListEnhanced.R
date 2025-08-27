@@ -8,12 +8,14 @@
 #'   Other vectors associated with the HESPER list, typically used for skip logic rules or disaggregation.
 #' @typed priority_list: list[HesperPriorities]
 #'   `HesperPriorities` list of length 1 representing top 3 priorities for respondents.  When provided, the validator will ensure that the priorities correspond to items that were indicated as serious problems in the HESPER list.
+#' @typed category_list: list[HesperCategories]
+#'   `HesperCategories` list of length 1 representing categorization of HESPER items into meaningful groups (e.g., sectors). When provided, allows for categorical analysis of HESPER data.
 #'
 #' @typedreturn S7_object
-#'   A S7 object of class `HesperListEnhanced`, representing a list of HESPER vectors associated with skip logic rules, priorities, and additional data.
+#'   A S7 object of class `HesperListEnhanced`, representing a list of HESPER vectors associated with skip logic rules, priorities, categories, and additional data.
 #'
 #' @details
-#'  This class extends the `HesperList` class to include support for skip logic (SL) rules, respondent priorities and additional data. Note that the only non empty list that must be provided is `hesper_list`. The other lists can be empty (length 0).
+#'  This class extends the `HesperList` class to include support for skip logic (SL) rules, respondent priorities, categorization capabilities, and additional data. Note that the only non empty list that must be provided is `hesper_list`. The other lists can be empty (length 0).
 #'
 #' It validates the following:
 #'
@@ -23,6 +25,7 @@
 #' - All items in `other_list` must have the same length as items in `hesper_list`.
 #' - If `priority_list` is provided, it must be a valid `HesperPriorities` object and its vectors must have the same length as items in `hesper_list`.
 #' - Each priority in `priority_list` must correspond to a `hesper_var` in `hesper_list` that was marked as "serious_problem" at the same position.
+#' - If `category_list` is provided, it must be a valid `HesperCategories` object and all HESPER variables in its categories must be present in `hesper_list`.
 #'
 #' @export
 HesperListEnhanced <- S7::new_class(
@@ -32,7 +35,8 @@ HesperListEnhanced <- S7::new_class(
     hesper_list = S7::class_list,
     SL = S7::class_list,
     other_list = S7::class_list,
-    priority_list = S7::class_list
+    priority_list = S7::class_list,
+    category_list = S7::class_list
   ),
   validator = function(self) {
     HesperList@validator(self)
@@ -202,6 +206,41 @@ HesperListEnhanced <- S7::new_class(
             "!" = "Each priority must be marked as 'serious_problem' at the same respondent position."
           ))
         }
+      }
+    }
+
+    # Validate category_list if provided
+    # Must be of length 0 or 1
+    checkmate::assert_list(self@category_list, max.len = 1)
+    if (length(self@category_list) > 0) {
+      # Validate the HesperCategories object itself
+      check_vector_class(
+        self@category_list,
+        HesperCategories,
+        'category_list',
+        use_S7_inherits = TRUE
+      )
+      HesperCategories@validator(self@category_list[[1]])
+
+      # Check that all HESPER variables in categories are present in hesper_list
+      category_hesper_vars <- purrr::map(
+        self@category_list[[1]]@category_list,
+        \(x) x@vars
+      ) |>
+        unlist(use.names = FALSE)
+      missing_category_vars <- setdiff(category_hesper_vars, hl_hesper_vars)
+      if (length(missing_category_vars) > 0) {
+        rlang::abort(c(
+          "All HESPER variables in category_list must be present in hesper_list.",
+          "i" = glue::glue(
+            "The following hesper_vars from category_list are missing in hesper_list: ",
+            glue::glue_collapse(
+              missing_category_vars,
+              sep = ", ",
+              last = " and "
+            )
+          )
+        ))
       }
     }
 

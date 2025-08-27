@@ -390,3 +390,231 @@ test_that("HesperListEnhanced validates HesperPriorities object itself", {
     regexp = "have non-unique"
   )
 })
+
+
+# ---- HesperCategories Tests ----
+test_that("HesperListEnhanced works with empty category_list (default)", {
+  test_data <- create_test_data()
+
+  hle <- HesperListEnhanced(
+    hesper_list = test_data$hesper_list,
+    SL = test_data$SL,
+    other_list = test_data$other_list
+  )
+
+  expect_s7_class(hle, HesperListEnhanced)
+  expect_length(hle@category_list, 0)
+})
+
+test_that("HesperListEnhanced accepts valid category_list", {
+  test_data <- create_test_data()
+
+  # Create valid categories using variables from hesper_list
+  cat1 <- HesperCategory(
+    cat = "basic_needs",
+    vars = c("hesper_drinking_water", "hesper_food")
+  )
+  cat2 <- HesperCategory(
+    cat = "shelter_health",
+    vars = c("hesper_shelter", "hesper_health")
+  )
+  cat3 <- HesperCategory(
+    cat = "services",
+    vars = c("hesper_education", "hesper_toilet")
+  )
+
+  categories <- HesperCategories(category_list = list(cat1, cat2, cat3))
+
+  hle <- HesperListEnhanced(
+    hesper_list = test_data$hesper_list,
+    SL = test_data$SL,
+    other_list = test_data$other_list,
+    category_list = list(categories)
+  )
+
+  expect_s7_class(hle, HesperListEnhanced)
+  expect_length(hle@category_list, 1)
+  expect_s7_class(hle@category_list[[1]], HesperCategories)
+  expect_length(hle@category_list[[1]]@category_list, 3)
+})
+
+test_that("HesperListEnhanced validates maximum one category_list object", {
+  test_data <- create_test_data()
+
+  cat1 <- HesperCategory(cat = "basic_needs", vars = c("hesper_drinking_water"))
+  cat2 <- HesperCategory(cat = "shelter", vars = c("hesper_shelter"))
+
+  categories1 <- HesperCategories(category_list = list(cat1))
+  categories2 <- HesperCategories(category_list = list(cat2))
+
+  expect_error(
+    HesperListEnhanced(
+      hesper_list = test_data$hesper_list,
+      SL = test_data$SL,
+      other_list = test_data$other_list,
+      category_list = list(categories1, categories2)
+    ),
+    regexp = "Must have length <= 1"
+  )
+})
+
+test_that("HesperListEnhanced validates category_list contains HesperCategories object", {
+  test_data <- create_test_data()
+
+  # Test with non-HesperCategories object in category_list
+  fake_category <- list(
+    category_list = list(
+      list(cat = "fake", vars = c("hesper_drinking_water"))
+    )
+  )
+
+  expect_error(
+    HesperListEnhanced(
+      hesper_list = test_data$hesper_list,
+      SL = test_data$SL,
+      other_list = test_data$other_list,
+      category_list = list(fake_category)
+    ),
+    regexp = "Not all items in 'category_list' are of the specified class"
+  )
+})
+
+test_that("HesperListEnhanced validates category variables are in hesper_list", {
+  test_data <- create_test_data()
+
+  # Create categories with variables not in hesper_list
+  cat1 <- HesperCategory(
+    cat = "basic_needs",
+    vars = c("hesper_drinking_water", "hesper_movement") # hesper_movement not in hesper_list
+  )
+  cat2 <- HesperCategory(
+    cat = "missing_vars",
+    vars = c("hesper_safety", "hesper_time") # both not in hesper_list
+  )
+
+  categories <- HesperCategories(category_list = list(cat1, cat2))
+
+  expect_error(
+    HesperListEnhanced(
+      hesper_list = test_data$hesper_list,
+      SL = test_data$SL,
+      other_list = test_data$other_list,
+      category_list = list(categories)
+    ),
+    regexp = "are missing in hesper_list: hesper_movement, hesper_safety and hesper_time"
+  )
+})
+
+test_that("HesperListEnhanced validates single missing category variable", {
+  test_data <- create_test_data()
+
+  # Create category with single missing variable
+  cat1 <- HesperCategory(
+    cat = "basic_needs",
+    vars = c("hesper_drinking_water", "hesper_food")
+  )
+  cat2 <- HesperCategory(
+    cat = "missing_var",
+    vars = c("hesper_movement") # not in hesper_list
+  )
+
+  categories <- HesperCategories(category_list = list(cat1, cat2))
+
+  expect_error(
+    HesperListEnhanced(
+      hesper_list = test_data$hesper_list,
+      SL = test_data$SL,
+      other_list = test_data$other_list,
+      category_list = list(categories)
+    ),
+    regexp = "are missing in hesper_list: hesper_movement"
+  )
+})
+
+test_that("HesperListEnhanced validates HesperCategories object itself", {
+  test_data <- create_test_data()
+
+  # Create categories with duplicate category names (should fail HesperCategories validation)
+  cat1 <- HesperCategory(cat = "basic_needs", vars = c("hesper_drinking_water"))
+  cat2 <- HesperCategory(cat = "basic_needs", vars = c("hesper_food")) # duplicate name
+
+  expect_error(
+    {
+      categories <- HesperCategories(category_list = list(cat1, cat2))
+      HesperListEnhanced(
+        hesper_list = test_data$hesper_list,
+        SL = test_data$SL,
+        other_list = test_data$other_list,
+        category_list = list(categories)
+      )
+    },
+    regexp = "category names"
+  )
+})
+
+test_that("HesperListEnhanced works with single category", {
+  test_data <- create_test_data()
+
+  # Create single category
+  cat1 <- HesperCategory(
+    cat = "all_hesper",
+    vars = c(
+      "hesper_drinking_water",
+      "hesper_food",
+      "hesper_shelter",
+      "hesper_health",
+      "hesper_education",
+      "hesper_toilet"
+    )
+  )
+
+  categories <- HesperCategories(category_list = list(cat1))
+
+  hle <- HesperListEnhanced(
+    hesper_list = test_data$hesper_list,
+    SL = test_data$SL,
+    other_list = test_data$other_list,
+    category_list = list(categories)
+  )
+
+  expect_s7_class(hle, HesperListEnhanced)
+  expect_length(hle@category_list[[1]]@category_list, 1)
+  expect_equal(hle@category_list[[1]]@category_list[[1]]@cat, "all_hesper")
+  expect_length(hle@category_list[[1]]@category_list[[1]]@vars, 6)
+})
+
+test_that("HesperListEnhanced works with categories covering subset of hesper_list", {
+  test_data <- create_test_data()
+
+  # Create categories that only cover some variables from hesper_list
+  cat1 <- HesperCategory(
+    cat = "water_food",
+    vars = c("hesper_drinking_water", "hesper_food")
+  )
+  cat2 <- HesperCategory(
+    cat = "services",
+    vars = c("hesper_education") # only one variable
+  )
+
+  categories <- HesperCategories(category_list = list(cat1, cat2))
+
+  hle <- HesperListEnhanced(
+    hesper_list = test_data$hesper_list,
+    SL = test_data$SL,
+    other_list = test_data$other_list,
+    category_list = list(categories)
+  )
+
+  expect_s7_class(hle, HesperListEnhanced)
+  expect_length(hle@category_list[[1]]@category_list, 2)
+
+  # Check that categories contain expected variables
+  all_category_vars <- purrr::map(hle@category_list[[1]]@category_list, \(x) {
+    x@vars
+  }) |>
+    unlist(use.names = FALSE)
+  expect_true(all(
+    all_category_vars %in%
+      c("hesper_drinking_water", "hesper_food", "hesper_education")
+  ))
+})
