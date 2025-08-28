@@ -15,7 +15,7 @@ SL(
 
 \item{subset_var}{(\code{character[1]}) Name of the subset variable.}
 
-\item{subset_vals}{(\verb{character[1+]}) Values in the subset variable that are skipped.}
+\item{subset_vals}{(\verb{atomic[1+]}) Values in the subset variable that are skipped.}
 }
 \description{
 S7 class for HESPER skip logic (SL)

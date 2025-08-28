@@ -43,3 +43,30 @@ test_that("SL class errors on empty subset_vals", {
     regexp = "subset_vals"
   )
 })
+
+test_that("SL class errors when subset_vals contains unique non-atomic or missing values", {
+  expect_error(
+    SL(
+      hesper_var = "hesper_drinking_water",
+      subset_var = "pop_group",
+      subset_vals = list("refugees", "host")
+    ),
+    regexp = "subset_vals"
+  )
+  expect_error(
+    SL(
+      hesper_var = "hesper_drinking_water",
+      subset_var = "pop_group",
+      subset_vals = c("refugees", NA)
+    ),
+    regexp = "subset_vals"
+  )
+  expect_error(
+    SL(
+      hesper_var = "hesper_drinking_water",
+      subset_var = "pop_group",
+      subset_vals = c("refugees", "other", "other")
+    ),
+    regexp = "subset_vals"
+  )
+})

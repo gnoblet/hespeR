@@ -4,7 +4,7 @@
 #'  Name of the HESPER variable.
 #' @typed subset_var: character[1]
 #'  Name of the subset variable.
-#' @typed subset_vals: character[1+]
+#' @typed subset_vals: atomic[1+]
 #'  Values in the subset variable that are skipped.
 #'
 #' @details
@@ -20,7 +20,7 @@ SL <- S7::new_class(
   properties = list(
     hesper_var = S7::class_character,
     subset_var = S7::class_character,
-    subset_vals = S7::class_vector
+    subset_vals = S7::class_atomic
   ),
   validator = function(self) {
     # hesper_var is a valid HESPER variable
@@ -36,10 +36,11 @@ SL <- S7::new_class(
     checkmate::assert_character(self@subset_var, len = 1, any.missing = FALSE)
 
     # subset_vals contains valid values for the subset variable
-    checkmate::assert_vector(
+    checkmate::assert_atomic_vector(
       self@subset_vals,
       min.len = 1,
-      any.missing = FALSE
+      any.missing = FALSE,
+      unique = TRUE
     )
 
     NULL
