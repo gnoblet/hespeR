@@ -29,9 +29,7 @@ HesperVector <- S7::new_class(
     hesper_bins = S7::new_property(
       S7::class_list,
       getter = function(self) {
-        opts <- hesper_opts()
-        purrr::map(opts, function(o) as.integer(self@hesper_vals == o)) |>
-          purrr::set_names(opts)
+        create_binary_vectors(self@hesper_vals, hesper_opts())
       },
     )
   ),
