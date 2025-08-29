@@ -36,4 +36,6 @@ This class is used to represent and validate HESPER priorities data. At the end 
 }
 
 When a proprerty of \link{HesperListEnhanced}, the validator will also ensure that the priorities correspond to items that were indicated as serious problems in the HESPER list.
+
+The \code{top1_bins}, \code{top2_bins}, and \code{top3_bins} properties are getters that generate named lists of binary vectors for each HESPER item, indicating which respondents selected that item as their top 1, top 2, or top 3 priority, respectively.
 }
