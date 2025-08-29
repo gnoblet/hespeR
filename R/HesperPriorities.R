@@ -21,6 +21,8 @@
 #'
 #' When a proprerty of [HesperListEnhanced], the validator will also ensure that the priorities correspond to items that were indicated as serious problems in the HESPER list.
 #'
+#' The `top1_bins`, `top2_bins`, and `top3_bins` properties are getters that generate named lists of binary vectors for each HESPER item, indicating which respondents selected that item as their top 1, top 2, or top 3 priority, respectively.
+#'
 #'
 #' @export
 HesperPriorities <- S7::new_class(
@@ -32,6 +34,24 @@ HesperPriorities <- S7::new_class(
     allow_missing = S7::new_property(
       S7::class_logical,
       default = FALSE
+    ),
+    top1_bins = S7::new_property(
+      S7::class_list,
+      getter = function(self) {
+        create_binary_vectors(self@top1, hesper_vars())
+      }
+    ),
+    top2_bins = S7::new_property(
+      S7::class_list,
+      getter = function(self) {
+        create_binary_vectors(self@top2, hesper_vars())
+      }
+    ),
+    top3_bins = S7::new_property(
+      S7::class_list,
+      getter = function(self) {
+        create_binary_vectors(self@top3, hesper_vars())
+      }
     )
   ),
   validator = function(self) {
