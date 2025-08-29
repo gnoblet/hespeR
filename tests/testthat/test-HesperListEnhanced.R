@@ -618,3 +618,128 @@ test_that("HesperListEnhanced works with categories covering subset of hesper_li
       c("hesper_drinking_water", "hesper_food", "hesper_education")
   ))
 })
+
+
+# Tests for category_list function ----
+
+test_that("HesperListEnhanced's category_list has correct behavior", {
+  hesper_vars <- c("hesper_drinking_water", "hesper_food", "hesper_shelter")
+  hesper_opts <- c(
+    "serious_problem",
+    "no_serious_problem",
+    "dnk",
+    "pnta",
+    "not_applicable"
+  )
+  hv1 <- HesperVector(
+    "hesper_drinking_water",
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+  hv2 <- HesperVector(
+    "hesper_food",
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+  hv3 <- HesperVector(
+    "hesper_shelter",
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+
+  cat1 <- HesperCategory(cat = "z_last", vars = c("hesper_shelter"))
+  cat2 <- HesperCategory(
+    cat = "a_first",
+    vars = c("hesper_food", "hesper_drinking_water")
+  )
+  cat3 <- HesperCategory(cat = "m_middle", vars = c("hesper_health"))
+
+  categories <- HesperCategories(category_list = list(cat1, cat2))
+
+  hle <- HesperListEnhanced(
+    hesper_list = list(hv1, hv2, hv3),
+    category_list = list(categories)
+  )
+
+  cat_list <- hle@category_hesper_list
+
+  # rightly named
+  expect_type(cat_list, "list")
+  expect_equal(length(cat_list), 2)
+  expect_named(
+    cat_list,
+    c("z_last", "a_first")
+  )
+
+  # correct values for all serious_problem
+  expect_equal(
+    cat_list$z_last$vals,
+    c(
+      "serious_problem",
+      "serious_problem",
+      "serious_problem"
+    )
+  )
+  expect_equal(
+    cat_list$a_first$vals,
+    c(
+      "serious_problem",
+      "serious_problem",
+      "serious_problem"
+    )
+  )
+
+  # if category list does not exist returns empty list
+  hle_no_cat <- HesperListEnhanced(
+    hesper_list = list(hv1, hv2, hv3)
+  )
+  cat_list_no_cat <- hle_no_cat@category_hesper_list
+  expect_type(cat_list_no_cat, "list")
+  expect_equal(length(cat_list_no_cat), 0)
+
+  # change hv1 and hv2 to no_serious_problem and re-test
+  hv1 <- HesperVector(
+    "hesper_drinking_water",
+    c("no_serious_problem", "no_serious_problem", "no_serious_problem")
+  )
+  hv2 <- HesperVector(
+    "hesper_food",
+    c("no_serious_problem", "no_serious_problem", "no_serious_problem")
+  )
+  hle@hesper_list <- list(hv1, hv2, hv3)
+  cat_list <- hle@category_hesper_list
+  expect_equal(
+    cat_list$a_first$vals,
+    c(
+      "no_serious_problem",
+      "no_serious_problem",
+      "no_serious_problem"
+    )
+  )
+
+  # validates binaries
+  expect_equal(cat_list$a_first$bins$no_serious_problem, c(1L, 1L, 1L))
+  expect_equal(cat_list$a_first$bins$serious_problem, c(0, 0, 0))
+
+  # validates logic
+  # if any is dnk, dnk
+  hv1 <- HesperVector(
+    "hesper_drinking_water",
+    c("dnk", "pnta", "not_applicable")
+  )
+  hle@hesper_list <- list(hv1, hv2, hv3)
+  cat_list <- hle@category_hesper_list
+  expect_equal(
+    cat_list$a_first$vals,
+    c("dnk", "pnta", "not_applicable")
+  )
+  expect_equal(
+    cat_list$a_first$bins$dnk,
+    c(1, 0, 0)
+  )
+  expect_equal(
+    cat_list$a_first$bins$pnta,
+    c(0, 1, 0)
+  )
+  expect_equal(
+    cat_list$a_first$bins$not_applicable,
+    c(0, 0, 1)
+  )
+})

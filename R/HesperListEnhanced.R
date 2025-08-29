@@ -14,6 +14,16 @@
 #' @typedreturn S7_object
 #'   A S7 object of class `HesperListEnhanced`, representing a list of HESPER vectors associated with skip logic rules, priorities, categories, and additional data.
 #'
+#' @section Getter:
+#'
+#' `category_hesper_list` is a getter property that returns a list of category-level aggregated HESPER vectors when `category_list` is provided. Each category becomes a named character vector (with associated binaries) with aggregated responses following hierarchical logic:
+#' - "serious_problem" if any variable in the category is "serious_problem"
+#' - "pnta" if any variable in the category is "pnta" (and none are "serious_problem")
+#' - "dnk" if any variable in the category is "dnk" (and none are "serious_problem" or "pnta")
+#' - "no_serious_problem" if ALL variables in the category are "no_serious_problem"
+#' - "not_applicable" if ALL variables in the category are "not_applicable"
+#' If `category_list` is not provided, it returns an empty list.
+#'
 #' @details
 #'  This class extends the `HesperList` class to include support for skip logic (SL) rules, respondent priorities, categorization capabilities, and additional data. Note that the only non empty list that must be provided is `hesper_list`. The other lists can be empty (length 0).
 #'
@@ -36,7 +46,18 @@ HesperListEnhanced <- S7::new_class(
     SL = S7::class_list,
     other_list = S7::class_list,
     priority_list = S7::class_list,
-    category_list = S7::class_list
+    category_list = S7::class_list,
+    category_hesper_list = S7::new_property(
+      S7::class_list,
+      getter = function(self) {
+        # if no category_list provided, return empty list
+        if (length(self@category_list) == 0) {
+          return(list())
+        }
+        # else create category hesper list
+        apply_hesper_list_cat(self)
+      }
+    )
   ),
   validator = function(self) {
     HesperList@validator(self)
@@ -274,6 +295,80 @@ validate_hle_priority_list <- function(
   }
 
   NULL
+}
+
+#' Create category-level HESPER vectors from HesperListEnhanced
+#'
+#' @typed self: HesperListEnhanced
+#'   A HesperListEnhanced object.
+#'
+#' @typedreturn list[character]
+#'   A named list of character vectors representing category-level aggregation (including binaries).
+#'
+#' @details
+#' This function creates category-level HESPER vectors by aggregating individual
+#' HESPER variables within each category using hierarchical logic:
+#' - "serious_problem" if any variable is "serious_problem"
+#' - "pnta" if any variable is "pnta" (and none are "serious_problem")
+#' - "dnk" if any variable is "dnk" (and none are "serious_problem" or "pnta")
+#' - "no_serious_problem" if ALL variables are "no_serious_problem"
+#' - "not_applicable" if ALL variables are "not_applicable"
+#'
+#' @keywords internal
+
+apply_hesper_list_cat <- function(
+  self
+) {
+  #------ Create category-level HESPER vectors
+
+  hesper_categories <- self@category_list[[1]]
+  hesper_list <- self@hesper_list
+
+  purrr::map(hesper_categories@category_list, \(x) {
+    cat_name = x@cat
+    cat_vars = x@vars
+
+    hesper_list_sub <- hesper_list[which(
+      purrr::map_chr(hesper_list, \(y) y@hesper_var) %in% cat_vars
+    )]
+
+    # pmap over hesper_list_sub and extract hesper_vals
+    hesper_vals_list <- purrr::map(hesper_list_sub, \(y) y@hesper_vals)
+    hesper_vals_list <- purrr::pmap_chr(hesper_vals_list, \(...) {
+      vals <- c(...)
+
+      # logic is:
+      # if any serious_problem -> serious_problem
+      # if all no_serious_problem -> no_serious_problem
+      # if any is dnk, dnk
+      # if any is pnta, pnta
+      # if any is not_applicable, not_applicable
+      res <- if ("serious_problem" %in% vals) {
+        "serious_problem"
+      } else if (all(vals == "no_serious_problem")) {
+        "no_serious_problem"
+      } else if ("dnk" %in% vals) {
+        "dnk"
+      } else if ("pnta" %in% vals) {
+        "pnta"
+      } else if ("not_applicable" %in% vals) {
+        "not_applicable"
+      } else {
+        NA_character_
+      }
+    })
+
+    # let's add binaries for each hesper_opts
+    hesper_vals_bins <- create_binary_vectors(hesper_vals_list, hesper_opts())
+
+    return(list(
+      vals = hesper_vals_list,
+      bins = hesper_vals_bins
+    ))
+  }) |>
+    purrr::set_names(purrr::map_chr(hesper_categories@category_list, \(x) {
+      x@cat
+    }))
 }
 
 #' Validate category_list in HesperListEnhanced
