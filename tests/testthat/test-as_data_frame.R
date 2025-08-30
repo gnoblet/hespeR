@@ -258,3 +258,91 @@ test_that("as_data_frame works for HesperListEnhanced with priority_list", {
   expect_equal(df$top2, c(NA_character_, NA_character_))
   expect_equal(df$top3, c(NA_character_, NA_character_))
 })
+
+test_that("as_data_frame works for HesperListEnhanced for category_list", {
+  hesper_vars <- c("hesper_drinking_water", "hesper_food", "hesper_shelter")
+  hesper_opts <- c(
+    "serious_problem",
+    "no_serious_problem",
+    "dnk",
+    "pnta",
+    "not_applicable"
+  )
+  hv1 <- HesperVector(
+    "hesper_drinking_water",
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+  hv2 <- HesperVector(
+    "hesper_food",
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+  hv3 <- HesperVector(
+    "hesper_shelter",
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+
+  cat1 <- HesperCategory(cat = "z_last", vars = c("hesper_shelter"))
+  cat2 <- HesperCategory(
+    cat = "a_first",
+    vars = c("hesper_food", "hesper_drinking_water")
+  )
+  cat3 <- HesperCategory(cat = "m_middle", vars = c("hesper_health"))
+
+  categories <- HesperCategories(category_list = list(cat1, cat2))
+
+  hle <- HesperListEnhanced(
+    hesper_list = list(hv1, hv2, hv3),
+    category_list = list(categories)
+  )
+
+  hle_df <- as_data_frame(hle, bins = F)
+
+  expect_equal(nrow(hle_df), 3)
+  expect_true(all(c("cat.a_first", "cat.z_last") %in% colnames(hle_df)))
+  expect_equal(
+    hle_df$cat.a_first,
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+  expect_equal(
+    hle_df$cat.z_last,
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+
+  hle_df <- as_data_frame(hle, bins = T)
+  expect_equal(nrow(hle_df), 3)
+  expect_true(all(
+    c(
+      "cat.a_first",
+      "cat.z_last",
+      "cat.a_first.serious_problem",
+      "cat.a_first.no_serious_problem",
+      "cat.a_first.dnk",
+      "cat.a_first.pnta",
+      "cat.a_first.not_applicable",
+      "cat.z_last.serious_problem",
+      "cat.z_last.no_serious_problem",
+      "cat.z_last.dnk",
+      "cat.z_last.pnta",
+      "cat.z_last.not_applicable"
+    ) %in%
+      colnames(hle_df)
+  ))
+  expect_equal(
+    hle_df$cat.a_first,
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+  expect_equal(
+    hle_df$cat.z_last,
+    c("serious_problem", "serious_problem", "serious_problem")
+  )
+  expect_equal(hle_df$cat.a_first.serious_problem, c(1L, 1L, 1L))
+  expect_equal(hle_df$cat.a_first.no_serious_problem, c(0L, 0L, 0L))
+  expect_equal(hle_df$cat.a_first.dnk, c(0L, 0L, 0L))
+  expect_equal(hle_df$cat.a_first.pnta, c(0L, 0L, 0L))
+  expect_equal(hle_df$cat.a_first.not_applicable, c(0L, 0L, 0L))
+  expect_equal(hle_df$cat.z_last.serious_problem, c(1L, 1L, 1L))
+  expect_equal(hle_df$cat.z_last.no_serious_problem, c(0L, 0L, 0L))
+  expect_equal(hle_df$cat.z_last.dnk, c(0L, 0L, 0L))
+  expect_equal(hle_df$cat.z_last.pnta, c(0L, 0L, 0L))
+  expect_equal(hle_df$cat.z_last.not_applicable, c(0L, 0L, 0L))
+})

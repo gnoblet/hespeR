@@ -104,29 +104,23 @@ S7::method(as_data_frame, HesperListEnhanced) <- function(x, bins = TRUE) {
     category_vars <- names(x@category_hesper_list)
     category_vals <- x@category_hesper_list
 
-    category_df <- as.data.frame(
-      purrr::set_names()
-      stringsAsFactors = FALSE
+    # keep only sub-item 'vals' if bins is false
+    category_vals_df <- as.data.frame(
+      purrr::map(category_vals, \(x) purrr::pluck(x, "vals"))
     )
-
-    # Add category binary columns if requested
+    colnames(category_vals_df) <- glue::glue(
+      "cat.{category_vars}"
+    )
     if (bins) {
-      # Create binary columns for each category and each HESPER option
-      all_hesper_opts <- hesper_opts()
-      category_bins <- purrr::map_dfc(category_vars, function(cat_name) {
-        cat_values <- category_vals[[cat_name]]
-
-        # Create binary columns for each HESPER option
-        bin_cols <- purrr::map_dfc(all_hesper_opts, function(opt) {
-          as.integer(cat_values == opt)
-        })
-
-        # Set column names
-        colnames(bin_cols) <- glue::glue("{cat_name}.{all_hesper_opts}")
-        return(bin_cols)
-      })
-
-      category_df <- cbind(category_df, category_bins)
+      category_bins_df <- as.data.frame(
+        purrr::map(category_vals, \(x) purrr::pluck(x, "bins"))
+      )
+      colnames(category_bins_df) <- glue::glue(
+        "cat.{colnames(category_bins_df)}"
+      )
+      category_df <- cbind(category_vals_df, category_bins_df)
+    } else {
+      category_df <- category_vals_df
     }
 
     df <- cbind(df, category_df)
