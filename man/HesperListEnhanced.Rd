@@ -43,3 +43,17 @@ It validates the following:
 \item If \code{category_list} is provided, it must be a valid \code{HesperCategories} object and all HESPER variables in its categories must be present in \code{hesper_list}.
 }
 }
+\section{Getter}{
+
+
+\code{category_hesper_list} is a getter property that returns a list of category-level aggregated HESPER vectors when \code{category_list} is provided. Each category becomes a named character vector (with associated binaries) with aggregated responses following hierarchical logic:
+\itemize{
+\item "serious_problem" if any variable in the category is "serious_problem"
+\item "pnta" if any variable in the category is "pnta" (and none are "serious_problem")
+\item "dnk" if any variable in the category is "dnk" (and none are "serious_problem" or "pnta")
+\item "no_serious_problem" if ALL variables in the category are "no_serious_problem"
+\item "not_applicable" if ALL variables in the category are "not_applicable"
+If \code{category_list} is not provided, it returns an empty list.
+}
+}
+
