@@ -658,7 +658,7 @@ test_that("HesperListEnhanced's category_list has correct behavior", {
     category_list = list(categories)
   )
 
-  cat_list <- hle@category_hesper_list
+  cat_list <- hle@category_list_pp
 
   # rightly named
   expect_type(cat_list, "list")
@@ -690,7 +690,7 @@ test_that("HesperListEnhanced's category_list has correct behavior", {
   hle_no_cat <- HesperListEnhanced(
     hesper_list = list(hv1, hv2, hv3)
   )
-  cat_list_no_cat <- hle_no_cat@category_hesper_list
+  cat_list_no_cat <- hle_no_cat@category_list_pp
   expect_type(cat_list_no_cat, "list")
   expect_equal(length(cat_list_no_cat), 0)
 
@@ -703,8 +703,11 @@ test_that("HesperListEnhanced's category_list has correct behavior", {
     "hesper_food",
     c("no_serious_problem", "no_serious_problem", "no_serious_problem")
   )
-  hle@hesper_list <- list(hv1, hv2, hv3)
-  cat_list <- hle@category_hesper_list
+  hle <- HesperListEnhanced(
+    hesper_list = list(hv1, hv2, hv3),
+    category_list = list(categories)
+  )
+  cat_list <- hle@category_list_pp
   expect_equal(
     cat_list$a_first$vals,
     c(
@@ -724,8 +727,11 @@ test_that("HesperListEnhanced's category_list has correct behavior", {
     "hesper_drinking_water",
     c("dnk", "pnta", "not_applicable")
   )
-  hle@hesper_list <- list(hv1, hv2, hv3)
-  cat_list <- hle@category_hesper_list
+  hle <- HesperListEnhanced(
+    hesper_list = list(hv1, hv2, hv3),
+    category_list = list(categories)
+  )
+  cat_list <- hle@category_list_pp
   expect_equal(
     cat_list$a_first$vals,
     c("dnk", "pnta", "not_applicable")
