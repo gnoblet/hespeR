@@ -137,11 +137,11 @@ hle <- HesperListEnhanced(
 
 It inherits all the validators from `HesperList`, and adds a few more checks, for instance that the `other_list` variables are of the same length as the HESPER items, or that the skip logic rules refer to valid variables.
 
-As such an very initial method to be used and added to the object is `apply_hesper_list_sl()`, which applies the skip logic rules to the `HesperListEnhanced` object, setting values to `NA` where appropriate and return the object it-`self`.
+As such an very initial method to be used and added to the object is `apply_hle_hesper_list_sl()`, which applies the skip logic rules to the `HesperListEnhanced` object, setting values to `NA` where appropriate and return the object it-`self`.
 
 ```{r}
 
-hle <- apply_hesper_list_sl(hle)
+hle <- apply_hle_hesper_list_sl(hle)
 hle
 ```
 

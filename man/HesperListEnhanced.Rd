@@ -43,10 +43,10 @@ It validates the following:
 \item If \code{category_list} is provided, it must be a valid \code{HesperCategories} object and all HESPER variables in its categories must be present in \code{hesper_list}.
 }
 }
-\section{Getter}{
+\section{Getters}{
 
 
-\code{category_hesper_list} is a getter property that returns a list of category-level aggregated HESPER vectors when \code{category_list} is provided. Each category becomes a named character vector (with associated binaries) with aggregated responses following hierarchical logic:
+\code{category_list_pp} is a getter property that returns a list of category-level aggregated HESPER vectors when \code{category_list} is provided. Each category becomes a named character vector (with associated binaries) with aggregated responses following hierarchical logic:
 \itemize{
 \item "serious_problem" if any variable in the category is "serious_problem"
 \item "pnta" if any variable in the category is "pnta" (and none are "serious_problem")
@@ -55,5 +55,14 @@ It validates the following:
 \item "not_applicable" if ALL variables in the category are "not_applicable"
 If \code{category_list} is not provided, it returns an empty list.
 }
+
+\strong{Automatic Skip Logic Application:}
+Both \code{hesper_list} and \code{priority_list} properties automatically apply skip logic rules when \code{SL} is provided:
+\itemize{
+\item \code{hesper_list_pp}: Returns cleaned HESPER data with skip logic applied. If no skip logic rules are defined (SL list is empty), returns the original hesper_list unchanged.
+\item \code{priority_list_pp}: Returns cleaned priority data with skip logic applied using "missing" cascading (if higher priority is NA, cascade NA down). If no skip logic rules are defined or no priority_list is provided, returns the original priority_list unchanged.
+}
+
+This provides transparent access to cleaned data without needing to manually call skip logic application methods.
 }
 
