@@ -86,11 +86,11 @@ hl
 
 ### `SL` (Skip Logic)
 
-Often, there would be other variables collected as part of a survey, for instance demographic variables about the respondent or the household. These variables can be used to define skip logic rules, specifying when certain HESPER items should be set to missing based on the values of these other variables. 
+Often, there would be other variables collected as part of a survey, for instance demographic variables about the respondent or the household. These variables can be used to define skip logic rules, specifying when certain HESPER items should be set to missing based on the values of these other variables.
 
 A few examples are:
 
-- If the person does not have children, then the 12th HESPER item about education for the children should be set to missing; or, 
+- If the person does not have children, then the 12th HESPER item about education for the children should be set to missing; or,
 - for healthcare, there are different questions depending on the gender of the respondent (e.g. access to maternal healthcare); or,
 - the 16th HESPER item about displacement from home should only be asked to those who have suffered forced displacement.
 
@@ -121,9 +121,42 @@ hp
 
 This class alone is not very useful, but it can be used as part of a `HesperListEnhanced` object to represent the top priority problems identified by the respondent. By itself, it simply checks that the values provided are valid HESPER item names and cannot be identical for one respondent, e.g. if the first position were to be: `top1 = "hesper_food"` and `top2 = "hesper_food"`, it would throw an error.
 
+### `HesperCategories`
+
+The `HesperCategories` class organizes HESPER items into thematic categories (e.g., "health", "protection", "WASH") for analytical purposes. This enables categorical analysis of HESPER data by grouping related items together.
+
+The class consists of two nested components:
+
+- `HesperCategory`: represents a single category with a name and associated HESPER variables
+- `HesperCategories`: a list of `HesperCategory` objects
+
+```{r}
+# Create individual categories
+health_cat <- HesperCategory(
+  cat = "health",
+  vars = c("hesper_health", "hesper_health_care_female")
+)
+
+protection_cat <- HesperCategory(
+  cat = "protection",
+  vars = c("hesper_safety", "hesper_displaced")
+)
+
+# Combine into a categories collection
+categories <- HesperCategories(
+  category_list = list(health_cat, protection_cat)
+)
+categories
+```
+
+The class validates that:
+- Category names are unique
+- HESPER variables don't appear in multiple categories
+- All referenced HESPER variables are valid
+
 ### `HesperListEnhanced`
 
-Eventually, the last class `HesperListEnhanced` extends `HesperList` by adding skip logic (`SL`), top priorities (`HesperPriorities`), and other variables (e.g., demographic variables). This class is the most useful as it represents a full survey response, including HESPER items, skip logic rules, top priorities, and other variables.
+Eventually, the last class `HesperListEnhanced` extends `HesperList` by adding skip logic (`SL`), top priorities (`HesperPriorities`), categorization (`HesperCategories`), and other variables (e.g., demographic variables). This class is the most useful as it represents a full survey response, including HESPER items, skip logic rules, top priorities, categories, and other variables.
 
 ```{r}
 hle <- HesperListEnhanced(
@@ -137,13 +170,33 @@ hle <- HesperListEnhanced(
 
 It inherits all the validators from `HesperList`, and adds a few more checks, for instance that the `other_list` variables are of the same length as the HESPER items, or that the skip logic rules refer to valid variables.
 
-As such an very initial method to be used and added to the object is `apply_hle_hesper_list_sl()`, which applies the skip logic rules to the `HesperListEnhanced` object, setting values to `NA` where appropriate and return the object it-`self`.
+#### Automatic Data Processing with `_pp` Properties
+
+The `HesperListEnhanced` class provides several "preprocessed" (`_pp`) getter properties that automatically apply transformations and cleaning operations:
+
+**`hesper_list_pp`**: Automatically applies skip logic rules to HESPER data, setting appropriate values to `NA` based on the defined `SL` rules.
+
+**`priority_list_pp`**: Cleans priority data by applying skip logic and cascading missing values (if a higher priority is `NA`, lower priorities become `NA` too).
+
+**`category_list_pp`**: Aggregates HESPER items by category using hierarchical logic:
+
+- "serious_problem" if any variable in the category is "serious_problem"
+- "pnta" if any variable is "pnta" (and none are "serious_problem")
+- "dnk" if any variable is "dnk" (and none are "serious_problem" or "pnta")
+- "no_serious_problem" if ALL variables are "no_serious_problem"
 
 ```{r}
+# Access cleaned HESPER data with skip logic applied
+hle@hesper_list_pp
 
-hle <- apply_hle_hesper_list_sl(hle)
-hle
+# Access cleaned priority data (when available)
+# hle@priority_list_pp
+
+# Access category-aggregated data (when categories are defined)
+# hle@category_list_pp
 ```
+
+These properties provide transparent access to processed data without requiring manual method calls, and keeping track of the original data.
 
 ### Methods to convert a data.frame to a `HesperListEnhanced` object
 
@@ -217,6 +270,21 @@ df <- data.frame(
     NA
   ) # row 6 → displaced is serious
 )
+# Create categories for the example
+basic_needs_cat <- HesperCategory(
+  cat = "basic_needs",
+  vars = c("hesper_food", "hesper_shelter")
+)
+
+health_protection_cat <- HesperCategory(
+  cat = "health_protection",
+  vars = c("hesper_health", "hesper_displaced")
+)
+
+example_categories <- HesperCategories(
+  category_list = list(basic_needs_cat, health_protection_cat)
+)
+
 hle2 <- from_data_frame(
   df = df,
   hesper_vars = c(
@@ -228,4 +296,13 @@ hle2 <- from_data_frame(
   other_vars = c("pop_group"),
   priority_vars = c("hesper_top1", "hesper_top2", "hesper_top3")
 )
+
+# Add categories
+hle2@category_list <- list(example_categories)
+
+# Examine the results with different _pp properties
+# hle2
+
+# View category-aggregated data
+hle2@category_list_pp
 ```
