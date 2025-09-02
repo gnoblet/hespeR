@@ -1,37 +1,28 @@
-#' Apply SL cleaning to HesperListEnhanced object
+#' Apply skip logic to hesper_list (helper function for getter)
 #'
 #' @typed self: HesperListEnhanced
-#'  A HesperListEnhanced object
+#'   A HesperListEnhanced object
 #'
-#' @typedreturn HesperListEnhanced
-#'  The cleaned HesperListEnhanced object after applying skip logic
+#' @typedreturn list[HesperVector]
+#'   The cleaned hesper_list
 #'
-#' @export
-apply_hesper_list_sl <- S7::new_generic(
-  "apply_hesper_list_sl",
-  dispatch_args = c("self"),
-  function(self) {
-    S7::S7_dispatch()
-  }
-)
+#' @keywords internal
+apply_hle_hesper_list_sl <- function(self) {
+  #------ Checks
 
-#' @rdname apply_hesper_list_sl
-#' @name apply_hesper_list_sl
-#'
-S7::method(apply_hesper_list_sl, HesperListEnhanced) <- function(self) {
-  # HesperListEnhanced is a HesperListEnhanced
-  # S7::S7_inherits(self, HesperListEnhanced)
-  # HesperListEnhanced@validator(self)
+  # Validate other_list
+  validate_hle_other_list(self@other_list, self@hesper_list)
 
-  # property is a single character string in the allowed set
+  # Validate SL if provided
+  hl_hesper_vars <- purrr::map_chr(self@hesper_list, \(x) x@hesper_var)
+  validate_hle_sl(self@SL, hl_hesper_vars, self@other_list)
+
+  # if no SL provided, return original hesper_list
   if (length(self@SL) == 0) {
-    rlang::warn(c(
-      "No skip logic rules (SL) defined in the HesperListEnhanced object.",
-      "i" = "Skipping application of skip logic rules."
-    ))
-
-    return(self)
+    return(self@hesper_list)
   }
+
+  #------ Apply SL cleaning
 
   # Get idx of hesper_list where skip logic rules apply
   sl_hesper_vars <- purrr::map_chr(self@SL, \(x) x@hesper_var)
@@ -81,60 +72,43 @@ S7::method(apply_hesper_list_sl, HesperListEnhanced) <- function(self) {
     names(hesper_list_cleaned)
   )]
 
-  # Add it back to the HesperListEnhanced object
-  self@hesper_list <- hesper_list_cleaned
-
-  return(self)
+  return(hesper_list_cleaned)
 }
 
-#' Apply SL cleaning to HesperPriorities object
+#' Apply skip logic to priority_list (helper function for getter)
 #'
 #' @typed self: HesperListEnhanced
-#'  A HesperListEnhanced object
+#'   A HesperListEnhanced object
 #' @typed cascading: character[1]
-#'  Cascading behavior when priorities are removed. Either "missing" (default) or "upcycle".
-#'  - "missing": removed priorities become NA, remaining priorities stay in place
-#'  - "upcycle": remaining priorities cascade up to fill gaps left by removed priorities
+#'  Cascading method to use when cleaning priorities. Options are: "upcycle" (default - if higher priority is NA, move lower priorities up) or "missing" (if higher priority is NA, cascade NA down).
 #'
-#' @typedreturn HesperListEnhanced
-#'  The HesperListEnhanced object with cleaned priorities after applying skip logic
+#' @typedreturn list[HesperPriorities]
+#'   The cleaned priority_list
 #'
-#' @export
-apply_priority_list_sl <- S7::new_generic(
-  "apply_priority_list_sl",
-  dispatch_args = c("self"),
-  function(self, cascading = "missing") {
-    S7::S7_dispatch()
-  }
-)
+#' @keywords internal
+apply_hle_priority_list_sl <- function(self, cascading = "upcycle") {
+  #------ Checks
 
-#' @rdname apply_priority_list_sl
-#' @name apply_priority_list_sl
-#'
-S7::method(apply_priority_list_sl, HesperListEnhanced) <- function(
-  self,
-  cascading = "missing"
-) {
-  # Validate cascading parameter
-  checkmate::assert_subset(cascading, c("missing", "upcycle"))
+  # Validate other_list
+  validate_hle_other_list(self@other_list, self@hesper_list)
 
-  # Check if skip logic rules exist
-  if (length(self@SL) == 0) {
-    rlang::warn(c(
-      "No skip logic rules (SL) defined in the HesperListEnhanced object.",
-      "i" = "Skipping application of skip logic rules to priorities."
-    ))
-    return(self)
+  # Validate SL if provided
+  hl_hesper_vars <- purrr::map_chr(self@hesper_list, \(x) x@hesper_var)
+  validate_hle_sl(self@SL, hl_hesper_vars, self@other_list)
+
+  # Validate priority_list
+  validate_hle_priority_list(
+    self@priority_list,
+    self@hesper_list,
+    hl_hesper_vars
+  )
+
+  # if no SL provided, return original priority_list
+  if (length(self@SL) == 0 || length(self@priority_list) == 0) {
+    return(self@priority_list)
   }
 
-  # Check if priorities exist
-  if (length(self@priority_list) == 0) {
-    rlang::warn(c(
-      "No priority_list defined in the HesperListEnhanced object.",
-      "i" = "Skipping application of skip logic rules to priorities."
-    ))
-    return(self)
-  }
+  #------ Apply SL cleaning
 
   # Apply skip logic rules to priorities
   top1_cleaned <- self@priority_list[[1]]@top1
@@ -209,7 +183,7 @@ S7::method(apply_priority_list_sl, HesperListEnhanced) <- function(
   }
 
   # Create new HesperPriorities object with cleaned data
-  self@priority_list <- list(
+  hp <- list(
     HesperPriorities(
       top1 = top1_cleaned,
       top2 = top2_cleaned,
@@ -218,50 +192,91 @@ S7::method(apply_priority_list_sl, HesperListEnhanced) <- function(
     )
   )
 
-  return(self)
+  return(hp)
 }
 
-#' Apply SL cleaning to both hesper_list and hesper_priorities
+
+#' Create category-level HESPER vectors from HesperListEnhanced
 #'
 #' @typed self: HesperListEnhanced
-#'  A HesperListEnhanced object
-#' @typed cascading: character[1]
-#'  The cascading behavior for missing values. Options are "missing" or "upcycle". See [apply_priority_list_sl()].
+#'   A HesperListEnhanced object.
 #'
-#' @typedreturn HesperListEnhanced
-#'  The cleaned HesperListEnhanced object after applying skip logic to both components
+#' @typedreturn list[character]
+#'   A named list of character vectors representing category-level aggregation (including binaries).
 #'
 #' @details
-#'  This method applies skip logic rules to both the hesper_list and hesper_priorities
-#'  components of a HesperListEnhanced object. It sequentially calls:
-#'  1. [apply_hesper_list_sl()] to clean the HESPER response data
-#'  2. [apply_priority_list_sl()] to clean the priority rankings
+#' This function creates category-level HESPER vectors by aggregating individual
+#' HESPER variables within each category using hierarchical logic:
+#' - "serious_problem" if any variable is "serious_problem"
+#' - "pnta" if any variable is "pnta" (and none are "serious_problem")
+#' - "dnk" if any variable is "dnk" (and none are "serious_problem" or "pnta")
+#' - "no_serious_problem" if ALL variables are "no_serious_problem"
+#' - "not_applicable" if ALL variables are "not_applicable"
 #'
-#'  This ensures consistency between the HESPER responses and priority data -
-#'  if a respondent shouldn't answer a particular HESPER item due to skip logic,
-#'  that item is also removed from their priority rankings.
-#'
-#' @export
-apply_sl <- S7::new_generic(
-  "apply_sl",
-  dispatch_args = c("self"),
-  function(self, cascading = "missing") {
-    S7::S7_dispatch()
-  }
-)
+#' @keywords internal
 
-#' @rdname apply_sl
-#' @name apply_sl
-#'
-S7::method(apply_sl, HesperListEnhanced) <- function(
-  self,
-  cascading = "missing"
+apply_hle_hesper_list_cat <- function(
+  self
 ) {
-  # Apply skip logic to hesper_list first
-  self <- apply_hesper_list_sl(self)
+  #------ Checks
 
-  # Then apply skip logic to hesper_priorities
-  self <- apply_priority_list_sl(self, cascading = cascading)
+  # Validate category list
+  validate_hle_category_list(
+    self@category_list,
+    purrr::map_chr(self@hesper_list, \(x) x@hesper_var)
+  )
+  # if no category_list provided, return empty list
+  if (length(self@category_list) == 0) {
+    return(list())
+  }
+  #------ Create category-level HESPER vectors
 
-  return(self)
+  hesper_categories <- self@category_list[[1]]
+  hesper_list <- self@hesper_list
+
+  purrr::map(hesper_categories@category_list, \(x) {
+    cat_name = x@cat
+    cat_vars = x@vars
+
+    hesper_list_sub <- hesper_list[which(
+      purrr::map_chr(hesper_list, \(y) y@hesper_var) %in% cat_vars
+    )]
+
+    # pmap over hesper_list_sub and extract hesper_vals
+    hesper_vals_list <- purrr::map(hesper_list_sub, \(y) y@hesper_vals)
+    hesper_vals_list <- purrr::pmap_chr(hesper_vals_list, \(...) {
+      vals <- c(...)
+
+      # logic is:
+      # if any serious_problem -> serious_problem
+      # if all no_serious_problem -> no_serious_problem
+      # if any is dnk, dnk
+      # if any is pnta, pnta
+      # if any is not_applicable, not_applicable
+      res <- if ("serious_problem" %in% vals) {
+        "serious_problem"
+      } else if (all(vals == "no_serious_problem")) {
+        "no_serious_problem"
+      } else if ("dnk" %in% vals) {
+        "dnk"
+      } else if ("pnta" %in% vals) {
+        "pnta"
+      } else if ("not_applicable" %in% vals) {
+        "not_applicable"
+      } else {
+        NA_character_
+      }
+    })
+
+    # let's add binaries for each hesper_opts
+    hesper_vals_bins <- create_binary_vectors(hesper_vals_list, hesper_opts())
+
+    return(list(
+      vals = hesper_vals_list,
+      bins = hesper_vals_bins
+    ))
+  }) |>
+    purrr::set_names(purrr::map_chr(hesper_categories@category_list, \(x) {
+      x@cat
+    }))
 }

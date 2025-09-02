@@ -100,9 +100,9 @@ S7::method(as_data_frame, HesperListEnhanced) <- function(x, bins = TRUE) {
   }
 
   # Add category-level HESPER vectors if categories are present
-  if (length(x@category_list) > 0 && length(x@category_hesper_list) > 0) {
-    category_vars <- names(x@category_hesper_list)
-    category_vals <- x@category_hesper_list
+  if (length(x@category_list) > 0 && length(x@category_list_pp) > 0) {
+    category_vars <- names(x@category_list_pp)
+    category_vals <- x@category_list_pp
 
     # keep only sub-item 'vals' if bins is false
     category_vals_df <- as.data.frame(
