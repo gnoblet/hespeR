@@ -1,9 +1,14 @@
 #' Get variables contained in hespeR S7 objects
 #'
-#' Returns the variable names contained in hespeR S7 objects, for instance @hesper_var in HesperVector or all @hesper_var s in HesperList. For HesperCategory it returns the @vars and not the @cat. For HesperListEnhanced objects, default uses get_vars on the @hesper_list slot.
+#' Returns the variable names contained in hespeR S7 objects, for instance `@hesper_var` in HesperVector or all `@hesper_var` s in HesperList. For HesperCategory it returns the `@vars` and not the `@cat`. For HesperListEnhanced objects, default uses get_vars on the `@hesper_list` slot.
 #'
-#' @typed x: HesperVector | HesperList | HesperCategories | SL
-#'  An S7 object of class HesperVector, HesperList, HesperCategory, HesperCategories or SL.
+#' @typed x: HesperVector | HesperList | HesperCategories | SL | HesperListEnhanced
+#'  An S7 object.
+#' @typed ...: param
+#'  For `HesperListEnhanced` objects, use the `property` argument to retrieve vars from the different properties.
+#'
+#'
+#'
 #' @typedreturn character[0+]
 #'  A character vector of variable names.
 #'
@@ -56,9 +61,6 @@ S7::method(get_vars, SL) <- function(x) {
 
 #' @rdname get_vars
 #' @name get_vars
-#'
-#' @typed property: character[1]
-#'
 #'
 S7::method(get_vars, HesperListEnhanced) <- function(
   x,

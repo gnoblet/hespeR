@@ -7,13 +7,13 @@
 get_vars(x, ...)
 }
 \arguments{
-\item{x}{(\code{HesperVector | HesperList | HesperCategories | SL}) An S7 object of class HesperVector, HesperList, HesperCategory, HesperCategories or SL.}
+\item{x}{(\code{HesperVector | HesperList | HesperCategories | SL | HesperListEnhanced}) An S7 object.}
 
-\item{property}{(\code{character[1]})}
+\item{...}{(\code{param}) For \code{HesperListEnhanced} objects, use the \code{property} argument to retrieve vars from the different properties.}
 }
 \value{
 (\verb{character[0+]}) A character vector of variable names.
 }
 \description{
-Returns the variable names contained in hespeR S7 objects, for instance @hesper_var in HesperVector or all @hesper_var s in HesperList. For HesperCategory it returns the @vars and not the @cat. For HesperListEnhanced objects, default uses get_vars on the @hesper_list slot.
+Returns the variable names contained in hespeR S7 objects, for instance \verb{@hesper_var} in HesperVector or all \verb{@hesper_var} s in HesperList. For HesperCategory it returns the \verb{@vars} and not the \verb{@cat}. For HesperListEnhanced objects, default uses get_vars on the \verb{@hesper_list} slot.
 }
