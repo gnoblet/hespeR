@@ -4,14 +4,16 @@
 \alias{get_vars}
 \title{Get variables contained in hespeR S7 objects}
 \usage{
-get_vars(x)
+get_vars(x, ...)
 }
 \arguments{
 \item{x}{(\code{HesperVector | HesperList | HesperCategories | SL}) An S7 object of class HesperVector, HesperList, HesperCategory, HesperCategories or SL.}
+
+\item{property}{(\code{character[1]})}
 }
 \value{
 (\verb{character[0+]}) A character vector of variable names.
 }
 \description{
-Returns the variable names contained in hespeR S7 objects, for instance @hesper_var in HesperVector or all @hesper_var s in HesperList. For HesperCategory it returns the @vars and not the @cat.
+Returns the variable names contained in hespeR S7 objects, for instance @hesper_var in HesperVector or all @hesper_var s in HesperList. For HesperCategory it returns the @vars and not the @cat. For HesperListEnhanced objects, default uses get_vars on the @hesper_list slot.
 }
