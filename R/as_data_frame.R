@@ -8,7 +8,7 @@
 #'  If `TRUE`, includes binary columns for each HESPER option in the data.frame.
 #'
 #' @typedreturn data.frame
-#'  With columns named by `hesper_var` and values from `hesper_vals` (and optionally binaries). An attribute `allow_missing` is added to indicate if missing values are allowed for each variable.
+#'  With columns named by `hesper_var` and values from `hesper_vals` (and optionally binaries). An attribute `allow_missing` is added to indicate if missing values are allowed for each variable. For `HesperListEnhanced`, `hesper_list_pp` is used instead of `hesper_list`.
 #'
 #' @export
 as_data_frame <- S7::new_generic(
@@ -79,7 +79,7 @@ S7::method(as_data_frame, HesperListEnhanced) <- function(x, bins = TRUE) {
   # Convert hesper_list to data.frame using HesperList method
   df <- as_data_frame(
     HesperList(
-      hesper_list = x@hesper_list
+      hesper_list = x@hesper_list_pp
     ),
     bins = bins
   )
