@@ -57,7 +57,7 @@ l <- list(
 hesper_df <- purrr::map(hesper_vars, \(x) {
   x = sample(hesper_opts, 10000, replace = TRUE)
 }) |>
-  ::set_names(hesper_vars) |>
+  purrr::set_names(hesper_vars) |>
   as.data.frame()
 
 gender_df <- purrr::map(gender_vars, \(x) {
@@ -65,7 +65,9 @@ gender_df <- purrr::map(gender_vars, \(x) {
 }) |>
   purrr::set_names(gender_vars) |>
   as.data.frame()
-dis_df <- purrr::map(dis_vars, \(x) x = sample(dis_opts, 10000, replace = TRUE)) |>
+dis_df <- purrr::map(dis_vars, \(x) {
+  x = sample(dis_opts, 10000, replace = TRUE)
+}) |>
   purrr::set_names(dis_vars) |>
   as.data.frame()
 
