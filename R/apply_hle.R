@@ -72,7 +72,7 @@ apply_hle_hesper_list_sl <- function(self) {
     names(hesper_list_cleaned)
   )]
 
-  return(hesper_list_cleaned)
+  return(unname(hesper_list_cleaned))
 }
 
 #' Apply skip logic to priority_list (helper function for getter)
