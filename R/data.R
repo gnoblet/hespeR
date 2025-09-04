@@ -154,3 +154,13 @@ hesper_opts <- function(...) {
     return(unlist(opts))
   }
 }
+
+#' Some Hesper data frame
+#'
+#' A sample data frame containing HESPER survey data for testing and demonstration purposes.
+#' It includes various HESPER item responses, demographic information, and a unique identifier for each respondent.#'
+#' @format data.frame
+#' A data frame with 10k rows and 32 columns.
+#'
+#' @source <https://www.who.int/teams/global-tuberculosis-programme/data>
+"hesper_dat"
