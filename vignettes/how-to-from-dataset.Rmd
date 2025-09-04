@@ -1,0 +1,101 @@
+---
+title: "how-to-from-dataset"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{how-to-from-dataset}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In the package, you can find an example dataset that you can play with. Let's use it in this vignette to prepare a `HesperListEnhanced` object and then apply different methods to it such as the marvelous overall 'report' method.
+```{r setup}
+library(hespeR)
+
+```
+
+# Some preliminary notes
+
+This vignette assumes that data were well formatted already, aka either data collection used the Kobotool template that can be found here: [XXX] or at the minimum that response options, variable names, etc. are the right ones.
+
+# Get a glimpse of the data and prepare
+
+What's wonderful about the `HesperListEnhanced` (HLE) class is that it contains all the necessary (hopefully!) validators to ensure that the data are in the right format. Let's see how it works.
+
+First let's just have a glimpes at the data:
+```{r glimpse-data}
+str(hesper_dat)
+```
+
+We can prepare our HLE object using the `from_data_frame()` method.
+```{r prepare-hle}
+hle <- from_data_frame(
+  hesper_dat,
+  hesper_vars = hesper_vars(), # here all vars are present, but you can use a vector of your existing vars instead
+  other_vars = NULL, # means that all non priority and non hesper-vars are consider others
+  priority_vars = c(
+    "hesper_priority_first",
+    "hesper_priority_second",
+    "hesper_priority_third"
+  )
+)
+```
+
+What is wonderful is that now out of this 10k-row dataset, we have all binaries calcualted, and so on. Let's see what we have. First, we have hesper vectors (see first 2 out of 29):
+```{r hle-summary-first3}
+hle@hesper_list |> head(2)
+```
+
+We could check priorities with:
+```{r hle-summary-priorities}
+hle@priority_list |> head(1)
+```
+
+To check which items are considered in this dataset, we can use the `get_vars()` method:
+```{r hle-summary-get-vars}
+get_vars(hle)
+```
+Now we can add some skip logic rules with an list of `SL` objects. Let's say that we want to apply the following rules:
+
+- based on gender of the respondent, skip `hesper_clean_women` and `hesper_health_care_female` if male, and `hesper_health_care_male` if female
+- based on displacement status, skip `hesper_displaced` if hosts
+
+```{r skip-logic}
+hle@SL <- list(
+  SL(
+    hesper_var = "hesper_clean_female",
+    subset_var = "resp_gender",
+    subset_vals = "female"
+  ),
+  SL(
+    hesper_var = "hesper_health_care_female",
+    subset_var = "resp_gender",
+    subset_vals = "female"
+  ),
+  SL(
+    hesper_var = "hesper_health_care_male",
+    subset_var = "resp_gender",
+    subset_vals = "male"
+  ),
+  SL(
+    hesper_var = "hesper_displaced",
+    subset_var = "pop_group",
+    subset_vals = c("refugees", "idp")
+  )
+)
+
+# Which hesper_var have skip logic rules?
+get_vars(hle, 'SL')
+```
+
+We can check that the skip logic rules are applied correctly. For instance, let's check the `hesper_displaced` SL rule (get it through `get(hle, 'SL', 'hesper_displaced')`), which should only keep those with `pop_group` being either `refugees` or `idp`.
+```{r check-skip-logic}
+hv_displaced <- get(hle, "hesper_list_pp", "hesper_displaced") 
+hv_displaced[[1]] |> as_data_frame(bins = F) |> head()
+```
